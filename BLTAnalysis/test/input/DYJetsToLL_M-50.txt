@@ -1,1 +1,10 @@
-root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Fall17_DYJetsToLL_M-50_amcatnlo/Fall17_DYJetsToLL_M-50_amcatnlo_bacon_0.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_0.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_1.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_2.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_3.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_4.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_5.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_6.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_7.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_8.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DYJetsToLL/Output_9.root

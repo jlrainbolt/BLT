@@ -15,7 +15,7 @@ TOPDIR=$PWD
 
 # lpc
 export SCRAM_ARCH=slc6_amd64_gcc630
-export CMSSW_VERSION=CMSSW_9_4_9_cand2
+export CMSSW_VERSION=CMSSW_9_4_12
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 tar -xzf source.tar.gz

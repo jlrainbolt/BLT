@@ -128,11 +128,11 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
 {
     bool elPass = false;
     float bdtVal = -1;
-
-    if (cutLevel.cutName == "hzzNoIsoV1")
+/*
+    if (cutLevel.cutName == "2016HZZ")
+        bdtVal = el->mva2016HZZ;
+    else if (cutLevel.cutName == "2017isoV2")
         bdtVal = el->mva;
-    else if (cutLevel.cutName == "hzzIsoV1")
-        bdtVal = el->mvaIso;
 
     if (el->calibPt > cutLevel.pt[0] && el->calibPt < cutLevel.pt[1])
     {
@@ -170,7 +170,7 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
                 elPass = true;
         }
     }
-
+*/
     return elPass;
 }
 

@@ -72,30 +72,15 @@ public:
 
     // Params and cuts
     std::unique_ptr<Parameters>         params;
-    std::unique_ptr<Cuts>               cuts;
+//  std::unique_ptr<Cuts>               cuts;
 
     // Utilities
-    std::unique_ptr<ParticleSelector>   particleSelector;
+//  std::unique_ptr<ParticleSelector>   particleSelector;
     std::unique_ptr<baconhep::TTrigger> trigger;
     std::unique_ptr<WeightUtils>        weights;
 
     std::vector<string>                 muonTriggerNames, electronTriggerNames;
 
-    // Histograms
-//  TH1D *hPhaseSpaceEvents, *hFiducialEvents;
-
-
-
-    ////  GEN SELECTION
-/*
-    // Phase space requirements
-    const   Float_t     M_MIN = 80,     M_MAX = 100,    MLL_MIN = 4;
-
-    // Fiducial requirements
-    // Same for both flavors...maybe not the "best" choice, but certainly the easiest!
-    const   Float_t     PT1_MIN = 20,   PT2_MIN = 10,   PT_MIN = 5;
-    const   Float_t     ETA_MAX = 2.5;
-*/
 
 
     ////  BRANCHES
@@ -104,15 +89,13 @@ public:
     Int_t runNumber, lumiSection;
     Long64_t evtNumber;
     UShort_t nPV;
-    Float_t genWeight, PUWeight, nPU;
-    UShort_t nPartons;
-    Float_t met, metPhi;
+    Float_t genWeight, PUWeight, nPU, ECALWeight;
     Bool_t evtMuonTriggered, evtElectronTriggered;
 
 
     // Counters
     UShort_t nMuons, nElectrons, nLeptons;
-    UShort_t nLooseMuons, nIsoMVAElectrons, nNoIsoMVAElectrons;
+    UShort_t nLooseMuons, nV1Electrons, nV2Electrons;
     UShort_t nHZZMuons, nHZZElectrons, nHZZLeptons;
     UShort_t nGenMuons, nGenElectrons, nGenLeptons;
 
@@ -137,11 +120,10 @@ public:
     std::vector<Short_t>    electronsQ;
     std::vector<Bool_t>     electronFiredLeg1, electronFiredLeg2;
 
-    std::vector<Bool_t>     electronIsGhost, electronPassIsoMVA, electronPassNoIsoMVA, electronIsHZZ;
+    std::vector<Bool_t>     electronIsGhost, electronPassV1MVA, electronPassV2MVA, electronIsHZZ;
     std::vector<Float_t>    electronEnergySF, electronHZZIDSF;
     std::vector<Float_t>    electronTrigEffLeg1Data, electronTrigEffLeg1MC, electronTrigEffLeg2Data, electronTrigEffLeg2MC;
 
-    std::vector<Float_t>    electronIsoMVA, electronNoIsoMVA;
     std::vector<Float_t>    electronCombIso, electronsTrkIso, electronD0, electronDz, electronSIP3d, electronScEta;
     std::vector<UShort_t>   electronNMissHits;
     std::vector<Bool_t>     electronIsGap;

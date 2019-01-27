@@ -8,31 +8,31 @@ This branch is designed for the BF(Z -> 4l) measurement over the full 2017 datas
 Setup
 =====
 
-This branch uses CMSSW_9_4_9_cand2 on cmslpc-sl6:
+This branch uses CMSSW_9_4_12 on cmslpc-sl6:
 
 ### Build and source environment
 
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 export SCRAM_ARCH=slc6_amd64_gcc630
-cmsrel CMSSW_9_4_9_cand2
-cd CMSSW_9_4_9_cand2/src
+cmsrel CMSSW_9_4_12
+cd CMSSW_9_4_12/src
 cmsenv
 git cms-init
 ```
 
 ### Checkout dependencies
 
-Depends on NWUHEP/BaconAna jbueghly_2017 branch:
+Depends on jlrainbolt/BaconAna 2016legacy branch:
 
 ```
-git clone -b jbueghly_2017 git@github.com:NWUHEP/BaconAna
+git clone -b 2016legacy git@github.com:jlrainbolt/BaconAna
 ```
 
 ### Checkout and compile BLT code
 
 ```
-git clone -b lacey_2017 git@github.com:NWUHEP/BLT.git
+git clone -b trimmed_legacy git@github.com:jlrainbolt/BLT.git
 scram b -j 12
 ```
 

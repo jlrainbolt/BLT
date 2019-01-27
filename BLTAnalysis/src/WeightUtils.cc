@@ -42,10 +42,9 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     //////////////////
 
 
-//  fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_2017_69200_100bins.root";
+//  fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_sf_2017_full.root";
     fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_sf_2017_full.root";
     TFile* puFile = new TFile(fileName.c_str(), "OPEN");
-//  _puReweight = (TH1*)puFile->Get("pileup_sf");
     _puReweight = (TGraph*)puFile->Get("pileup_sf");
 
 
@@ -136,11 +135,13 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
     //--- HZZ ELECTRON ---//
 
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_Moriond2018v1.root";
+//  fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_Moriond2018v1.root";
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_Moriond2017v2.root";
     TFile* f_hzz_eleIdSF = new TFile(fileName.c_str(), "OPEN"); 
     _hzz_eleIdSF = (TH2F*) f_hzz_eleIdSF->Get("EGamma_SF2D");
 
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_Moriond2018v1_gap.root";
+//  fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_Moriond2018v1_gap.root";
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_Moriond2017v2_gap.root";
     TFile* f_hzz_eleIdSF_gap = new TFile(fileName.c_str(), "OPEN"); 
     _hzz_eleIdSF_gap = (TH2F*) f_hzz_eleIdSF_gap->Get("EGamma_SF2D");
 
@@ -154,11 +155,13 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
     //--- ELECTRON ---//
 
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root";
+//  fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root";
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_passingRECO.root";
     TFile* f_eleRecoSF = new TFile(fileName.c_str(), "OPEN"); 
     _eleSF_RECO = (TH2F*) f_eleRecoSF->Get("EGamma_SF2D");
 
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root";
+//  fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root";
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D_passingRECO.root";
     TFile* f_eleRecoSF_lowEt = new TFile(fileName.c_str(), "OPEN"); 
     _eleSF_RECO_lowEt = (TH2F*) f_eleRecoSF_lowEt->Get("EGamma_SF2D");
 }
@@ -341,6 +344,7 @@ EfficiencyContainer WeightUtils::GetHZZMuonIDEff(const baconhep::TMuon* muon) co
 // Reco: https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Electron_Reconstruction_Scale_Fa
 EfficiencyContainer WeightUtils::GetHZZElectronIDRecoEff(const baconhep::TElectron* electron) const 
 {
+    // FIXME replace pt with corrected pt
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
 
     if (_isRealData)
@@ -358,20 +362,20 @@ EfficiencyContainer WeightUtils::GetHZZElectronIDRecoEff(const baconhep::TElectr
     {   
         if (electron->fiducialBits & kIsGap)
         {
-            if (electron->calibPt > maxPt)
+            if (electron->pt > maxPt)
                 bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, 0.99 * maxPt);
             else
-                bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, electron->calibPt);
+                bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, electron->pt);
   
             sfID = _hzz_eleIdSF_gap->GetBinContent(bin);
             errID = _hzz_eleIdSF_gap->GetBinError(bin);
         }
         else
         {
-            if (electron->calibPt > maxPt)
+            if (electron->pt > maxPt)
                 bin = _hzz_eleIdSF->FindBin(electron->scEta, 0.99 * maxPt);
             else
-                bin = _hzz_eleIdSF->FindBin(electron->scEta, electron->calibPt);
+                bin = _hzz_eleIdSF->FindBin(electron->scEta, electron->pt);
 
             sfID = _hzz_eleIdSF->GetBinContent(bin);
             errID = _hzz_eleIdSF->GetBinError(bin);
@@ -382,26 +386,27 @@ EfficiencyContainer WeightUtils::GetHZZElectronIDRecoEff(const baconhep::TElectr
     // Reco
     // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electron_scale_factors
     // https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Electron_Reconstruction_Scale_Fa
-    float threshPt = 20, minPt = 10;
+//  float threshPt = 20, minPt = 10;
+    float threshPt = 50, minPt = 25;    // FIXME add extra 1%
     float sfReco = 1, errReco = 0;
     if (fabs(electron->scEta) < maxEta)
     {
-        if (electron->calibPt > threshPt)
+        if (electron->pt > threshPt)
         {
-            if (electron->calibPt > maxPt)
+            if (electron->pt > maxPt)
                 bin = _eleSF_RECO->FindBin(electron->scEta, 0.99 * maxPt);
             else
-                bin = _eleSF_RECO->FindBin(electron->scEta, electron->calibPt);
+                bin = _eleSF_RECO->FindBin(electron->scEta, electron->pt);
 
             sfReco = _eleSF_RECO->GetBinContent(bin);
             errReco = _eleSF_RECO->GetBinError(bin);
         }
         else
         {
-            if (electron->calibPt < minPt)
+            if (electron->pt < minPt)
                 bin = _eleSF_RECO_lowEt->FindBin(electron->scEta, 1.01 * minPt);
             else
-                bin = _eleSF_RECO_lowEt->FindBin(electron->scEta, electron->calibPt);
+                bin = _eleSF_RECO_lowEt->FindBin(electron->scEta, electron->pt);
 
             sfReco = _eleSF_RECO_lowEt->GetBinContent(bin);
             errReco = _eleSF_RECO_lowEt->GetBinError(bin);
