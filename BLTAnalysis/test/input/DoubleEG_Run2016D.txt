@@ -1,0 +1,5 @@
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Summer16MiniAODv3/DoubleEG_Run2016D/Summer16_DoubleMuon_RunD_test_0.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Summer16MiniAODv3/DoubleEG_Run2016D/Summer16_DoubleMuon_RunD_test_1.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Summer16MiniAODv3/DoubleEG_Run2016D/Summer16_DoubleMuon_RunD_test_2.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Summer16MiniAODv3/DoubleEG_Run2016D/Summer16_DoubleMuon_RunD_test_3.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Summer16MiniAODv3/DoubleEG_Run2016D/Summer16_DoubleMuon_RunD_test_4.root

@@ -146,12 +146,10 @@ void PhaseSpaceAnalyzer::Init(TTree *tree)
     fInfo           = 0;
     fGenEvtInfo     = 0;
     fGenParticleArr = 0;
-    fLHEWeightArr   = 0;
 
     fChain->SetBranchAddress(   "Info",         &fInfo,             &b_Info);
     fChain->SetBranchAddress(   "GenEvtInfo",   &fGenEvtInfo,       &b_GenEvtInfo);
     fChain->SetBranchAddress(   "GenParticle",  &fGenParticleArr,   &b_GenParticleArr);
-    fChain->SetBranchAddress(   "LHEWeight",    &fLHEWeightArr,     &b_LHEWeightArr);
 }
 
 

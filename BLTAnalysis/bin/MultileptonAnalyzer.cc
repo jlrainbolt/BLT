@@ -80,6 +80,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
     string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
+    lumiMask.AddJSONFile(jsonFileName);
 
     // muon momentum corrections
     muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/RoccoR2016.txt");
@@ -166,7 +167,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     outTree->Branch(    "electronIsGhost",          &electronIsGhost);
     outTree->Branch(    "electronPassV1MVA",        &electronPassV1MVA);
-    outTree->Branch(    "electronPassv2MVA",        &electronPassV2MVA);
+    outTree->Branch(    "electronPassV2MVA",        &electronPassV2MVA);
     outTree->Branch(    "electronIsHZZ",            &electronIsHZZ);
 
     outTree->Branch(    "electronEnergySF",         &electronEnergySF);
@@ -299,8 +300,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     ////  EVENT WEIGHTS
 
-    genWeight   = 1.;
-    PUWeight    = 1.;
+    genWeight   = 1;
+    PUWeight    = 1;
+    ECALWeight  = 1;
     nPU         = 0;
     runNumber   = fInfo->runNum;
     evtNumber   = fInfo->evtNum;
@@ -319,6 +321,10 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         // Pileup reweighting
         nPU = fInfo->nPUmean;
         PUWeight = weights->GetPUWeight(nPU);
+
+
+        // L1 ECAL prefiring weight
+        ECALWeight = fInfo->ecalWeight;
     }
 
 
@@ -477,9 +483,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     if (!passTrigger)
         return kTRUE;
-
-    if (passTrigger)    
-        hTotalEvents->Fill(3);
+    hTotalEvents->Fill(3);
 
 
 
@@ -646,6 +650,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     }
 
     nLeptons        = nMuons + nElectrons;
+    nHZZLeptons     = nHZZMuons + nHZZElectrons;
 
 
 
@@ -654,12 +659,10 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     // SELECTION //
     ///////////////
 
-
     // Require at least two same-flavor leptons passing HZZ cuts
     if (nHZZMuons < 2 && nHZZElectrons < 2)
         return kTRUE;
     hTotalEvents->Fill(5);
-
 
 
 
@@ -809,6 +812,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         electronD0.push_back(electron->d0);
         electronDz.push_back(electron->dz);
         electronSIP3d.push_back(electron->sip3d);
+        electronScEta.push_back(electron->scEta);
         electronNMissHits.push_back(electron->nMissingHits);
         electronIsGap.push_back(electron->fiducialBits & kIsGap);
     }

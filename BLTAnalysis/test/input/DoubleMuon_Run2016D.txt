@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Summer16MiniAODv3/DoubleMuon_Run2016D/Summer16_DoubleMuon_RunD_test.root

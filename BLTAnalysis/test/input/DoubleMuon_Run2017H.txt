@@ -1,3 +1,0 @@
-root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DoubleMuon/Output_0.root
-root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DoubleMuon/Output_1.root
-root://cmseos.fnal.gov//store/user/jrainbol/Bacon/DoubleMuon/Output_2.root

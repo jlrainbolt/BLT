@@ -20,9 +20,7 @@
 #include "BLT/BLTAnalysis/interface/BLTSelector.hh"
 #include "BLT/BLTAnalysis/interface/BLTHelper.hh"
 #include "BLT/BLTAnalysis/interface/Parameters.hh"
-#include "BLT/BLTAnalysis/interface/Cuts.hh"
 #include "BLT/BLTAnalysis/interface/TriggerSelector.hh"
-#include "BLT/BLTAnalysis/interface/ParticleSelector.hh"
 #include "BLT/BLTAnalysis/interface/WeightUtils.h"
 #include "BLT/BLTAnalysis/interface/RoccoR.h"
 
