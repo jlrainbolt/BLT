@@ -120,8 +120,13 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
     else if (cutLevel.cutName == "tightHZZElectronID")
     {
         bool isLoose    = this->PassElectronID(el, _cuts.looseHZZElectronID)    == cutLevel.IsLoose;
-        bool isMVA      = this->PassElectronMVA(el, _cuts.wpLooseNoIsoV1)       == cutLevel.IsMVA;
         bool isIsolated = this->PassElectronIso(el, _cuts.wpHZZElectronIso)     == cutLevel.IsIsolated;
+
+        bool isMVA  = kFALSE;
+        if      (_dataPeriod == "2016")
+            isMVA = el->pass2017noIsoV1wpLoose;
+        else if (_dataPeriod == "2017")
+            isMVA = this->PassElectronMVA(el, _cuts.wpLooseNoIsoV1)     == cutLevel.IsMVA;
 
         if (isLoose && isIsolated && isMVA)
             return kTRUE;
@@ -129,12 +134,12 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
     else if (cutLevel.cutName == "tightHZZIsoMVAElectronID")
     {
         bool isLoose    = this->PassElectronID(el, _cuts.looseHZZElectronID)    == cutLevel.IsLoose;
-        bool isMVA;
 
+        bool isMVA  = kFALSE;
         if      (_dataPeriod == "2016")
-            isMVA   = el->pass2017isoV2wpHZZ;
+            isMVA = el->pass2017isoV2wpHZZ;
         else if (_dataPeriod == "2017")
-            isMVA   = this->PassElectronMVA(el, _cuts.wpLooseIsoV1)         == cutLevel.IsMVA;
+            isMVA = this->PassElectronMVA(el, _cuts.wpLooseIsoV1)         == cutLevel.IsMVA;
 
         if (isLoose && isMVA)
             return kTRUE;
@@ -145,6 +150,7 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 
 bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const
 {
+/*
     float bdtVal = -1;
     unsigned ptBin, etaBin;
 
@@ -171,7 +177,7 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
 
     if (bdtVal > cutLevel.bdt[ptBin][etaBin])
         return kTRUE;
-
+*/  //FIXME
     return kFALSE;
 }
 
@@ -201,7 +207,7 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
         }
     }
 
-    float effArea;
+    float effArea = 0;
 
     if      (_dataPeriod == "2016")
         effArea = _cuts.effArea2016[etaBin];
@@ -214,7 +220,8 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
 float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el) const
 {
     if      (_dataPeriod == "2016")
-        return el->ecalEnergy / el->energy();
+        return el->ecalEnergy / el->energy;
+/*
     else if (_dataPeriod == "2017")
     {
         TLorentzVector electronP4;
@@ -222,4 +229,7 @@ float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el) con
 
         return el->calibE / electronP4.E();
     }
+*/  //FIXME
+    else
+        return 0;
 }

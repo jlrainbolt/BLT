@@ -42,6 +42,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
+    const bool isSignal = params->datasetgroup == "zz_4l";
+
     // Particle selector, cuts
     cuts.reset(new Cuts());
     particleSelector.reset(new ParticleSelector(*params, *cuts));
@@ -249,7 +251,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     const bool isData = (fInfo->runNum != 1);
     particleSelector->SetRealData(isData);
     weights->SetDataBit(isData);
-   
+ 
     const bool isSignal = params->datasetgroup == "zz_4l";
 
 
@@ -600,7 +602,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         if      (params->period == "2016")
         {
             electronIs2016HZZ.push_back(electron->pass2016HZZwpLoose);
-            electronIsV1NoIso.push_back(election->pass2017noIsoV1wpLoose);
+            electronIsV1NoIso.push_back(electron->pass2017noIsoV1wpLoose);
             electronIsV1Iso.push_back(electron->pass2017isoV1wpLoose);
             electronIsV2Iso.push_back(electron->pass2017isoV2wpHZZ);
         }
@@ -616,8 +618,17 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         if (electronIsLoose.back())
             nLooseElectrons++;
-        if (electronIsTight.back())
-            nTightElectrons++;
+
+        if      (params->period == "2016")
+        {
+            if (electronIsTightIsoMVA.back())
+                nTightElectrons++;
+        }
+        else if (params->period == "2017")
+        {
+            if (electronIsTight.back())
+                nTightElectrons++;
+        }
 
         // Trigger bools and SFs
         bool firedLeg1 = kFALSE, firedLeg2 = kFALSE;
