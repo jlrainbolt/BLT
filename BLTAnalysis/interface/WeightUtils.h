@@ -5,10 +5,13 @@
 #ifndef _WeightUtils_H
 #define _WeightUtils_H
 
+#include "BLT/BLTAnalysis/interface/BLTHelper.hh"
+
 // c++ libraries
 #include <string>
 #include <iostream>
 #include <map>
+#include <algorithm>
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,22 +33,6 @@
 using namespace std;
 
 
-class EfficiencyContainer: public TObject{
-    public:
-        EfficiencyContainer();
-        EfficiencyContainer(float, float, float, float);
-        virtual ~EfficiencyContainer() {};
-        void SetData(float, float, float, float);
-        pair<double, double> GetEff() {return make_pair(_dataEff, _mcEff);};
-        pair<double, double> GetErr() {return make_pair(_dataErr, _mcErr);};
-        float GetSF() {return (_dataEff/_mcEff);};
-        float GetVar() {return pow(_dataEff/_mcEff, 2)*(pow(_dataErr/_dataEff, 2) + pow(_mcErr/_mcEff, 2));};
-
-    private:
-        float _dataEff, _mcEff;
-        float _dataErr, _mcErr;
-};
-
 
 class WeightUtils: public TObject {
     public:
@@ -58,12 +45,13 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
-        float               GetPUWeight(float);
-        EfficiencyContainer GetDoubleMuonTriggerEff(const baconhep::TMuon*, int) const;
-        EfficiencyContainer GetDoubleElectronTriggerEff(const baconhep::TElectron*, int) const;
-        EfficiencyContainer GetTriggerEff(string, TLorentzVector&) const;
-        EfficiencyContainer GetHZZMuonIDEff(const baconhep::TMuon*) const;
-        EfficiencyContainer GetHZZElectronIDRecoEff(const baconhep::TElectron*) const;
+        float   GetPUWeight(float) const;
+        float   GetHZZMuonIDSF(const baconhep::TMuon*) const;
+        float   GetHZZElectronIDSF(const baconhep::TElectron*) const;
+        float   GetElectronRecoSF(const baconhep::TElectron*) const;
+
+        std::pair<float, float> GetDoubleMuonTriggerEff(const baconhep::TMuon*, const int) const;
+        std::pair<float, float> GetDoubleElectronTriggerEff(const baconhep::TElectron*, const int) const;
 
         ClassDef(WeightUtils, 0);
 
@@ -75,7 +63,6 @@ class WeightUtils: public TObject {
         bool   _isRealData;
 
         // Pileup
-//      TH1  *_puReweight;
         TGraph *_puReweight;
 
         // Muon triggers, ID, iso

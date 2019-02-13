@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/user/jbueghly/jbueghly_2017_data/DoubleEG_Run2017B-31Mar2018-v1/Output_22.root

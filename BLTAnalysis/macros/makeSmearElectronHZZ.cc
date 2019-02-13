@@ -13,7 +13,7 @@ void makeSmearElectronHZZ()
 
     // Number of histograms to create
 
-    const int N = 10;
+    const int N = 100;
 
 
     // Get histograms
@@ -69,6 +69,11 @@ void makeSmearElectronHZZ()
     TString histName;
     TH2D *h_smr[N];
 
+    TH2D *h_err = new TH2D("ERROR", "ERROR", x_bins, x_edge, y_bins, y_edge);
+    h_err->GetXaxis()->SetTitle(h_sf->GetXaxis()->GetTitle());
+    h_err->GetYaxis()->SetTitle(h_sf->GetYaxis()->GetTitle());
+
+
     for (unsigned n = 0; n < N; n++)
     {
         histName.Form("SMEAR%i", n);
@@ -83,21 +88,28 @@ void makeSmearElectronHZZ()
                 Double_t smr = rng.Gaus(0, err);
 
                 h_smr[n]->SetBinContent(i, j, smr);
+
+                if (n == 0)
+                    h_err->SetBinContent(i, j, err);
             }
         }
     }
-
+/*
+    h_err->SetStats(0);
+    h_err->Draw("COLZ");
+    h_smr[0]->GetXaxis()->SetTitle(h_sf->GetXaxis()->GetTitle());
+    h_smr[0]->GetYaxis()->SetTitle(h_sf->GetYaxis()->GetTitle());
+    h_smr[0]->SetStats(0);
     h_smr[0]->Draw("COLZ");
-
+*/
 
 
     // Write to file
 
     inFile->Close();
 
-    TFile *outFile = new TFile(inPath + "hzz_electron_id_smear.root", "RECREATE");
+    TFile *outFile = new TFile("hzz_electron_id_smear.root", "RECREATE");
     for (unsigned n = 0; n < N; n++)
         h_smr[n]->Write();
     outFile->Close();
-
 }

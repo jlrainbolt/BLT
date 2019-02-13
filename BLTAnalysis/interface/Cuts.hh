@@ -3,130 +3,68 @@
 
 #include <string>
 #include <vector>
+#include <TRandom3.h>
+#include "BLT/BLTAnalysis/interface/RoccoR.h"
 
 class Cuts {
 public:
     Cuts();
     ~Cuts() {}
 
-    float leadJetPt, trailJetPt, leadMuPt, trailMuPt, leadElPt, trailElPt, gPtOverMass, gPt,
-          zMassLow, zMassHigh, metLow, metHigh, zgMassLow, zgMassHigh;
-    float EAMu[6];
-    float EAEl[7];
-    float EAPho[7][3];
 
-    struct muIDCuts {
-        float IsPF;
-        float IsGLB;
-        float IsTRK;
-        float NormalizedChi2;
-        float NumberOfValidMuonHits;
-        float NumberOfMatchedStations;
-        float NumberOfValidPixelHits;
-        float TrackLayersWithMeasurement;
-        float dxy;
-        float dz;
+
+    //
+    //  MUONS
+    //
+
+    struct muIDCuts
+    {
         std::string cutName;
-    } tightMuID;
 
-    struct muIsoCuts {
-        float chIso04;
-        float nhIso04;
-        float phIso04;
-        float relCombIso04;
+        float   pt,     eta,    dxy,    dz,     SIP3d,      ptFracError;
+        bool    IsGLB,  IsTRK,  IsPF,   IsTrackerHighPt,    IsLoose,    IsIsolated;
+        float   NumberOfMatchedStations,    NumberOfValidPixelHits,     TrackLayersWithMeasurement;
+        int     BestTrackType;
+    }
+    looseHZZMuonID, tightHZZMuonID, trackerHighPtMuonID;
+
+    struct muIsoCuts
+    {
         std::string cutName;
-    } looseMuIso, tightMuIso;
+        float relCombIso03;
+    }
+    wpHZZMuonIso;
 
-    struct muDetIsoCuts {
-        float hcalIso;
-        float ecalIso;
-        float trkIso;
-        float relCombIso;
+
+
+    //
+    //  ELECTRONS
+    //
+
+    struct elIDCuts
+    {
         std::string cutName;
-    } looseMuDetIso, tightMuDetIso, amumuMuDetIso;
 
-    struct elIDCuts {
-        //broken into [0] barrel and [1] endcap
-        float dEtaIn[2];
-        float dPhiIn[2];
-        float sigmaIetaIeta[2];
-        float HadOverEm[2];
-        float dxy[2];
-        float dz[2];
-        float fabsEPDiff[2];
-        float ConversionMissHits[2];
-        float dr03TkSumPt[2];
-        float dr03EcalRecHitSumEt[2];
-        float dr03HcalTowerSumEt[2];
-        int   numberOfLostHits[2];
+        float   pt,     eta,    dxy,    dz,     SIP3d;
+        bool    IsLoose,    IsMVA,  IsIsolated;
+    }
+    looseHZZElectronID, tightHZZElectronID, tightHZZIsoMVAElectronID;
+
+    struct elMVACuts
+    {
         std::string cutName;
-    } vetoElID, looseElID, mediumElID, tightElID, mvaPreElID;
+        float   pt[2],  eta[3], bdt[2][3];
+    }
+    wpLooseIsoV1, wpLooseNoIsoV1;
 
-    struct elIsoCuts {
-        float chIso04;
-        float nhIso04;
-        float phIso04;
-        float relCombIso04;
-        float chIso;
-        float nhIso;
-        float phIso;
-        //broken into [0] barrel and [1] endcap
-        float relCombIso[2];
+    struct elIsoCuts
+    {
         std::string cutName;
-    } vetoElIso, looseElIso, mediumElIso, tightElIso;
+        float relCombIso03;
+    }
+    wpHZZElectronIso;
 
-
-    struct phIDCuts {
-        //broken into [0] barrel and [1] endcap
-        float PassedEleSafeVeto[2];
-        float HadOverEm[2];
-        float sigmaIetaIeta[2];
-        float HcalIso[2];
-        float TrkIso[2];
-        float ChPfIso[2];
-        std::string cutName;
-    } loosePhID, mediumPhID, preSelPhID;
-
-    struct phIsoCuts {
-        float chIso[2];
-        float nhIso[2];
-        float phIso[2];
-        float relCombIso[2];
-        std::string cutName;
-    } loosePhIso, mediumPhIso;
-
-    struct phMVACuts {
-        float mvaValCat1;
-        float mvaValCat2;
-        float mvaValCat3;
-        float mvaValCat4;
-        std::string cutName;
-    } catPhMVAID;
-
-    struct elMVACuts {
-        float bdt[6];
-        float pt[2];
-        float eta[3];
-        std::string cutName;
-    } hzzNoIsoV1, hzzIsoV1;
-
-    struct vbfJetIDCuts {
-        float betaStarC[2];
-        float dR2Mean[4];
-        std::string cutName;
-    } vbfJetID;
-
-    struct jetIDCuts {
-        unsigned int NumConst;
-        unsigned int CHM;
-        float NHF;
-        float NEMF;
-        float CHF;
-        float CEMF;
-        float MUF;
-        float CSV;
-        std::string cutName;
-    } looseJetID, bJetID;
+    float etaBins[8], effArea2016[7], effArea2017[7];
 };
 
 #endif  // CUTS_HH

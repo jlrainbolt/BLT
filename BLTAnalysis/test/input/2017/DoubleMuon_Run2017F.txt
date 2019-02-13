@@ -1,0 +1,2 @@
+root://cmseos.fnal.gov//store/user/jbueghly/jbueghly_2017_data/DoubleMuon_Run2017F-31Mar2018-v1/Output_0.root
+root://cmseos.fnal.gov//store/user/jbueghly/jbueghly_2017_data/DoubleMuon_Run2017F-31Mar2018-v1/Output_1.root

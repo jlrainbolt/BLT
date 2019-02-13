@@ -9,7 +9,7 @@ void makeSmearMuonHZZ()
 {
     // Number of histograms to create
 
-    const int N = 10;
+    const int N = 100;
 
 
     // Get histograms
@@ -19,7 +19,8 @@ void makeSmearMuonHZZ()
     TH2 *h_err;
     inFile->GetObject("ERROR", h_err);
 
-    h_err->Draw("COL");
+    h_err->SetStats(0);
+    h_err->Draw("COLZ");
 
 
 
@@ -81,18 +82,20 @@ void makeSmearMuonHZZ()
             }
         }
     }
-
+/*
+    h_smr[0]->GetXaxis()->SetTitle(h_err->GetXaxis()->GetTitle());
+    h_smr[0]->GetYaxis()->SetTitle(h_err->GetYaxis()->GetTitle());
+    h_smr[0]->SetStats(0);
     h_smr[0]->Draw("COLZ");
-
+*/
 
 
     // Write to file
 
     inFile->Close();
 
-    TFile *outFile = new TFile(inPath + "hzz_muon_id_smear.root", "RECREATE");
+    TFile *outFile = new TFile("hzz_muon_id_smear.root", "RECREATE");
     for (unsigned n = 0; n < N; n++)
         h_smr[n]->Write();
     outFile->Close();
-
 }

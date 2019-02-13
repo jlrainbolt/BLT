@@ -13,6 +13,10 @@ __init__.py
 # Stuff
 *~
 *.log
+*.swp
+
+# Images
+*.png
 
 # Remove crap in test dir
 BLTAnalysis/test/batch
