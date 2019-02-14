@@ -220,7 +220,7 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
 float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el) const
 {
     if      (_dataPeriod == "2016")
-        return el->ecalEnergy / el->energy;
+        return el->ecalTrkEnergyPostCorr / el->energy;
 /*
     else if (_dataPeriod == "2017")
     {
