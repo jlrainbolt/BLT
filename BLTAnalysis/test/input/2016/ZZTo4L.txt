@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/2016/Summer16_ZZTo4L_powheg/Summer16_ZZTo4L_powheg_bacon_0.root

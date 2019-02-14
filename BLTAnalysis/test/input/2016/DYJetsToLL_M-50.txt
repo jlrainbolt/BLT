@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/2016/Summer16_DYJetsToLL_M-50_amcatnlo/Summer16_DYJetsToLL_M-50_amcatnlo_bacon_0.root
