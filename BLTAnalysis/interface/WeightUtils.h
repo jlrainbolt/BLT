@@ -63,7 +63,7 @@ class WeightUtils: public TObject {
         bool   _isRealData;
 
         // Pileup
-        TGraph *_puReweight;
+        TH1 *_puReweight;
 
         // Muon triggers, ID, iso
         TGraphAsymmErrors *_eff_doubleMu_leg1_DATA[4], *_eff_doubleMu_leg1_MC[4];
