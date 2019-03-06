@@ -64,11 +64,6 @@ Cuts::Cuts() {
     tightHZZElectronID.cutName                      = "tightHZZElectronID";
     tightHZZElectronID.IsLoose                      = 1;
     tightHZZElectronID.IsMVA                        = 1;
-    tightHZZElectronID.IsIsolated                   = 1;
-
-    tightHZZIsoMVAElectronID.cutName                = "tightHZZIsoMVAElectronID";
-    tightHZZIsoMVAElectronID.IsLoose                = 1;
-    tightHZZIsoMVAElectronID.IsMVA                  = 1;
 
 
     // MVA

@@ -107,9 +107,8 @@ public:
     std::vector<Short_t>    electronCharge;
     std::vector<Float_t>    electronEnergySF,       electronIDSF,           electronRecoSF;
     std::vector<Float_t>    electronIsolation,      electronScEta;
-    std::vector<Bool_t>     electronIsTight,        electronIsTightIsoMVA,  electronIsLoose;
-    std::vector<Bool_t>     electronIsV1NoIso,      electronIsV1Iso,        electronIsV2Iso;
-    std::vector<Bool_t>     electronIs2016HZZ,      electronIsIsolated,     electronIsGap;
+    std::vector<Bool_t>     electronIsTight,        electronIsLoose,        electronIsV2Iso;
+    std::vector<Bool_t>     electronIsGap;
     std::vector<Bool_t>     electronFiredLeg1,      electronFiredLeg2;
     std::vector<Float_t>    electronTrigEffLeg1MC,  electronTrigEffLeg1Data;
     std::vector<Float_t>    electronTrigEffLeg2MC,  electronTrigEffLeg2Data;

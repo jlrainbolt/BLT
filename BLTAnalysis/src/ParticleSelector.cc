@@ -49,16 +49,27 @@ bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCut
     }
     else if (cutLevel.cutName == "trackerHighPtMuonID")
     {
-        if (
-                    mu->pt                  > cutLevel.pt
-                &&  fabs(mu->d0)            < cutLevel.dxy
-                &&  fabs(mu->dz)            < cutLevel.dz
-                &&  (mu->ptErr / mu->pt)    < cutLevel.ptFracError
-                &&  mu->nMatchStn           > cutLevel.NumberOfMatchedStations
-                &&  mu->nPixHits            > cutLevel.NumberOfValidPixelHits
-                &&  mu->nTkLayers           > cutLevel.TrackLayersWithMeasurement
-           )
-            return kTRUE;
+        if      (_dataPeriod == "2016")
+        {
+            if (
+                        mu->pt                  > cutLevel.pt
+                    &&  fabs(mu->d0)            < cutLevel.dxy
+                    &&  fabs(mu->dz)            < cutLevel.dz
+                    &&  (mu->ptErr / mu->pt)    < cutLevel.ptFracError
+                    &&  mu->nMatchStn           > cutLevel.NumberOfMatchedStations
+                    &&  mu->nPixHits            > cutLevel.NumberOfValidPixelHits
+                    &&  mu->nTkLayers           > cutLevel.TrackLayersWithMeasurement
+               )
+                return kTRUE;
+        }
+        else if (_dataPeriod == "2017")
+        {
+            bool isHighPt       = mu->pt > cutLevel.pt;
+            bool isIdentified   = mu->isTrackerHighPt;
+
+            if (isHighPt && isIdentified)
+                return kTRUE;
+        }
     }
     else if (cutLevel.cutName == "tightHZZMuonID")
     {
@@ -120,26 +131,7 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
     else if (cutLevel.cutName == "tightHZZElectronID")
     {
         bool isLoose    = this->PassElectronID(el, _cuts.looseHZZElectronID)    == cutLevel.IsLoose;
-        bool isIsolated = this->PassElectronIso(el, _cuts.wpHZZElectronIso)     == cutLevel.IsIsolated;
-
-        bool isMVA  = kFALSE;
-        if      (_dataPeriod == "2016")
-            isMVA = el->pass2017noIsoV1wpLoose;
-        else if (_dataPeriod == "2017")
-            isMVA = this->PassElectronMVA(el, _cuts.wpLooseNoIsoV1)     == cutLevel.IsMVA;
-
-        if (isLoose && isIsolated && isMVA)
-            return kTRUE;
-    }
-    else if (cutLevel.cutName == "tightHZZIsoMVAElectronID")
-    {
-        bool isLoose    = this->PassElectronID(el, _cuts.looseHZZElectronID)    == cutLevel.IsLoose;
-
-        bool isMVA  = kFALSE;
-        if      (_dataPeriod == "2016")
-            isMVA = el->pass2017isoV2wpHZZ;
-        else if (_dataPeriod == "2017")
-            isMVA = this->PassElectronMVA(el, _cuts.wpLooseIsoV1)         == cutLevel.IsMVA;
+        bool isMVA      = el->pass2017isoV2wpHZZ                                == cutLevel.IsMVA;
 
         if (isLoose && isMVA)
             return kTRUE;
@@ -148,6 +140,7 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 }
 
 
+// Deprecated??
 bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const
 {
 /*
@@ -177,7 +170,7 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
 
     if (bdtVal > cutLevel.bdt[ptBin][etaBin])
         return kTRUE;
-*/  //FIXME
+*/
     return kFALSE;
 }
 
@@ -219,17 +212,5 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
 
 float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el) const
 {
-    if      (_dataPeriod == "2016")
-        return el->ecalTrkEnergyPostCorr / el->energy;
-/*
-    else if (_dataPeriod == "2017")
-    {
-        TLorentzVector electronP4;
-        electronP4.SetPtEtaPhiM(el->pt, el->eta, el->phi, ELE_MASS);
-
-        return el->calibE / electronP4.E();
-    }
-*/  //FIXME
-    else
-        return 0;
+    return el->ecalTrkEnergyPostCorr / el->energy;
 }

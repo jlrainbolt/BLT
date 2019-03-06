@@ -35,7 +35,7 @@ mc_dict['zjets'] = \
 [
     cfg(data_name = 'DYJetsToLL_M-50',
         path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
-        nJobs    = 1,
+        nJobs    = 100,
         suffix   = 'zjets_m-50'
         ),
 ]

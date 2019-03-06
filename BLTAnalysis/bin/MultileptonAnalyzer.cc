@@ -143,12 +143,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "electronIsolation",        &electronIsolation);
     outTree->Branch(    "electronScEta",            &electronScEta);
     outTree->Branch(    "electronIsTight",          &electronIsTight);
-    outTree->Branch(    "electronIsTightIsoMVA",    &electronIsTightIsoMVA);
     outTree->Branch(    "electronIsLoose",          &electronIsLoose);
-    outTree->Branch(    "electronIsIsolated",       &electronIsIsolated);
-    outTree->Branch(    "electronIs2016HZZ",        &electronIs2016HZZ);
-    outTree->Branch(    "electronIsV1NoIso",        &electronIsV1NoIso);
-    outTree->Branch(    "electronIsV1Iso",          &electronIsV1Iso);
     outTree->Branch(    "electronIsV2Iso",          &electronIsV2Iso);
     outTree->Branch(    "electronIsGap",            &electronIsGap);
     outTree->Branch(    "electronFiredLeg1",        &electronFiredLeg1);
@@ -211,10 +206,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                                                                                                         
     electronP4_->Delete();          electronUncorrectedP4_->Delete();   electronCharge.clear();
     electronEnergySF.clear();       electronIDSF.clear();               electronRecoSF.clear();
-    electronIsolation.clear();      electronScEta.clear();
-    electronIsTight.clear();        electronIsTightIsoMVA.clear();  electronIsLoose.clear();
-    electronIsV1NoIso.clear();      electronIsV1Iso.clear();        electronIsV2Iso.clear();
-    electronIs2016HZZ.clear();      electronIsIsolated.clear();     electronIsGap.clear();
+    electronIsolation.clear();      electronScEta.clear();          electronIsGap.clear();
+    electronIsTight.clear();        electronIsLoose.clear();        electronIsV2Iso.clear();
     electronFiredLeg1.clear();      electronFiredLeg2.clear();      electronTrigEffLeg1Data.clear();
     electronTrigEffLeg1MC.clear();  electronTrigEffLeg2Data.clear();electronTrigEffLeg2MC.clear();
 
@@ -282,8 +275,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         PUWeight = weights->GetPUWeight(nPU);
 
         // ECAL weight
-        if (params->period == "2016")
-            ECALWeight = fInfo->ecalWeight;
+        ECALWeight = fInfo->ecalWeight;
     }
     else
     {
@@ -597,38 +589,14 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         // ID/iso bools
         electronIsTight.push_back(particleSelector->PassElectronID(electron, cuts->tightHZZElectronID));
-        electronIsTightIsoMVA.push_back(particleSelector->PassElectronID(electron, cuts->tightHZZIsoMVAElectronID));
         electronIsLoose.push_back(particleSelector->PassElectronID(electron, cuts->looseHZZElectronID));
-        if      (params->period == "2016")
-        {
-            electronIs2016HZZ.push_back(electron->pass2016HZZwpLoose);
-            electronIsV1NoIso.push_back(electron->pass2017noIsoV1wpLoose);
-            electronIsV1Iso.push_back(electron->pass2017isoV1wpLoose);
-            electronIsV2Iso.push_back(electron->pass2017isoV2wpHZZ);
-        }
-        else if (params->period == "2017")
-        {
-            electronIs2016HZZ.push_back(kFALSE);
-            electronIsV1NoIso.push_back(particleSelector->PassElectronMVA(electron, cuts->wpLooseNoIsoV1));
-            electronIsV1Iso.push_back(particleSelector->PassElectronMVA(electron, cuts->wpLooseIsoV1));
-            electronIsV2Iso.push_back(kFALSE);
-        }
-        electronIsIsolated.push_back(particleSelector->PassElectronIso(electron, cuts->wpHZZElectronIso));
+        electronIsV2Iso.push_back(electron->pass2017isoV2wpHZZ);
         electronIsGap.push_back(electron->fiducialBits & kIsGap);
 
         if (electronIsLoose.back())
             nLooseElectrons++;
-
-        if      (params->period == "2016")
-        {
-            if (electronIsTightIsoMVA.back())
-                nTightElectrons++;
-        }
-        else if (params->period == "2017")
-        {
-            if (electronIsTight.back())
-                nTightElectrons++;
-        }
+        if (electronIsTight.back())
+            nTightElectrons++;
 
         // Trigger bools and SFs
         bool firedLeg1 = kFALSE, firedLeg2 = kFALSE;

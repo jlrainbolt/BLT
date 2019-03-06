@@ -46,9 +46,9 @@ public:
         std::string cutName;
 
         float   pt,     eta,    dxy,    dz,     SIP3d;
-        bool    IsLoose,    IsMVA,  IsIsolated;
+        bool    IsLoose,        IsMVA;
     }
-    looseHZZElectronID, tightHZZElectronID, tightHZZIsoMVAElectronID;
+    looseHZZElectronID, tightHZZElectronID;
 
     struct elMVACuts
     {
