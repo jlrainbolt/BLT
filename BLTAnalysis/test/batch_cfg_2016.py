@@ -5,7 +5,7 @@ import sys
 
 ''' Specify parameters '''
 cfg         = bm.JobConfig
-selection   = 'tight'
+selection   = 'loose'
 period      = '2016'
 executable  = 'execBatch.sh'
 location    = 'lpc'

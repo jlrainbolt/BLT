@@ -109,7 +109,7 @@ class BatchMaster():
             exit()
         else:
             cmssw_version = os.getenv('CMSSW_BASE').split('/')[-1]
-            os.system('tar czf {0}/source.tar.gz -C $CMSSW_BASE/.. {1} --exclude-tag-all=.tarignore'.format(self._stage_dir, cmssw_version))
+            os.system('tar czf {0}/source.tar.gz -C $CMSSW_BASE/.. {1} --exclude $CMSSW_BASE/src/BLT/BLTAnalysis/test/batch --exclude-tag-all=.tarignore'.format(self._stage_dir, cmssw_version))
 
         subprocess.call('cp {0} {1}'.format(self._executable, self._stage_dir), shell=True)
         os.chdir(self._stage_dir)

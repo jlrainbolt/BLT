@@ -8,7 +8,7 @@ targName=$3
 srcDir=$4
 targDir=$5
 
-files=($(ls -1 ${srcDir}/${srcName}_*.root))
+files=($(ls -1v ${srcDir}/${srcName}_*.root))
 nSource=${#files[@]}
 nHadd=$((nSource / nTarget))
 remainder=$((nSource - (nTarget * nHadd)))

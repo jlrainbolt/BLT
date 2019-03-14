@@ -5,13 +5,15 @@ import sys
 
 ''' Specify parameters '''
 cfg         = bm.JobConfig
-selection   = 'tight'
+selection   = 'loose'
 period      = '2017'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-data_samples    = ['double_mu', 'double_eg']
-mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+#data_samples    = ['double_mu', 'double_eg']
+#mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+data_samples    = []
+mc_samples      = ['zjets']
 
 
 
@@ -74,11 +76,11 @@ data_dict['double_eg'] = \
         nJobs    = 20,
         suffix   = 'electron_2017'
         ),
-#   cfg(data_name = 'electron_2017F_v1',
-#       path     = '{0}/DoubleEG_Run2017F-31Mar2018-v1'.format(path),
-#       nJobs    = 25,
-#       suffix   = 'electron_2017'
-#       ),
+    cfg(data_name = 'electron_2017F_v1',
+        path     = '{0}/DoubleEG_Run2017F-31Mar2018-v1'.format(path),
+        nJobs    = 25,
+        suffix   = 'electron_2017'
+        ),
 ]
 
 
@@ -96,20 +98,25 @@ mc_dict['signal'] = \
 
 mc_dict['zjets'] = \
 [
-    cfg(data_name = 'DYJetsToLL_M-50',
-        path     = '{0}/DYJetsToLL_M-50_amcatnlo_RunIIFall17_new_pmx_v14_ext1-v1'.format(path),
-        nJobs    = 350,
-        suffix   = 'zjets_m-50'
+#   cfg(data_name = 'DYJetsToLL_M-50',
+#       path     = '{0}/DYJetsToLL_M-50_amcatnlo_RunIIFall17_new_pmx_v14_ext1-v1'.format(path),
+#       nJobs    = 350,
+#       suffix   = 'zjets_m-50'
+#       ),
+    cfg(data_name = 'DYJetsToLL_M-10to50',
+        path     = '{0}/DYJetsToLL_M-10to50_madgraph_RunIIFall17_v14_ext1-v2'.format(path),
+        nJobs    = 65,
+        suffix   = 'zjets_m-10'
         ),
 ]
 
 mc_dict['ttbar'] = \
 [
-#   cfg(data_name = 'TTJets',
-#       path     = '{0}/TTJets_amcatnlo_RunIIFall17_new_pmx_v14-v1'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'ttbar'
-#       ),
+    cfg(data_name = 'TTJets',
+        path     = '{0}/TTJets_amcatnlo_RunIIFall17_new_pmx_v14-v1'.format(path),
+        nJobs    = 200,
+        suffix   = 'ttbar'
+        ),
     cfg(data_name = 'TTTo2L2Nu',
         path     = '{0}/TTTo2L2Nu_powheg_RunIIFall17_new_pmx_v14-v1'.format(path),
         nJobs    = 30,
@@ -124,13 +131,13 @@ mc_dict['ttbar'] = \
 
 mc_dict['diboson'] = \
 [
-    cfg(data_name = 'WWTo2L2Nu',
-        path     = '{0}/WWTo2L2Nu_powheg_RunIIFall17_v14-v1'.format(path),
-        nJobs    = 5,
-        suffix   = 'ww_2l2nu'
-        ),
+#   cfg(data_name = 'WWTo2L2Nu',
+#       path     = '{0}/WWTo2L2Nu_powheg_RunIIFall17_v14-v1'.format(path),
+#       nJobs    = 5,
+#       suffix   = 'ww_2l2nu'
+#       ),
     cfg(data_name = 'WZTo2L2Q',
-        path     = '{0}/WZTo2L2Q_powheg_RunIIFall17_v14-v1'.format(path),
+        path     = '{0}/WZTo2L2Q_amcatnlo_RunIIFall17_v14-v1'.format(path),
         nJobs    = 70,
         suffix   = 'wz_2l2q'
         ),
@@ -144,11 +151,11 @@ mc_dict['diboson'] = \
         nJobs    = 20,
         suffix   = 'zz_2l2nu'
         ),
-#   cfg(data_name = 'ZZTo2L2Q',
-#       path     = '{0}/ZZTo2L2Nu_amcatnlo_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 75,
-#       suffix   = 'zz_2l2q'
-#       ),
+    cfg(data_name = 'ZZTo2L2Q',
+        path     = '{0}/ZZTo2L2Q_amcatnlo_RunIIFall17_v14-v1'.format(path),
+        nJobs    = 75,
+        suffix   = 'zz_2l2q'
+        ),
 ]
 
 mc_dict['higgs'] = \
