@@ -25,15 +25,12 @@
 #include "BLT/BLTAnalysis/interface/ParticleSelector.hh"
 #include "BLT/BLTAnalysis/interface/WeightUtils.h"
 
-#include "BLT/BLTAnalysis/interface/muresolution.h"
-#include "BLT/BLTAnalysis/interface/rochcor2012wasym.h"
-
 // BaconAna class definitions (might need to add more)
 #include "BaconAna/Utils/interface/TTrigger.hh"
 
 // ROOT headers
+#include <TString.h>
 #include <TLorentzVector.h>
-#include <TVector3.h>
 
 // C++ headers
 #include <string>
@@ -66,9 +63,6 @@ public:
     // Lumi mask
     RunLumiRangeMap lumiMask;
 
-    // rochester muon corrections
-    rochcor2012 *muonCorr;
-
     // Params and cuts
     std::unique_ptr<Parameters>         params;
     std::unique_ptr<Cuts>               cuts;
@@ -80,82 +74,66 @@ public:
 
     std::vector<string>                 muonTriggerNames, electronTriggerNames;
 
-    // Histograms
-    TH1D *hAcceptedEvents;
 
 
-
-    //--- BRANCHES ---//
+    //
+    //  BRANCHES
+    //
 
     // Event
-    Int_t runNumber, lumiSection;
-    Long64_t evtNumber;
-    UShort_t nPV;
-    Float_t genWeight, PUWeight, nPU;
-    UShort_t nPartons;
-    Float_t met, metPhi;
-    Bool_t evtMuonTriggered, evtElectronTriggered;
-
+    Int_t       runNumber,          lumiSection,            evtNumber;
+    Bool_t      evtMuonTriggered,   evtElectronTriggered;
+    Float_t     genWeight,          ECALWeight,             PUWeight,               nPU;
+    UShort_t    nPV;
 
     // Counters
-    UShort_t nMuons, nElectrons, nLeptons;
-    UShort_t nLooseMuons, nMVAElectrons;
-    UShort_t nHZZMuons, nHZZElectrons, nHZZLeptons;
-    UShort_t nGenMuons, nGenElectrons, nGenLeptons;
-
-
+    UShort_t    nLooseMuons,        nLooseElectrons,        nLooseLeptons;
+    UShort_t    nTightMuons,        nTightElectrons,        nTightLeptons;
+    
     // Muons
-    TClonesArray *muonsP4 = new TClonesArray("TLorentzVector"), &muonsP4ptr = *muonsP4;
-    std::vector<Short_t>    muonsQ;
-    std::vector<Bool_t>     muonFiredLeg1, muonFiredLeg2;
-
-    std::vector<Bool_t>     muonIsGhost, muonIsLoose, muonIsHZZ; 
-    std::vector<Float_t>    muonEnergySF, muonHZZIDSF;
-    std::vector<Float_t>    muonTrigEffLeg1Data, muonTrigEffLeg1MC, muonTrigEffLeg2Data, muonTrigEffLeg2MC;
-
-    std::vector<Float_t>    muonCombIso, muonsTrkIso, muonD0, muonDz, muonSIP3d, muonPtErr;
-    std::vector<UShort_t>   muonNMatchStn, muonNPixHits, muonNTkLayers;
-    std::vector<Bool_t>     muonIsPF, muonIsGlobal, muonIsTracker;
-    std::vector<Short_t>    muonBestTrackType;
-
+    TClonesArray            *muonP4_                = new TClonesArray("TLorentzVector");
+    TClonesArray            *muonUncorrectedP4_     = new TClonesArray("TLorentzVector");
+    std::vector<Short_t>    muonCharge;
+    std::vector<Float_t>    muonEnergySF,           muonIDSF,               muonIsolation;
+    std::vector<Bool_t>     muonIsTight,            muonIsLoose,            muonIsIsolated;
+    std::vector<Bool_t>     muonIsPF,               muonIsTrackerHighPt; 
+    std::vector<Bool_t>     muonFiredLeg1,          muonFiredLeg2;
+    std::vector<Float_t>    muonTrigEffLeg1MC,      muonTrigEffLeg1Data;
+    std::vector<Float_t>    muonTrigEffLeg2MC,      muonTrigEffLeg2Data;
 
     // Electrons
-    TClonesArray *electronsP4 = new TClonesArray("TLorentzVector"), &electronsP4ptr = *electronsP4;
-    std::vector<Short_t>    electronsQ;
-    std::vector<Bool_t>     electronFiredLeg1, electronFiredLeg2;
+    TClonesArray            *electronP4_            = new TClonesArray("TLorentzVector");
+    TClonesArray            *electronUncorrectedP4_ = new TClonesArray("TLorentzVector");
+    std::vector<Short_t>    electronCharge;
+    std::vector<Float_t>    electronEnergySF,       electronIDSF,           electronRecoSF;
+    std::vector<Float_t>    electronIsolation,      electronScEta;
+    std::vector<Bool_t>     electronIsTight,        electronIsLoose,        electronIsMVA;
+    std::vector<Bool_t>     electronIsIsolated,     electronIsGap;
+    std::vector<Bool_t>     electronFiredLeg1,      electronFiredLeg2;
+    std::vector<Float_t>    electronTrigEffLeg1MC,  electronTrigEffLeg1Data;
+    std::vector<Float_t>    electronTrigEffLeg2MC,  electronTrigEffLeg2Data;
 
-    std::vector<Bool_t>     electronIsGhost, electronPassMVA, electronIsHZZ;
-    std::vector<Float_t>    electronEnergySF, electronHZZIDSF;
-    std::vector<Float_t>    electronTrigEffLeg1Data, electronTrigEffLeg1MC, electronTrigEffLeg2Data, electronTrigEffLeg2MC;
-
-    std::vector<Float_t>    electronMVA;
-    std::vector<Float_t>    electronCombIso, electronsTrkIso, electronD0, electronDz, electronSIP3d, electronScEta;
-    std::vector<UShort_t>   electronNMissHits;
-    std::vector<Bool_t>     electronIsGap;
-
-
+/*
     // Gen particles
-    TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector"), &genMuonsP4ptr = *genMuonsP4;
-    std::vector<Short_t> genMuonsQ, genMuonStatus;
 
-    TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector"), &genElectronsP4ptr = *genElectronsP4;
-    std::vector<Short_t> genElectronsQ, genElectronStatus;
+    // Counters
+    UShort_t    nFinalStateMuons,   nFinalStateElectrons,   nFinalStateLeptons;
+    UShort_t    nHardProcMuons,     nHardProcElectrons,     nHardProcLeptons;
 
+    // Final state leptons
+    TLorentzVector          finalStateLeptonsP4;
+    TClonesArray            *finalStateMuonP4_     = new TClonesArray("TLorentzVector");
+    TClonesArray            *finalStateElectronP4_ = new TClonesArray("TLorentzVector");
+    std::vector<Short_t>    finalStateMuonQ,       finalStateElectronQ;
+    std::vector<UShort_t>   finalStateMuonZIndex,  finalStateElectronZIndex;
 
-
-    //--- HELPER FUNCTIONS ---//
-
-    float MetKluge(float);
-
-    float GetMuonIsolation(const baconhep::TMuon*);
-    float GetRochesterCorrection(const baconhep::TMuon*, rochcor2012*, const bool);
-    bool PassMuonHZZTightID(const baconhep::TMuon*, const TLorentzVector&);
-    bool IsPOGLooseMuon(const baconhep::TMuon*);
-
-    float GetElectronIsolation(const baconhep::TElectron*, const float);
-    float GetElectronPtSF(baconhep::TElectron*);
-    bool PassElectronHZZTightID(const baconhep::TElectron*, const float);
-
+    // Hard process leptons
+    TLorentzVector          hardProcLeptonsP4;
+    TClonesArray            *hardProcMuonP4_       = new TClonesArray("TLorentzVector");
+    TClonesArray            *hardProcElectronP4_   = new TClonesArray("TLorentzVector");
+    std::vector<Short_t>    hardProcMuonQ,         hardProcElectronQ;
+    std::vector<UShort_t>   hardProcMuonZIndex,    hardProcElectronZIndex;
+*/
 
     //ClassDef(MultileptonAnalyzer,0);
 };
