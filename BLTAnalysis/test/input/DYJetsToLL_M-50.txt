@@ -1,1 +1,1 @@
-/tthome/share/bacon/production/04/Summer12_DYJetsToLL_M-50_TuneZ2Star/Summer12_DYJetsToLL_M-50_TuneZ2Star_bacon_0.root
+root://cmseos.fnal.gov//store/group/lpcbacon/04/Summer12_DYJetsToLL_M-50_TuneZ2Star/Summer12_DYJetsToLL_M-50_TuneZ2Star_bacon_0.root

@@ -1,407 +1,190 @@
 #include "BLT/BLTAnalysis/interface/ParticleSelector.hh"
+
 #include <iostream>
 
+using namespace baconhep;
+using namespace std;
+
 bool test_bits(unsigned int bits, unsigned int test) {
-    return (bits & test) == test;
+        return (bits & test) == test;
 }
 
-ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cuts) {
+ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cuts)
+{
     this->_parameters = parameters;
     this->_cuts = cuts;
 
-    // b-tag mc efficiencies                                     
-    const std::string cmssw_base = getenv("CMSSW_BASE");
-    std::string btagFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/bEff_ttbar_2012.root";
-    TFile* f_bEff = new TFile(btagFileName.c_str());   
-    _misTagEff  = (TGraphAsymmErrors*)f_bEff->Get("g_MistagEff");
-    _bTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_bTagEff");  
-    _cTagEff    = (TGraphAsymmErrors*)f_bEff->Get("g_cTagEff");  
+    _dataPeriod = parameters.period;
 
-    _rng = new TRandom3(1337); 
+    _rc = new rochcor2012();
 }
 
-bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCuts& cutLevel) const {
-    bool muPass = false;
-    if (cutLevel.cutName == "tightMuID") {
-        if (this->_parameters.period == "2012") {
-            if (
-                    mu->muNchi2       < cutLevel.NormalizedChi2
-                    && mu->nValidHits > cutLevel.NumberOfValidMuonHits
-                    && mu->nMatchStn  > cutLevel.NumberOfMatchedStations
-                    && mu->nPixHits   > cutLevel.NumberOfValidPixelHits
-                    && mu->nTkLayers  > cutLevel.TrackLayersWithMeasurement
-                    && fabs(mu->d0)   < cutLevel.dxy
-                    && fabs(mu->dz)   < cutLevel.dz
-                    && test_bits(mu->typeBits, baconhep::kPFMuon) == cutLevel.IsPF
-                    && test_bits(mu->typeBits, baconhep::kGlobal) == cutLevel.IsGLB
-               ) muPass = true;
 
-        }     
+
+//
+//  MUONS
+//
+
+bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCuts& cutLevel) const
+{
+    if      (cutLevel.cutName == "looseHZZMuonID")
+    {
+        bool isGlobal       = test_bits(mu->typeBits, baconhep::kGlobal)    == cutLevel.IsGLB;
+        bool isTracker      = test_bits(mu->typeBits, baconhep::kTracker)   == cutLevel.IsTRK;
+        bool isArbitrated   = mu->nMatchStn > cutLevel.NumberOfMatchedStations;
+        bool isStandalone   = test_bits(mu->typeBits, baconhep::kStandalone)== cutLevel.IsStandalone;
+
+        if (
+                    mu->pt          > cutLevel.pt
+                &&  fabs(mu->eta)   < cutLevel.eta
+                &&  fabs(mu->d0)    < cutLevel.dxy
+                &&  fabs(mu->dz)    < cutLevel.dz
+                &&  mu->sip3d       < cutLevel.SIP3d
+                &&  (isGlobal || (isTracker && isArbitrated))
+                &&  !isStandalone
+           )
+            return kTRUE;
     }
-    return muPass;
+    else if (cutLevel.cutName == "tightHZZMuonID")
+    {
+        bool isLoose            = this->PassMuonID(mu, _cuts.looseHZZMuonID)        == cutLevel.IsLoose;
+        bool isPF               = test_bits(mu->typeBits, baconhep::kPFMuon)        == cutLevel.IsPF;
+        bool isIsolated         = this->PassMuonIso(mu, _cuts.wpHZZMuonIso)         == cutLevel.IsIsolated;
+
+        if (isLoose && isIsolated && isPF)
+            return kTRUE;
+    }
+    return kFALSE;
 }
 
-bool ParticleSelector::PassMuonIso(const baconhep::TMuon* mu, const Cuts::muIsoCuts& cutLevel) const {
-    bool isoPass = false;
-    if (cutLevel.cutName == "tightMuIso" || cutLevel.cutName == "looseMuIso") {
-        float combIso = (mu->chHadIso04 + std::max(0.,(double)mu->neuHadIso04 + mu->gammaIso04 - 0.5*mu->puIso04));
-        if (combIso/mu->pt < cutLevel.relCombIso04) 
-            isoPass = true;
+bool ParticleSelector::PassMuonIso(const baconhep::TMuon* mu, const Cuts::muIsoCuts& cutLevel) const
+{
+    if (cutLevel.cutName == "wpHZZMuonIso")
+    {
+        float combIso = this->GetMuonIso(mu);
 
-    }     return isoPass;
+        if ((combIso / mu->pt) < cutLevel.relCombIso04) 
+            return kTRUE;
+    }
+    return kFALSE;
 }
 
-bool ParticleSelector::PassMuonIso(const baconhep::TMuon* mu, const Cuts::muDetIsoCuts& cutLevel) const {
-    bool isoPass = false;
-    if (
-            mu->trkIso03/mu->pt < cutLevel.trkIso03
-            && mu->hcalIso03/mu->pt < cutLevel.hcalIso03
-            && mu->ecalIso03/mu->pt < cutLevel.ecalIso03
-       ) 
-        isoPass = true;
-    return isoPass;
+float ParticleSelector::GetMuonIso(const baconhep::TMuon* mu) const
+{
+    return mu->chHadIso04 + std::max(0., (double) mu->neuHadIso04 + mu->gammaIso04 - 0.5 * mu->puIso04);
 }
+
+TLorentzVector ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu) const
+{
+    TLorentzVector p4;
+    copy_p4(mu, MUON_MASS, p4);
+    float qter;
+
+    if (_isRealData)
+        _rc->momcor_data(p4, mu->q, 0, qter);
+    else
+        _rc->momcor_mc(p4, mu->q, 0, qter);
+
+    return p4;
+}
+
+
+
+//
+//  ELECTRONS
+//
 
 bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts::elIDCuts& cutLevel) const 
 {
-    bool elPass = false;
-    float energyInverse = fabs(1. - el->eoverp)/el->ecalEnergy;
+    if      (cutLevel.cutName == "looseHZZElectronID")
+    {
+        if (
+                    el->pt          > cutLevel.pt
+                &&  fabs(el->eta)   < cutLevel.eta
+                &&  fabs(el->d0)    < cutLevel.dxy
+                &&  fabs(el->dz)    < cutLevel.dz
+                &&  el->sip3d       < cutLevel.SIP3d
+           )
+            return kTRUE;
+    }
+    else if (cutLevel.cutName == "tightHZZElectronID")
+    {
+        bool isLoose    = this->PassElectronID(el, _cuts.looseHZZElectronID)    == cutLevel.IsLoose;
+        bool isMVA      = this->PassElectronMVA(el, _cuts.wpHZZElectronMVA)     == cutLevel.IsMVA;
+        bool isIsolated = this->PassElectronIso(el, _cuts.wpHZZElectronIso)     == cutLevel.IsIsolated;
 
-    if (fabs(el->scEta) < 1.479) 
-    { // barrel
-        if (
-                fabs(el->dEtaIn)    < cutLevel.dEtaIn[0]
-                && fabs(el->dPhiIn) < cutLevel.dPhiIn[0]
-                && el->sieie        < cutLevel.sigmaIetaIeta[0]
-                && el->hovere       < cutLevel.HadOverEm[0]
-                && fabs(el->d0)     < cutLevel.dxy[0]
-                && fabs(el->dz)     < cutLevel.dz[0]
-                && energyInverse   < cutLevel.fabsEPDiff[0]
-                && el->nMissingHits <= cutLevel.ConversionMissHits[0]
-                && !el->isConv
-           ) elPass = true;
-    } 
-    else if (fabs(el->scEta) > 1.4446 && fabs(el->scEta) < 1.566) 
-    { // transition
-        return elPass;
-    } 
-    else if (fabs(el->scEta) > 1.566) 
-    { // endcap
-        if (
-                fabs(el->dEtaIn)    < cutLevel.dEtaIn[1]
-                && fabs(el->dPhiIn) < cutLevel.dPhiIn[1]
-                && el->sieie        < cutLevel.sigmaIetaIeta[1]
-                && el->hovere       < cutLevel.HadOverEm[1]
-                && fabs(el->d0)     < cutLevel.dxy[1]
-                && fabs(el->dz)     < cutLevel.dz[1]
-                && energyInverse   < cutLevel.fabsEPDiff[1]
-                && el->nMissingHits <= cutLevel.ConversionMissHits[1]
-                && !el->isConv    
-           ) elPass = true;
-    }    
-    return elPass;
+        if (isLoose && isMVA && isIsolated)
+            return kTRUE;
+    }
+    return kFALSE;
 }
+
 
 bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const
 {
-    bool elPass = false;
-    float bdtVal = el->mva;
+    float bdtVal = -1;
+    unsigned ptBin, etaBin;
 
-    if (el->ptHZZ4l > cutLevel.pt[0] && el->ptHZZ4l < cutLevel.pt[1])
+    if (cutLevel.cutName == "wpHZZElectronMVA")
     {
-        if (fabs(el->scEta) < cutLevel.eta[0])
-        {
-            if (bdtVal > cutLevel.bdt[0])
-                elPass = true;
-        }
-        else if (fabs(el->scEta) < cutLevel.eta[1])
-        {
-            if (bdtVal > cutLevel.bdt[1])  
-                elPass = true;
-        }
-        else if (fabs(el->scEta) < cutLevel.eta[2])
-        {
-            if (bdtVal > cutLevel.bdt[2])  
-                elPass = true;
-        }
-    }
-    else if (el->ptHZZ4l > cutLevel.pt[1])
-    {
-        if (fabs(el->scEta) < cutLevel.eta[0])
-        {
-            if (bdtVal > cutLevel.bdt[3])
-                elPass = true;
-        }
-        else if (fabs(el->scEta) < cutLevel.eta[1])
-        {
-            if (bdtVal > cutLevel.bdt[4])  
-                elPass = true;
-        }
-        else if (fabs(el->scEta) < cutLevel.eta[2])
-        {
-            if (bdtVal > cutLevel.bdt[5])
-                elPass = true;
-        }
-    }
+        bdtVal = el->mva;
 
-    return elPass;
+        if      (el->pt < cutLevel.pt[0])
+        return kFALSE;
+        else if (el->pt < cutLevel.pt[1])
+            ptBin = 0;
+        else
+            ptBin = 1;
+
+        if      (fabs(el->scEta) < cutLevel.eta[0])
+            etaBin = 0;
+        else if (fabs(el->scEta) < cutLevel.eta[1])
+            etaBin = 1;
+        else if (fabs(el->scEta) < cutLevel.eta[2])
+            etaBin = 2;
+        else
+            return kFALSE;
+
+        if (bdtVal > cutLevel.bdt[ptBin][etaBin])
+            return kTRUE;
+    }
+    return kFALSE;
 }
 
-bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel, float EAEl[7]) const 
+
+bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel) const 
 {
-    int iEta = 0;
-    float etaBins[8] = {0., 1., 1.479, 2.0, 2.2, 2.3, 2.4, 2.5};
-    for (unsigned i = 0; i < 8; ++i) {
-        if (fabs(el->scEta) > etaBins[i] && fabs(el->scEta) < etaBins[i+1]) {
-            iEta = i;
+    if (cutLevel.cutName == "wpHZZElectronIso")
+    {
+        float combIso = this->GetElectronIso(el);
+
+        if ((combIso / el->pt) < cutLevel.relCombIso04) 
+            return kTRUE;
+    }
+    return kFALSE;
+}
+
+float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const 
+{
+    unsigned etaBin = 0;
+
+    for (unsigned i = 0; i < 7; i++)
+    {
+        if (fabs(el->scEta) >= _cuts.etaBins[i] && fabs(el->scEta) < _cuts.etaBins[i+1])
+        {
+            etaBin = i;
             break;
         }
     }
 
-    float combIso = el->chHadIso03 
-        + std::max(0.,(double)el->neuHadIso03 
-                + el->gammaIso03 
-                - _rhoFactor*EAEl[iEta]);
+    float effArea = 0;
 
-    bool isoPass = false;
-    if (cutLevel.cutName == "mediumElIso") {
-        if (el->pt < 20) {
-            if (combIso/el->pt < 0.10) isoPass = true;
-        } else {
-            if (combIso/el->pt < 0.15) isoPass = true;
-        }
+    effArea = _cuts.effArea2012[etaBin];
 
-    } else {
-        if (combIso/el->pt < cutLevel.relCombIso03) isoPass = true;
-    }
-    return isoPass;
+    return el->chHadIso04 + std::max(0., (double) el->neuHadIso04 + el->gammaIso04 - _rhoFactor * effArea);
 }
 
-bool ParticleSelector::PassPhotonID(const baconhep::TPhoton* ph, const Cuts::phIDCuts& cutLevel) const {
-    bool phoPass = false;
-    bool phoPass1 = false;
-    bool phoPass2 = false;
-
-    //if (fabs(ph->scEta) > 2.5) return phoPass;  // uncomment to apply eta requirement
-    if (cutLevel.cutName == "preSelPhID") {
-        if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass;
-        if (fabs(ph->scEta) < 1.479) {
-            if (
-                    (!ph->isConv) == cutLevel.PassedEleSafeVeto[0] 
-                    && ph->sieie < cutLevel.sigmaIetaIeta[0]
-               ) {
-                if (ph->r9 > 0.9) {
-                    if (ph->hovere < cutLevel.HadOverEm[0]) phoPass1 = true;
-                } else {
-                    if (ph->hovere < cutLevel.HadOverEm[1]) phoPass1 = true;
-                }
-            }
-        } else {
-            if (
-                    (!ph->isConv) == cutLevel.PassedEleSafeVeto[1]
-                    && ph->sieie  < cutLevel.sigmaIetaIeta[1]
-                    && ph->hovere < cutLevel.HadOverEm[1]
-               ) phoPass1 = true;
-        }
-
-        if (ph->r9 > 0.9) {
-            if (
-                    //ph->hcalIso03 - 0.005*ph->pt     < cutLevel.HcalIso[0]  //FIXME
-                    //&& ph->trkIso03 - 0.002*ph->pt   < cutLevel.TrkIso[0]   //FIXME
-                    //&& ph->cicPF4chgpfIso02          < cutLevel.ChPfIso[0]  //FIXME
-                    1
-               ) phoPass2 = true;
-        } else {
-            if (
-                    //ph->hcalIso03 - 0.005*ph->pt     < cutLevel.HcalIso[1]  //FIXME
-                    //&& ph->trkIso03 - 0.002*ph->pt   < cutLevel.TrkIso[1]   //FIXME
-                    //&& ph->cicPF4chgpfIso02          < cutLevel.ChPfIso[1]  //FIXME
-                    1
-               ) phoPass2 = true;
-        }
-        if (phoPass1 && phoPass2) phoPass = true;
-
-    } else if (cutLevel.cutName == "medPhID"){
-        if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass;
-        if (
-                (
-                 fabs(ph->scEta)  < 1.4442
-                 && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[0]
-                 && ph->hovere                    < cutLevel.HadOverEm[0]
-                 && ph->sieie                     < cutLevel.sigmaIetaIeta[0]
-                ) || (
-                    fabs(ph->scEta)  > 1.566
-                    && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[1]
-                    && ph->hovere                    < cutLevel.HadOverEm[1]
-                    && ph->sieie                     < cutLevel.sigmaIetaIeta[1]
-                    )
-           ) phoPass = true;
-    }
-    return phoPass;
-}
-
-bool ParticleSelector::PassPhotonMVA(const baconhep::TPhoton* ph, const Cuts::phMVACuts& cutLevel) const {
-    bool phoPass = false;
-    return phoPass;
-}
-
-bool ParticleSelector::PassPhotonIso(const baconhep::TPhoton* ph, const Cuts::phIsoCuts& cutLevel, float EAPho[7][3]) const {
-    bool isoPass = false;
-
-    float chEA, nhEA, phEA, chIsoCor, nhIsoCor, phIsoCor;
-    if (fabs(ph->scEta) < 1.0) {
-        chEA = EAPho[0][0];
-        nhEA = EAPho[0][1];
-        phEA = EAPho[0][2];
-    } else if (fabs(ph->scEta) < 1.479) {
-        chEA = EAPho[1][0];
-        nhEA = EAPho[1][1];
-        phEA = EAPho[1][2];
-    } else if (fabs(ph->scEta) < 2.0) {
-        chEA = EAPho[2][0];
-        nhEA = EAPho[2][1];
-        phEA = EAPho[2][2];
-    } else if (fabs(ph->scEta) < 2.2) {
-        chEA = EAPho[3][0];
-        nhEA = EAPho[3][1];
-        phEA = EAPho[3][2];
-    } else if (fabs(ph->scEta) < 2.3) {
-        chEA = EAPho[4][0];
-        nhEA = EAPho[4][1];
-        phEA = EAPho[4][2];
-    } else if (fabs(ph->scEta) < 2.4) {
-        chEA = EAPho[5][0];
-        nhEA = EAPho[5][1];
-        phEA = EAPho[5][2];
-    } else {
-        chEA = EAPho[6][0];
-        nhEA = EAPho[6][1];
-        phEA = EAPho[6][2];
-    }
-
-    chIsoCor = ph->chHadIso03 - _rhoFactor*chEA;
-    nhIsoCor = ph->neuHadIso03 - _rhoFactor*nhEA;
-    phIsoCor = ph->gammaIso03 -_rhoFactor*phEA;
-
-    if (cutLevel.cutName == "loosePhIso"){
-        if (
-                (
-                 fabs(ph->scEta) < 1.4442
-                 && max((double)chIsoCor,0.)      < cutLevel.chIso03[0]
-                 && max((double)nhIsoCor,0.)      < cutLevel.nhIso03[0] + 0.04*ph->pt
-                 && max((double)phIsoCor,0.)      < cutLevel.phIso03[0] + 0.005*ph->pt
-                ) || (
-                    fabs(ph->scEta) > 1.566
-                    && max((double)chIsoCor,0.)      < cutLevel.chIso03[1]
-                    && max((double)nhIsoCor,0.)      < cutLevel.nhIso03[1] + 0.04*ph->pt
-                    )
-           ) isoPass = true;
-    } else {
-        if (
-                (
-                 fabs(ph->scEta) < 1.4442
-                 && max((double)chIsoCor,0.)      < cutLevel.chIso03[0]
-                 && max((double)nhIsoCor,0.)      < cutLevel.nhIso03[0] + 0.04*ph->pt
-                 && max((double)phIsoCor,0.)      < cutLevel.phIso03[0] + 0.005*ph->pt
-                ) || (
-                    fabs(ph->scEta) > 1.566
-                    && max((double)chIsoCor,0.)      < cutLevel.chIso03[1]
-                    && max((double)nhIsoCor,0.)      < cutLevel.nhIso03[1] + 0.04*ph->pt
-                    && max((double)phIsoCor,0.)      < cutLevel.phIso03[1] + 0.005*ph->pt
-                    )
-           ) isoPass = true;
-    }
-    return isoPass;
-}
-
-
-bool ParticleSelector::PassJetID(const baconhep::TJet* jet, const Cuts::jetIDCuts& cutLevel) const {
-    bool jetPass = false;
-    if (fabs(jet->eta) <= 2.4) {
-        if (
-                jet->neuHadFrac       < cutLevel.NHF
-                && jet->neuEmFrac     < cutLevel.NEMF
-                && jet->nParticles    > cutLevel.NumConst
-                && jet->chHadFrac     > cutLevel.CHF
-                && jet->nCharged      > cutLevel.CHM
-                && jet->chEmFrac      < cutLevel.CEMF
-           ) jetPass = true;
-    } else {
-        if (
-                jet->neuHadFrac       < 0.99
-                && jet->neuEmFrac     < 0.99
-                && jet->nParticles    > 1
-           ) jetPass = true;
-    }
-
-    return jetPass;
-}
-
-bool ParticleSelector::PassJetPUID(const baconhep::TJet* jet, const Cuts::jetIDCuts& cutLevel) const {
-    bool pass = false;
-    if (0    <= fabs(jet->eta) && fabs(jet->eta) < 2.5) {
-        if(jet->mva >= -0.63) 
-            pass = true;
-    } else if(2.5  <= fabs(jet->eta) && fabs(jet->eta) < 2.75) {
-        if (jet->mva >= -0.60) 
-            pass = true;
-    } else if(2.75 <= fabs(jet->eta) && fabs(jet->eta) < 3) {
-        if (jet->mva >= -0.55) 
-            pass = true;
-    } else if(3 <= fabs(jet->eta) && fabs(jet->eta) < 4.7) {
-        if (jet->mva >= -0.45) 
-            pass = true;
-    }
-
-    return pass;
-}
-
-bool ParticleSelector::BTagModifier(const baconhep::TJet* jet, string tagName) const
+float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el) const
 {
-    bool  isBTagged = false;
-    float jetPt     = jet->pt;
-    //float jetEta    = jet->eta;
-    float bTag      = jet->csv;
-    int   jetFlavor = jet->mcFlavor;
-
-    // Get b tag efficiency and mistag scale factor
-    float btagSF = 1.;
-    float bMistagSF = 1.;
-    if (tagName == "CSVT") {
-        if (bTag > 0.898) isBTagged = true;
-        btagSF    = 0.927563 + 1.55479e-05*jetPt + -1.90666e-07*jetPt*jetPt;
-        bMistagSF = 1.00462 + 0.00325971*jetPt + -7.79184e-06*jetPt*jetPt + 5.22506e-09*jetPt*jetPt*jetPt;
-    }
-    
-
-    // Upgrade or downgrade jet
-    float rNumber = _rng->Uniform(1.);
-    if (abs(jetFlavor) == 5 || abs(jetFlavor) == 4) {
-        float mcEff = 1.;
-        if (abs(jetFlavor) == 4) 
-            mcEff = 0.3; //_cTagEff->Eval(jetPt);
-        else if (abs(jetFlavor) == 5) 
-            mcEff = 0.55; //_bTagEff->Eval(jetPt);
-
-        if(btagSF > 1){  // use this if SF>1
-            if (!isBTagged) { //upgrade to tagged
-                float mistagRate = (1. - btagSF) / (1. - 1./mcEff);
-                if (rNumber < mistagRate) isBTagged = true;
-            }
-        } else if (btagSF < 1) { //downgrade tagged to untagged
-            if(isBTagged && rNumber > btagSF) isBTagged = false;
-        }
-    } else if (abs(jetFlavor) > 0) {
-        float mistagEff = 0.01; //_misTagEff->Eval(jetPt);
-        if(bMistagSF >= 1){  // use this if SF>1
-            if (!isBTagged) { //upgrade to tagged
-                float mistagPercent = (1. - bMistagSF) / (1. - 1./mistagEff);
-                if (rNumber < mistagPercent) isBTagged = true;
-            }
-        } else if (bMistagSF < 1) { //downgrade tagged to untagged
-            if (isBTagged && rNumber > bMistagSF) isBTagged = false;
-        }
-    }
-
-    return isBTagged;
+    return el->ptHZZ4l / el->pt;
 }

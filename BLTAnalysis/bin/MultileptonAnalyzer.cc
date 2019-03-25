@@ -42,7 +42,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
-    const bool isSignal = params->datasetgroup == "zz_4l";
+//  const bool isSignal = params->datasetgroup == "zz_4l";
 
     // Particle selector, cuts
     cuts.reset(new Cuts());
@@ -234,7 +234,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     particleSelector->SetRealData(isData);
     weights->SetDataBit(isData);
  
-    const bool isSignal = params->datasetgroup == "zz_4l";
+//  const bool isSignal = params->datasetgroup == "zz_4l";
 
 
 
@@ -254,11 +254,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     if (!isData)
     {
-        // Gen weight
-        genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
-        if (genWeight < 0)
-            hTotalEvents->Fill(10);
-
         // Pileup weight
         nPU = fInfo->nPUmean;
         PUWeight = weights->GetPUWeight(nPU);
@@ -488,10 +483,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         muonCharge.push_back(muon->q);
 
         // Rochester correction
-        float corr = particleSelector->GetRochesterCorrection(muon);
-        muon->pt *= corr;
-        copy_p4(muon, MUON_MASS, corrP4);
-        muonEnergySF.push_back(corr);
+        *corrP4 = particleSelector->GetRochesterCorrection(muon);
+        muonEnergySF.push_back(corrP4->Pt() / muon->pt);
+        muon->pt = corrP4->Pt();
 
         // ID scale factor
         muonIDSF.push_back(weights->GetHZZMuonIDSF(muon));
@@ -504,7 +498,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         muonIsLoose.push_back(particleSelector->PassMuonID(muon, cuts->looseHZZMuonID));
         muonIsIsolated.push_back(particleSelector->PassMuonIso(muon, cuts->wpHZZMuonIso));
         muonIsPF.push_back(muon->typeBits & baconhep::kPFMuon);
-        muonIsTrackerHighPt.push_back(particleSelector->PassMuonID(muon, cuts->trackerHighPtMuonID));
+        muonIsTrackerHighPt.push_back(kFALSE);
 
         if (muonIsLoose.back())
             nLooseMuons++;
@@ -555,20 +549,13 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         electronCharge.push_back(electron->q);
 
         // Energy correction
-        float corr = particleSelector->GetElectronCorrection(electron);
-        TLorentzVector electronP4(*uncorrP4);
-        electronP4 *= corr;
-
-        electron->pt = electronP4.Pt();
-        electron->eta = electronP4.Eta();
-        electron->phi = electronP4.Phi();
+        electronEnergySF.push_back(particleSelector->GetElectronCorrection(electron));
+        electron->pt = electron->ptHZZ4l;
         copy_p4(electrons[i], ELE_MASS, corrP4);
-
-        electronEnergySF.push_back(corr);
 
         // ID scale factor
         electronIDSF.push_back(weights->GetHZZElectronIDSF(electron));
-        electronRecoSF.push_back(weights->GetElectronRecoSF(electron));
+        electronRecoSF.push_back(1);
 
         // Isolation
         electronIsolation.push_back(particleSelector->GetElectronIso(electron));
@@ -576,8 +563,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         // ID/iso bools
         electronIsTight.push_back(particleSelector->PassElectronID(electron, cuts->tightHZZElectronID));
         electronIsLoose.push_back(particleSelector->PassElectronID(electron, cuts->looseHZZElectronID));
-        electronIsMVA.push_back(particleSelector->PassElectronMVA(electron, cuts->wpHZZ));
-        electronIsIsolated.push_back(particleSelector->PassElectronIso(muon, cuts->wpHZZElectronIso));
+        electronIsMVA.push_back(particleSelector->PassElectronMVA(electron, cuts->wpHZZElectronMVA));
+        electronIsIsolated.push_back(particleSelector->PassElectronIso(electron, cuts->wpHZZElectronIso));
         electronIsGap.push_back(electron->fiducialBits & kIsGap);
 
         if (electronIsLoose.back())

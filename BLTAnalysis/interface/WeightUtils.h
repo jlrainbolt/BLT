@@ -5,10 +5,13 @@
 #ifndef _WeightUtils_H
 #define _WeightUtils_H
 
+#include "BLT/BLTAnalysis/interface/BLTHelper.hh"
+
 // c++ libraries
 #include <string>
 #include <iostream>
 #include <map>
+#include <algorithm>
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,22 +33,6 @@
 using namespace std;
 
 
-class EfficiencyContainer: public TObject{
-    public:
-        EfficiencyContainer();
-        EfficiencyContainer(float, float, float, float);
-        virtual ~EfficiencyContainer() {};
-        void SetData(float, float, float, float);
-        pair<double, double> GetEff() {return make_pair(_dataEff, _mcEff);};
-        pair<double, double> GetErr() {return make_pair(_dataErr, _mcErr);};
-        float GetSF() {return (_dataEff/_mcEff);};
-        float GetVar() {return pow(_dataEff/_mcEff, 2)*(pow(_dataErr/_dataEff, 2) + pow(_mcErr/_mcEff, 2));};
-
-    private:
-        float _dataEff, _mcEff;
-        float _dataErr, _mcErr;
-};
-
 
 class WeightUtils: public TObject {
     public:
@@ -58,14 +45,13 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
-        float               GetPUWeight(float);
-        EfficiencyContainer GetSingleMuonTriggerEff(TLorentzVector&) const;
-        EfficiencyContainer GetSingleElectronTriggerEff(TLorentzVector&) const;
-        EfficiencyContainer GetDoubleMuonTriggerEff(TLorentzVector&, int) const;
-        EfficiencyContainer GetDoubleElectronTriggerEff(const baconhep::TElectron*, int) const;
-        EfficiencyContainer GetTriggerEff(string, TLorentzVector&) const;
-        EfficiencyContainer GetHZZMuonIDEff(TLorentzVector&) const;
-        EfficiencyContainer GetHZZElectronIDRecoEff(const baconhep::TElectron*) const;
+        float   GetPUWeight(float) const;
+        float   GetHZZMuonIDSF(const baconhep::TMuon*) const;
+        float   GetHZZElectronIDSF(const baconhep::TElectron*) const;
+        float   GetElectronRecoSF(const baconhep::TElectron*) const;
+
+        std::pair<float, float> GetDoubleMuonTriggerEff(const baconhep::TMuon*, const int) const;
+        std::pair<float, float> GetDoubleElectronTriggerEff(const baconhep::TElectron*, const int) const;
 
         ClassDef(WeightUtils, 0);
 
@@ -77,15 +63,16 @@ class WeightUtils: public TObject {
         bool   _isRealData;
 
         // Pileup
-        TH1D *_puReweight;
+        TH1 *_puReweight;
 
-        // Triggers
-        TGraphErrors *_sf_IsoMu24_Eta2p1_data[3], *_sf_IsoMu24_Eta2p1_mc[3];
+        // Muon triggers, ID
+//      TH2D *h2_MuTriggerSFs[2]; // Good for Mu17_Mu8 or Mu17_TkMu8
+        TH2 *_hzz_muIdSF;
 
-
-        // Lepton ID
-        TH2D *_hzz_muIdSF;
-        TH2F *_hzz_eleIdSF;
+        // Electron triggers, ID
+//      TH2F *_eff_doubleEle_leg1_DATA, *_eff_doubleEle_leg1_MC;
+//      TH2F *_eff_doubleEle_leg2_DATA, *_eff_doubleEle_leg2_MC;
+        TH2 *_hzz_eleIdSF;  // Includes ID and reco
 };
 
 #endif
