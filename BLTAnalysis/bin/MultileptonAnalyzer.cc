@@ -42,7 +42,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
-    const bool isSignal = params->datasetgroup == "zz_4l";
+    const bool isSignal     = params->datasetgroup == "zz_4l";
 
     // Particle selector, cuts
     cuts.reset(new Cuts());
@@ -108,6 +108,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "PUWeight",                 &PUWeight);
     outTree->Branch(    "nPU",                      &nPU);
     outTree->Branch(    "nPV",                      &nPV);
+    outTree->Branch(    "hasTauDecay",              &hasTauDecay);
 
     outTree->Branch(    "nLooseMuons",              &nLooseMuons);
     outTree->Branch(    "nLooseElectrons",          &nLooseElectrons);
@@ -245,7 +246,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     particleSelector->SetRealData(isData);
     weights->SetDataBit(isData);
  
-    const bool isSignal = params->datasetgroup == "zz_4l";
+    const bool isSignal     = params->datasetgroup == "zz_4l";
+    const bool isDrellYan   = params->datasetgroup == "zjets_m-50";
 
 
 
@@ -261,6 +263,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     PUWeight    = 1;
     nPU         = 0;
     nPV         = fPVArr->GetEntries();
+    hasTauDecay = kFALSE;
 
 
     if (!isData)
@@ -292,7 +295,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     //  GEN PARTICLES
     //
 
-    if (isSignal)
+    if (isSignal || isDrellYan)
     {
         finalStateLeptonsP4 = TLorentzVector();
         hardProcLeptonsP4 = TLorentzVector();
@@ -302,7 +305,10 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
 
-            if  ((abs(particle->pdgId) == 13 || abs(particle->pdgId) == 11)  &&  particle->parent >= 0)
+            if  (
+                    (abs(particle->pdgId) == 13 || abs(particle->pdgId) == 11)
+                    &&  (particle->parent >= 0)
+                )
             {
                 TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
 
@@ -368,6 +374,19 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                     }
                 }
             }
+
+            else if ((abs(particle->pdgId) == 15) && particle->parent >= 0)
+            {
+                TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
+
+                // Trace back tau decay chain
+                while ((abs(mother->pdgId) == 15) && (mother->parent >= 0))
+                    mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
+
+                // If the "ultimate mother" is a Z, we have a tau from a Z decay
+                if (mother->pdgId == 23)
+                    hasTauDecay = kTRUE;
+            }
         }
 
         nFinalStateLeptons      = nFinalStateMuons + nFinalStateElectrons;
@@ -394,7 +413,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             evtElectronTriggered = kTRUE;
     }
 
-    bool passTrigger = evtMuonTriggered || evtElectronTriggered;
+    bool passTrigger = evtMuonTriggered || evtElectronTriggered || isSignal || isDrellYan;
 
     if (!passTrigger)
         return kTRUE;

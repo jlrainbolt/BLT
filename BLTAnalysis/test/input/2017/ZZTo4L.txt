@@ -1,1 +1,1 @@
-root://cmseos.fnal.gov//store/group/lpcbacon/2017/Fall17_ZZTo4L_powheg/Fall17_ZZTo4L_powheg_bacon_0.root
+root://cmseos.fnal.gov//store/group/lpcbacon/jlr/ZZTo4L_powheg_RunIIFall17_new_pmx_v14-v1/ZZTo4L_powheg_RunIIFall17_new_pmx_v14-v1_trimmedBacon_0.root

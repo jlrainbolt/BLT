@@ -66,18 +66,21 @@ public:
 
 
 
-    //--- SELECTION CUTS ---//
+    //
+    //  SELECTION CUTS
+    //
 
     // Phase space requirements
     Float_t     M_MIN = 80,     M_MAX = 100,    MLL_MIN = 4;
 
     // Fiducial requirements
-    // (decided they are the same for both flavors...)
     Float_t     PT1_MIN = 20,   PT2_MIN = 10,   PT_MIN = 5,     ETA_MAX = 2.5;
 
 
 
-    //--- BRANCHES ---//
+    //
+    //  BRANCHES
+    //
     
     // Event
     Int_t       runNumber,  lumiSection;
@@ -89,7 +92,7 @@ public:
 
 
     // Counters
-    UShort_t    nStatus22Zs,        nFinalStateZs,          nHardProcZs;                                                        // Status 22
+    UShort_t    nStatus22Zs,        nFinalStateZs;
 
     UShort_t    nFinalStateMuons,   nFinalStateElectrons,   nFinalStateLeptons;     // Status 1 & traceable to a Z
     UShort_t    nHardProcMuons,     nHardProcElectrons,     nHardProcLeptons;       // Mother is a Z
@@ -134,15 +137,6 @@ public:
     std::vector<UShort_t>   status22ZIndex,         finalStateZIndex;
 
     TLorentzVector  status22ZsP4,       finalStateZsP4;
-
-
-
-    //--- HELPER FUNCTIONS ---//
-
-//  TLorentzVector GetP4Sum(const std::vector<TLorentzVector>&);
-
-//  bool SortDecPt(const std::pair<TLorentzVector, Int_t>&, const std::pair<TLorentzVector, Int_t>&);
-
 
 
     //ClassDef(PhaseSpaceAnalyzer,0);

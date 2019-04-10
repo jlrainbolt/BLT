@@ -39,8 +39,8 @@ void SelectedEventRetriever::Begin(TTree *tree)
 
     // Open appropriate "selected" tree
     TString tempFileName = "root://cmseos.fnal.gov//store/user/jrainbol/Selected/" + params->period
-                + "/background_" + params->datasetgroup + ".root";
-//              + "/selected_" + params->datasetgroup + ".root";
+//              + "/background_" + params->datasetgroup + ".root";
+                + "/selected_" + params->datasetgroup + ".root";
     TString tempTreeName = params->selection + "_" + params->datasetgroup;
 
     TFile *tempFile = TFile::Open(tempFileName);

@@ -49,27 +49,27 @@ bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCut
     }
     else if (cutLevel.cutName == "trackerHighPtMuonID")
     {
-        if      (_dataPeriod == "2016")
-        {
-            if (
-                        mu->pt                  > cutLevel.pt
-                    &&  fabs(mu->d0)            < cutLevel.dxy
-                    &&  fabs(mu->dz)            < cutLevel.dz
-                    &&  (mu->ptErr / mu->pt)    < cutLevel.ptFracError
-                    &&  mu->nMatchStn           > cutLevel.NumberOfMatchedStations
-                    &&  mu->nPixHits            > cutLevel.NumberOfValidPixelHits
-                    &&  mu->nTkLayers           > cutLevel.TrackLayersWithMeasurement
-               )
-                return kTRUE;
-        }
-        else if (_dataPeriod == "2017")
-        {
+//      if      (_dataPeriod == "2016")
+//      {
+//          if (
+//                      mu->pt                  > cutLevel.pt
+//                  &&  fabs(mu->d0)            < cutLevel.dxy
+//                  &&  fabs(mu->dz)            < cutLevel.dz
+//                  &&  (mu->ptErr / mu->pt)    < cutLevel.ptFracError
+//                  &&  mu->nMatchStn           > cutLevel.NumberOfMatchedStations
+//                  &&  mu->nPixHits            > cutLevel.NumberOfValidPixelHits
+//                  &&  mu->nTkLayers           > cutLevel.TrackLayersWithMeasurement
+//             )
+//              return kTRUE;
+//      }
+//      else if (_dataPeriod == "2017")
+//      {
             bool isHighPt       = mu->pt > cutLevel.pt;
             bool isIdentified   = mu->isTrackerHighPt;
 
             if (isHighPt && isIdentified)
                 return kTRUE;
-        }
+//      }
     }
     else if (cutLevel.cutName == "tightHZZMuonID")
     {

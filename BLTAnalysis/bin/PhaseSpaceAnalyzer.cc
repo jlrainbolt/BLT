@@ -56,9 +56,7 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "evtNumber",                &evtNumber,                 "eventNumber/l");
     outTree->Branch(    "lumiSection",              &lumiSection);
     outTree->Branch(    "genWeight",                &genWeight);
-
     outTree->Branch(    "decayChannel",             &decayChannel);
-
     outTree->Branch(    "foundTauDecay",            &foundTauDecay);
 
 
@@ -73,7 +71,6 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "nHardProcMuons",           &nHardProcMuons);
     outTree->Branch(    "nHardProcElectrons",       &nHardProcElectrons);
     outTree->Branch(    "nHardProcLeptons",         &nHardProcLeptons);
-//  outTree->Branch(    "nHardProcZs",              &nHardProcZs);
 
 
     // Final state leptons
@@ -108,13 +105,11 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "status22ZP4",              &status22ZP4);
     outTree->Branch(    "status22ZMother",          &status22ZMother);
     outTree->Branch(    "status22ZIndex",           &status22ZIndex);
-
     outTree->Branch(    "status22ZsP4",             &status22ZsP4);
 
     outTree->Branch(    "finalStateZP4",            &finalStateZP4);
     outTree->Branch(    "finalStateZStatus",        &finalStateZStatus);
     outTree->Branch(    "finalStateZIndex",         &finalStateZIndex);
-
     outTree->Branch(    "finalStateZsP4",           &finalStateZsP4);
 
 
@@ -146,12 +141,10 @@ void PhaseSpaceAnalyzer::Init(TTree *tree)
     fInfo           = 0;
     fGenEvtInfo     = 0;
     fGenParticleArr = 0;
-    fLHEWeightArr   = 0;
 
     fChain->SetBranchAddress(   "Info",         &fInfo,             &b_Info);
     fChain->SetBranchAddress(   "GenEvtInfo",   &fGenEvtInfo,       &b_GenEvtInfo);
     fChain->SetBranchAddress(   "GenParticle",  &fGenParticleArr,   &b_GenParticleArr);
-    fChain->SetBranchAddress(   "LHEWeight",    &fLHEWeightArr,     &b_LHEWeightArr);
 }
 
 
@@ -167,7 +160,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     nFinalStateMuons = 0;               nFinalStateElectrons = 0;           nFinalStateLeptons = 0; 
     nHardProcMuons = 0;                 nHardProcElectrons = 0;             nHardProcLeptons = 0; 
-    nStatus22Zs = 0;                    nFinalStateZs = 0;                  nHardProcZs = 0;
+    nStatus22Zs = 0;                    nFinalStateZs = 0;
 
     finalStateMuonP4ptr.Delete();       finalStateMuonQ.clear();            finalStateMuonMother.clear();
     finalStateElectronP4ptr.Delete();   finalStateElectronQ.clear();        finalStateElectronMother.clear();
@@ -264,10 +257,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
             TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
 
 
-
-            // Hard process
-
-            // ("immediate" mother is a Z)
+            // Hard process ("immediate" mother is a Z)
 
             if (mother->pdgId == 23)
             {
@@ -295,10 +285,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
             }
 
 
-
-            // Final state
-
-            // (have status 1 & can be traced to a Z)
+            // Final state (have status 1 & can be traced to a Z)
 
             if (particle->status == 1)
             {
@@ -341,6 +328,11 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
         } // END lepton case
 
+
+
+        //
+        //  TAU TAGGING
+        //
 
         else if ((abs(particle->pdgId) == 15) && particle->parent >= 0)
         {
@@ -457,7 +449,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         fsElecsP4 += fsElecP4[i];
 
     TLorentzVector fsLepsP4 = fsMuonsP4 + fsElecsP4;
-
 
 
     // Hard process
@@ -582,7 +573,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     else if (params->selection == "hard")
     {
         // Require four hard-process leptons
-        // (because they are what is "real")
 
 
         if (isSignal && (nHardProcLeptons != 4))
@@ -835,9 +825,9 @@ int main(int argc, char **argv)
 
 
 
-///////////////////
-//    HELPERS    //
-///////////////////
+//
+//  HELPERS
+//
 
 
 TLorentzVector GetP4Sum(const vector<TLorentzVector> &p4)

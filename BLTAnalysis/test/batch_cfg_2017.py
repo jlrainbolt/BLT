@@ -13,7 +13,7 @@ location    = 'lpc'
 #data_samples    = ['double_mu', 'double_eg']
 #mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
 data_samples    = []
-mc_samples      = ['zjets']
+mc_samples      = ['zjets', 'signal']
 
 
 
@@ -98,16 +98,16 @@ mc_dict['signal'] = \
 
 mc_dict['zjets'] = \
 [
-#   cfg(data_name = 'DYJetsToLL_M-50',
-#       path     = '{0}/DYJetsToLL_M-50_amcatnlo_RunIIFall17_new_pmx_v14_ext1-v1'.format(path),
-#       nJobs    = 350,
-#       suffix   = 'zjets_m-50'
-#       ),
-    cfg(data_name = 'DYJetsToLL_M-10to50',
-        path     = '{0}/DYJetsToLL_M-10to50_madgraph_RunIIFall17_v14_ext1-v2'.format(path),
-        nJobs    = 65,
-        suffix   = 'zjets_m-10'
+    cfg(data_name = 'DYJetsToLL_M-50',
+        path     = '{0}/DYJetsToLL_M-50_amcatnlo_RunIIFall17_new_pmx_v14_ext1-v1'.format(path),
+        nJobs    = 350,
+        suffix   = 'zjets_m-50'
         ),
+#   cfg(data_name = 'DYJetsToLL_M-10to50',
+#       path     = '{0}/DYJetsToLL_M-10to50_madgraph_RunIIFall17_v14_ext1-v2'.format(path),
+#       nJobs    = 65,
+#       suffix   = 'zjets_m-10'
+#       ),
 ]
 
 mc_dict['ttbar'] = \
@@ -131,11 +131,11 @@ mc_dict['ttbar'] = \
 
 mc_dict['diboson'] = \
 [
-#   cfg(data_name = 'WWTo2L2Nu',
-#       path     = '{0}/WWTo2L2Nu_powheg_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 5,
-#       suffix   = 'ww_2l2nu'
-#       ),
+    cfg(data_name = 'WWTo2L2Nu',
+        path     = '{0}/WWTo2L2Nu_powheg_RunIIFall17_v14-v1'.format(path),
+        nJobs    = 5,
+        suffix   = 'ww_2l2nu'
+        ),
     cfg(data_name = 'WZTo2L2Q',
         path     = '{0}/WZTo2L2Q_amcatnlo_RunIIFall17_v14-v1'.format(path),
         nJobs    = 70,

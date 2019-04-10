@@ -85,6 +85,7 @@ public:
     Bool_t      evtMuonTriggered,   evtElectronTriggered;
     Float_t     genWeight,          ECALWeight,             PUWeight,               nPU;
     UShort_t    nPV;
+    Bool_t      hasTauDecay;
 
     // Counters
     UShort_t    nLooseMuons,        nLooseElectrons,        nLooseLeptons;

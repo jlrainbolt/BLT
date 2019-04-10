@@ -60,7 +60,7 @@ void printTruthInfo(const TString inFileName)
     //  SELECTED TREE
     //
 
-    const TString suffix = "zjets_m-50",    YEAR_STR = "2016";
+    const TString suffix = "zjets_m-50",    YEAR_STR = "2017";
     const TString EOS_PATH = "root://cmseos.fnal.gov//store/user/jrainbol";
 
     TString inName  = "background_" + suffix + ".root";

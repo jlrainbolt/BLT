@@ -10,8 +10,10 @@ period      = '2016'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-data_samples    = ['double_mu', 'double_eg']
-mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs']
+#data_samples    = ['double_mu', 'double_eg']
+#mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs']
+data_samples    = ['double_eg']
+mc_samples      = []
 
 
 
@@ -22,116 +24,100 @@ Set job configurations.
 # DATA #
 data_dict = {}
 
-path = '/eos/uscms/store/user/jrainbol/Bacon/2016'
+path = '/eos/uscms/store/group/lpcbacon/jlr'
 data_dict['double_mu'] = \
 [
     cfg(data_name = 'DoubleMuon_Run2016B_v1',
         path     = '{0}/DoubleMuon_Run2016B-17Jul2018_ver1-v1'.format(path),
-        nJobs    = 1,
+        nJobs    = 2,
         suffix   = 'muon_2016'
         ),
     cfg(data_name = 'DoubleMuon_Run2016B_v2',
         path     = '{0}/DoubleMuon_Run2016B-17Jul2018_ver2-v1'.format(path),
-        nJobs    = 15,
+        nJobs    = 25,
         suffix   = 'muon_2016'
         ),
     cfg(data_name = 'DoubleMuon_Run2016C_v1',
         path     = '{0}/DoubleMuon_Run2016C-17Jul2018-v1'.format(path),
-        nJobs    = 5,
+        nJobs    = 10,
         suffix   = 'muon_2016'
         ),
     cfg(data_name = 'DoubleMuon_Run2016D_v1',
         path     = '{0}/DoubleMuon_Run2016D-17Jul2018-v1'.format(path),
-        nJobs    = 5,
+        nJobs    = 10,
         suffix   = 'muon_2016'
         ),
     cfg(data_name = 'DoubleMuon_Run2016E_v1',
         path     = '{0}/DoubleMuon_Run2016E-17Jul2018-v1'.format(path),
-        nJobs    = 5,
+        nJobs    = 15,
         suffix   = 'muon_2016'
         ),
     cfg(data_name = 'DoubleMuon_Run2016F_v1',
         path     = '{0}/DoubleMuon_Run2016F-17Jul2018-v1'.format(path),
-        nJobs    = 5,
+        nJobs    = 10,
         suffix   = 'muon_2016'
         ),
     cfg(data_name = 'DoubleMuon_Run2016G_v1',
         path     = '{0}/DoubleMuon_Run2016G-17Jul2018-v1'.format(path),
-        nJobs    = 10,
+        nJobs    = 20,
         suffix   = 'muon_2016'
         ),
     cfg(data_name = 'DoubleMuon_Run2016H_v1',
         path     = '{0}/DoubleMuon_Run2016H-17Jul2018-v1'.format(path),
-        nJobs    = 10,
+        nJobs    = 20,
         suffix   = 'muon_2016'
         ),
 ]
 
-path = '/eos/uscms/store/user/jrainbol/BaconProd/eg_2016'
 data_dict['double_eg'] = \
 [
     cfg(data_name = 'DoubleEG_Run2016B_v1',
-        path     = '{0}/RunB_ver1'.format(path),
-        nJobs    = 1,
+        path     = '{0}/DoubleEG_Run2016B-17Jul2018_ver1-v1'.format(path),
+        nJobs    = 5,
         suffix   = 'electron_2016'
         ),
     cfg(data_name = 'DoubleEG_Run2016B_v2',
-        path     = '{0}/RunB_ver2'.format(path),
-        nJobs    = 25,
-        suffix   = 'electron_2016'
-        ),
-    cfg(data_name = 'DoubleEG_Run2016B_v2_nfl',
-        path     = '{0}/RunB_ver2_nfl'.format(path),
-        nJobs    = 10,
+        path     = '{0}/DoubleEG_Run2016B-17Jul2018_ver2-v1'.format(path),
+        nJobs    = 70,
         suffix   = 'electron_2016'
         ),
     cfg(data_name = 'DoubleEG_Run2016C_v1',
-        path     = '{0}/RunC'.format(path),
-        nJobs    = 10,
+        path     = '{0}/DoubleEG_Run2016C-17Jul2018-v1'.format(path),
+        nJobs    = 20,
         suffix   = 'electron_2016'
         ),
     cfg(data_name = 'DoubleEG_Run2016D_v1',
-        path     = '{0}/RunD'.format(path),
-        nJobs    = 10,
+        path     = '{0}/DoubleEG_Run2016D-17Jul2018-v1'.format(path),
+        nJobs    = 15,
         suffix   = 'electron_2016'
         ),
     cfg(data_name = 'DoubleEG_Run2016E_v1',
-        path     = '{0}/RunE'.format(path),
-        nJobs    = 10,
+        path     = '{0}/DoubleEG_Run2016E-17Jul2018-v1'.format(path),
+        nJobs    = 15,
         suffix   = 'electron_2016'
         ),
     cfg(data_name = 'DoubleEG_Run2016F_v1',
-        path     = '{0}/RunF'.format(path),
+        path     = '{0}/DoubleEG_Run2016F-17Jul2018-v1'.format(path),
         nJobs    = 10,
         suffix   = 'electron_2016'
         ),
     cfg(data_name = 'DoubleEG_Run2016G_v1',
-        path     = '{0}/RunG'.format(path),
-        nJobs    = 19,
-        suffix   = 'electron_2016'
-        ),
-    cfg(data_name = 'DoubleEG_Run2016G_v1_nfl',
-        path     = '{0}/RunG_nfl'.format(path),
-        nJobs    = 1,
+        path     = '{0}/DoubleEG_Run2016G-17Jul2018-v1'.format(path),
+        nJobs    = 25,
         suffix   = 'electron_2016'
         ),
     cfg(data_name = 'DoubleEG_Run2016H_v1',
-        path     = '{0}/RunH'.format(path),
-        nJobs    = 20,
+        path     = '{0}/DoubleEG_Run2016H-17Jul2018-v1'.format(path),
+        nJobs    = 25,
         suffix   = 'electron_2016'
         ),
-#   cfg(data_name = 'DoubleEG_Run2016H_v1_nfl',
-#       path     = '{0}/RunH_nfl'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'electron_2016'
-#       ),
 ]
 
 
 # MONTE CARLO #
 mc_dict = {}
 
-path = '/eos/uscms/store/user/jrainbol/Bacon/2016'
+path = '/eos/uscms/store/group/lpcbacon/jlr/2016'
 mc_dict['signal'] = \
 [
     cfg(data_name = 'ZZTo4L',
@@ -148,18 +134,29 @@ mc_dict['zjets'] = \
         nJobs    = 100,
         suffix   = 'zjets_m-50'
         ),
+#   cfg(data_name = 'DYJetsToLL_M-10to50',
+#       path     = '{0}/DYJetsToLL_M-10to50_amcatnlo_RunIISummer16_v3_ext1-v2'.format(path),
+#       nJobs    = 60,
+#       suffix   = 'zjets_m-10'
+#       ),
 ]
 
-path = '/eos/uscms/store/user/jrainbol/BaconProd'
+path = '/eos/uscms/store/group/lpcbacon/jlr'
 mc_dict['ttbar'] = \
 [
     cfg(data_name = 'TTJets',
-        path     = '{0}/ttbar'.format(path),
-        nJobs    = 15,
+        path     = '{0}/TTJets_amcatnlo_RunIISummer16_v3-v2'.format(path),
+        nJobs    = 85,
         suffix   = 'ttbar'
+        ),
+    cfg(data_name = 'TTTo2L2Nu',
+        path     = '{0}/TTTo2L2Nu_ttHtranche3_powheg_RunIISummer16_v3-v2'.format(path),
+        nJobs    = 140,
+        suffix   = 'tt_2l2nu'
         ),
 ]
 
+path = '/eos/uscms/store/user/jrainbol/BaconProd'
 mc_dict['diboson'] = \
 [
     cfg(data_name = 'WWTo2L2Nu',
