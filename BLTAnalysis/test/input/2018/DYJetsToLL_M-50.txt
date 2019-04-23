@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/jlr/DYJetsToLL_M-50_madgraph_RunIIAutumn18_v15-v1/DYJetsToLL_M-50_madgraph_RunIIAutumn18_v15-v1_trimmedBacon_0.root

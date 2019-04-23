@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/jlr/DoubleEG_Run2016H-17Jul2018-v1/DoubleEG_Run2016H-17Jul2018-v1_trimmedBacon_0.root

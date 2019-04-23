@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/jlr/DoubleMuon_Run2018D-PromptReco-v2/DoubleMuon_Run2018D-PromptReco-v2_trimmedBacon_0.root
