@@ -25,3 +25,4 @@ BLTAnalysis/test/ValidationTrees
 
 # Fix data subdir
 !BLTAnalysis/data/**
+!BLTAnalysis/test/input/**
