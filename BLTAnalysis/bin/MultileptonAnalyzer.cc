@@ -83,6 +83,12 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
         electronTriggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
     }
+    else if (params->period == "2018")
+    {
+        muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
+
+        electronTriggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+    }
 
 
 

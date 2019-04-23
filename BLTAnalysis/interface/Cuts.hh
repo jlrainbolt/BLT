@@ -50,13 +50,6 @@ public:
     }
     looseHZZElectronID, tightHZZElectronID;
 
-    struct elMVACuts
-    {
-        std::string cutName;
-        float   pt[2],  eta[3], bdt[2][3];
-    }
-    wpLooseIsoV1, wpLooseNoIsoV1;
-
     struct elIsoCuts
     {
         std::string cutName;
@@ -64,7 +57,7 @@ public:
     }
     wpHZZElectronIso;
 
-    float etaBins[8], effArea2016[7], effArea2017[7];
+    float etaBins[8], effArea2016[7], effArea2017[7], effArea2018[7];
 };
 
 #endif  // CUTS_HH

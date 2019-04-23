@@ -49,27 +49,26 @@ bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCut
     }
     else if (cutLevel.cutName == "trackerHighPtMuonID")
     {
-//      if      (_dataPeriod == "2016")
-//      {
-//          if (
-//                      mu->pt                  > cutLevel.pt
-//                  &&  fabs(mu->d0)            < cutLevel.dxy
-//                  &&  fabs(mu->dz)            < cutLevel.dz
-//                  &&  (mu->ptErr / mu->pt)    < cutLevel.ptFracError
-//                  &&  mu->nMatchStn           > cutLevel.NumberOfMatchedStations
-//                  &&  mu->nPixHits            > cutLevel.NumberOfValidPixelHits
-//                  &&  mu->nTkLayers           > cutLevel.TrackLayersWithMeasurement
-//             )
-//              return kTRUE;
-//      }
-//      else if (_dataPeriod == "2017")
-//      {
-            bool isHighPt       = mu->pt > cutLevel.pt;
-            bool isIdentified   = mu->isTrackerHighPt;
+/*
+        // "Outdated" 2016 ntuples
+        if (
+                    mu->pt                  > cutLevel.pt
+                &&  fabs(mu->d0)            < cutLevel.dxy
+                &&  fabs(mu->dz)            < cutLevel.dz
+                &&  (mu->ptErr / mu->pt)    < cutLevel.ptFracError
+                &&  mu->nMatchStn           > cutLevel.NumberOfMatchedStations
+                &&  mu->nPixHits            > cutLevel.NumberOfValidPixelHits
+                &&  mu->nTkLayers           > cutLevel.TrackLayersWithMeasurement
+           )
+            return kTRUE;
+*/
 
-            if (isHighPt && isIdentified)
-                return kTRUE;
-//      }
+        // All other ntuples
+        bool isHighPt       = mu->pt > cutLevel.pt;
+        bool isIdentified   = mu->isTrackerHighPt;
+
+        if (isHighPt && isIdentified)
+            return kTRUE;
     }
     else if (cutLevel.cutName == "tightHZZMuonID")
     {
@@ -140,41 +139,6 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 }
 
 
-// Deprecated??
-bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const
-{
-/*
-    float bdtVal = -1;
-    unsigned ptBin, etaBin;
-
-    if      (cutLevel.cutName == "wpLooseIsoV1")
-        bdtVal = el->mvaIso;
-    else if (cutLevel.cutName == "wpLooseNoIsoV1")
-        bdtVal = el->mva;
-
-    if      (el->pt < cutLevel.pt[0])
-        return kFALSE;
-    else if (el->pt < cutLevel.pt[1])
-        ptBin = 0;
-    else
-        ptBin = 1;
-
-    if      (fabs(el->scEta) < cutLevel.eta[0])
-        etaBin = 0;
-    else if (fabs(el->scEta) < cutLevel.eta[1])
-        etaBin = 1;
-    else if (fabs(el->scEta) < cutLevel.eta[2])
-        etaBin = 2;
-    else
-        return kFALSE;
-
-    if (bdtVal > cutLevel.bdt[ptBin][etaBin])
-        return kTRUE;
-*/
-    return kFALSE;
-}
-
-
 bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel) const 
 {
     if (cutLevel.cutName == "wpHZZElectronIso")
@@ -206,6 +170,8 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
         effArea = _cuts.effArea2016[etaBin];
     else if (_dataPeriod == "2017")
         effArea = _cuts.effArea2017[etaBin];
+    else if (_dataPeriod == "2018")
+        effArea = _cuts.effArea2018[etaBin];
 
     return el->chHadIso + std::max(0., (double) el->neuHadIso + el->gammaIso - _rhoFactor * effArea);
 }

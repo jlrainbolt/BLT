@@ -41,7 +41,6 @@ public:
 
     // Electrons
     bool PassElectronID(const baconhep::TElectron* el, const Cuts::elIDCuts& cutLevel) const;
-    bool PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const;
     bool PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel) const;
     float GetElectronIso(const baconhep::TElectron* el) const;
     float GetElectronCorrection(const baconhep::TElectron* el) const;

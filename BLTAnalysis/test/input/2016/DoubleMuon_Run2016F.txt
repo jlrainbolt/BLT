@@ -1,1 +1,0 @@
-root://cmseos.fnal.gov//store/user/jrainbol/Bacon/2016/DoubleMuon_Run2016F-17Jul2018-v1/DoubleMuon_Run2016F-17Jul2018-v1_bacon_0.root
