@@ -421,7 +421,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             evtElectronTriggered = kTRUE;
     }
 
-    bool passTrigger = evtMuonTriggered || evtElectronTriggered || isSignal || isDrellYan;
+//  bool passTrigger = evtMuonTriggered || evtElectronTriggered || isSignal || isDrellYan;
+    bool passTrigger = evtMuonTriggered || evtElectronTriggered;
 
     if (!passTrigger)
         return kTRUE;
