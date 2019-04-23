@@ -58,6 +58,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
         jsonFileName = "Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
     else if (params->period == "2017")
         jsonFileName = "Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt";
+    else if (params->period == "2018")
+        jsonFileName = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
     lumiMask.AddJSONFile(cmssw_base + data_dir + jsonFileName);
 
 
