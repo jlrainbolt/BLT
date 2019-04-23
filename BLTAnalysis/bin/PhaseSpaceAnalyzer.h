@@ -22,7 +22,7 @@
 #include "BLT/BLTAnalysis/interface/Parameters.hh"
 
 // BaconAna class definitions (might need to add more)
-#include "BaconAna/Utils/interface/TTrigger.hh"
+#include "BaconAna/DataFormats/interface/TLHEWeight.hh"
 
 // ROOT headers
 #include <TLorentzVector.h>
@@ -85,10 +85,13 @@ public:
     // Event
     Int_t       runNumber,  lumiSection;
     Long64_t    evtNumber;
-    Float_t     genWeight;
+    Float_t     genWeight,  nomWeight;
 
     UShort_t    decayChannel;
-    Bool_t      foundTauDecay;  // traced a tau to a Z
+    Bool_t      isFiducial;
+
+    std::vector<UShort_t>   qcdID,      pdfID;
+    std::vector<Float_t>    qcdWeight,  pdfWeight;
 
 
     // Counters

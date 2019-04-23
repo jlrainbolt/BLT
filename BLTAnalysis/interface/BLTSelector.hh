@@ -75,17 +75,7 @@ public :
     TClonesArray            *fLHEWeightArr;
     TClonesArray            *fElectronArr;
     TClonesArray            *fMuonArr;
-    TClonesArray            *fTauArr;
-    TClonesArray            *fPhotonArr;
     TClonesArray            *fPVArr;
-    TClonesArray            *fAK4CHSArr;
-    TClonesArray            *fAK8CHSArr;
-    TClonesArray            *fAddAK8CHSArr;
-    TClonesArray            *fCA15CHSArr;
-    TClonesArray            *fAddCA15CHSArr;
-    TClonesArray            *fAK4PuppiArr;
-    TClonesArray            *fCA15PuppiArr;
-    TClonesArray            *fAddCA15PuppiArr;
 
     TBranch                 *b_Info;
     TBranch                 *b_GenEvtInfo;
@@ -93,18 +83,7 @@ public :
     TBranch                 *b_LHEWeightArr;
     TBranch                 *b_ElectronArr;
     TBranch                 *b_MuonArr;
-    TBranch                 *b_TauArr;
-    TBranch                 *b_PhotonArr;
     TBranch                 *b_PVArr;
-    TBranch                 *b_AK4CHSArr;
-    TBranch                 *b_AK8CHSArr;
-    TBranch                 *b_AddAK8CHSArr;
-    TBranch                 *b_CA15CHSArr;
-    TBranch                 *b_AddCA15CHSArr;
-    TBranch                 *b_AK4PuppiArr;
-    TBranch                 *b_AddCA8PuppiArr;
-    TBranch                 *b_CA15PuppiArr;
-    TBranch                 *b_AddCA15PuppiArr;
 
     TFile                   *fCurrentFile;
     TH1D                    *hTotalEvents;
@@ -138,17 +117,7 @@ void BLTSelector::Init(TTree *tree)
     fLHEWeightArr            = 0;
     fElectronArr             = 0;
     fMuonArr                 = 0;
-    fTauArr                  = 0;
-    fPhotonArr               = 0;
     fPVArr                   = 0;
-    fAK4CHSArr               = 0;
-    fAK8CHSArr               = 0;
-    fAddAK8CHSArr            = 0;
-    fCA15CHSArr              = 0;
-    fAddCA15CHSArr           = 0;
-    fAK4PuppiArr             = 0;
-    fCA15PuppiArr            = 0;
-    fAddCA15PuppiArr         = 0;
 
     fChain->SetBranchAddress("Info", &fInfo, &b_Info);
     fChain->SetBranchAddress("GenEvtInfo", &fGenEvtInfo, &b_GenEvtInfo);
@@ -156,17 +125,7 @@ void BLTSelector::Init(TTree *tree)
     fChain->SetBranchAddress("LHEWeight", &fLHEWeightArr, &b_LHEWeightArr);
     fChain->SetBranchAddress("Electron", &fElectronArr, &b_ElectronArr);
     fChain->SetBranchAddress("Muon", &fMuonArr, &b_MuonArr);
-    //fChain->SetBranchAddress("Tau", &fTauArr, &b_TauArr);
-//  fChain->SetBranchAddress("Photon", &fPhotonArr, &b_PhotonArr);
     fChain->SetBranchAddress("PV", &fPVArr, &b_PVArr);
-//  fChain->SetBranchAddress("AK4CHS", &fAK4CHSArr, &b_AK4CHSArr);
-    //fChain->SetBranchAddress("AK8CHS", &fAK8CHSArr, &b_AK8CHSArr);
-    //fChain->SetBranchAddress("AddAK8CHS", &fAddAK8CHSArr, &b_AddAK8CHSArr);
-    //fChain->SetBranchAddress("CA15CHS", &fCA15CHSArr, &b_CA15CHSArr);
-    //fChain->SetBranchAddress("AddCA15CHS", &fAddCA15CHSArr, &b_AddCA15CHSArr);
-    //fChain->SetBranchAddress("AK4Puppi", &fAK4PuppiArr, &b_AK4PuppiArr);
-    //fChain->SetBranchAddress("CA15Puppi", &fCA15PuppiArr, &b_CA15PuppiArr);
-    //fChain->SetBranchAddress("AddCA15Puppi", &fAddCA15PuppiArr, &b_AddCA15PuppiArr);
 }
 
 #endif  // BLTSELECTOR_HH
