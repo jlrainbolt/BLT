@@ -77,14 +77,14 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     // Leg 1
     fileName = data_dir + "/electron_trigger/SFs_Leg1_Ele23_HZZSelection_Tag35.root";
     TFile* f_elTrigSF_leg1 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleEle_leg1_DATA = (TH2F*)f_elTrigSF_leg1->Get("EGamma_EffData2D");
-    _eff_doubleEle_leg1_MC   = (TH2F*)f_elTrigSF_leg1->Get("EGamma_EffMC2D"); 
+    _eff_doubleEle_leg1_DATA = (TH2*)f_elTrigSF_leg1->Get("EGamma_EffData2D");
+    _eff_doubleEle_leg1_MC   = (TH2*)f_elTrigSF_leg1->Get("EGamma_EffMC2D"); 
 
     // Leg 2
     fileName = data_dir + "/electron_trigger/SFs_Leg2_Ele12_HZZSelection_Tag35.root";
     TFile* f_elTrigSF_leg2 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleEle_leg2_DATA = (TH2F*)f_elTrigSF_leg2->Get("EGamma_EffData2D");
-    _eff_doubleEle_leg2_MC   = (TH2F*)f_elTrigSF_leg2->Get("EGamma_EffMC2D");
+    _eff_doubleEle_leg2_DATA = (TH2*)f_elTrigSF_leg2->Get("EGamma_EffData2D");
+    _eff_doubleEle_leg2_MC   = (TH2*)f_elTrigSF_leg2->Get("EGamma_EffMC2D");
 
 
 
@@ -95,8 +95,8 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     // Muon HZZ ID
     fileName = data_dir + "muon_id_sf_" + _dataPeriod + ".root";
     TFile* f_hzz_muIdSF = new TFile(fileName.c_str(), "OPEN");
-    _hzz_muIdSF = (TH2F*) f_hzz_muIdSF->Get("FINAL");
-    _hzz_muIdErr = (TH2F*) f_hzz_muIdSF->Get("ERROR");
+    _hzz_muIdSF = (TH2*) f_hzz_muIdSF->Get("FINAL");
+    _hzz_muIdErr = (TH2*) f_hzz_muIdSF->Get("ERROR");
 
 
     // Electron
@@ -104,21 +104,21 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     // HZZ ID
     fileName = data_dir + "electron_id_sf_" + _dataPeriod + ".root";
     TFile* f_hzz_eleIdSF = new TFile(fileName.c_str(), "OPEN"); 
-    _hzz_eleIdSF = (TH2F*) f_hzz_eleIdSF->Get("EGamma_SF2D");
+    _hzz_eleIdSF = (TH2*) f_hzz_eleIdSF->Get("EGamma_SF2D");
 
     fileName = data_dir + "electron_id_sf_" + _dataPeriod + "_gap.root";
     TFile* f_hzz_eleIdSF_gap = new TFile(fileName.c_str(), "OPEN"); 
-    _hzz_eleIdSF_gap = (TH2F*) f_hzz_eleIdSF_gap->Get("EGamma_SF2D");
+    _hzz_eleIdSF_gap = (TH2*) f_hzz_eleIdSF_gap->Get("EGamma_SF2D");
 
 
     // Reco
     fileName = data_dir + "electron_reco_sf_" + _dataPeriod + ".root";
     TFile* f_eleRecoSF = new TFile(fileName.c_str(), "OPEN"); 
-    _eleSF_RECO = (TH2F*) f_eleRecoSF->Get("EGamma_SF2D");
+    _eleSF_RECO = (TH2*) f_eleRecoSF->Get("EGamma_SF2D");
 
     fileName = data_dir + "electron_reco_sf_" + _dataPeriod + "_lowEt.root";
     TFile* f_eleRecoSF_lowEt = new TFile(fileName.c_str(), "OPEN"); 
-    _eleSF_RECO_lowEt = (TH2F*) f_eleRecoSF_lowEt->Get("EGamma_SF2D");
+    _eleSF_RECO_lowEt = (TH2*) f_eleRecoSF_lowEt->Get("EGamma_SF2D");
 }
 
 
@@ -236,20 +236,15 @@ float WeightUtils::GetHZZMuonIDSF(const baconhep::TMuon* muon) const
     if (_isRealData)
         return 1;
 
-    float maxPt = 200, maxEta = 2.4;
-    if (fabs(muon->eta) < maxEta)
-    {
-        int bin;
+    TH2 *hist = _hzz_muIdSF;
 
-        if (muon->pt > maxPt)
-            bin = _hzz_muIdSF->FindBin(muon->eta, 0.99 * maxPt);
-        else
-            bin = _hzz_muIdSF->FindBin(muon->eta, muon->pt);
+    float   maxPt = hist->GetYaxis()->GetXmax();
+    int     bin = hist->FindBin(muon->eta, min((double) muon->pt, 0.99 * maxPt));
 
-        return _hzz_muIdSF->GetBinContent(bin);
-    }
-    else
+    if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;
+    else
+        return hist->GetBinContent(bin);
 }
 
 
@@ -258,32 +253,19 @@ float WeightUtils::GetHZZElectronIDSF(const baconhep::TElectron* electron) const
     if (_isRealData)
         return 1;
 
-    float maxPt = 500, maxEta = 2.5;
-    if (fabs(electron->scEta) < maxEta)
-    {   
-        int bin;
-
-        if (electron->fiducialBits & kIsGap)
-        {
-            if (electron->pt > maxPt)
-                bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, 0.99 * maxPt);
-            else
-                bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, electron->pt);
-  
-            return _hzz_eleIdSF_gap->GetBinContent(bin);
-        }
-        else
-        {
-            if (electron->pt > maxPt)
-                bin = _hzz_eleIdSF->FindBin(electron->scEta, 0.99 * maxPt);
-            else
-                bin = _hzz_eleIdSF->FindBin(electron->scEta, electron->pt);
-
-            return _hzz_eleIdSF->GetBinContent(bin);
-        }
-    }
+    TH2 *hist;
+    if (electron->fiducialBits & kIsGap)
+        hist = _hzz_eleIdSF_gap;
     else
+        hist = _hzz_eleIdSF;
+
+    float   maxPt = hist->GetYaxis()->GetXmax();
+    int     bin = hist->FindBin(electron->scEta, min((double) electron->pt, 0.99 * maxPt));
+
+    if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;
+    else
+        return hist->GetBinContent(bin);
 }
 
 float WeightUtils::GetElectronRecoSF(const baconhep::TElectron* electron) const 
@@ -291,31 +273,17 @@ float WeightUtils::GetElectronRecoSF(const baconhep::TElectron* electron) const
     if (_isRealData)
         return 1;
 
-    float maxPt = 500, maxEta = 2.5;
-    float threshPt = 20, minPt = 10;
-    if (fabs(electron->scEta) < maxEta)
-    {
-        int bin;
-
-        if (electron->pt > threshPt)
-        {
-            if (electron->pt > maxPt)
-                bin = _eleSF_RECO->FindBin(electron->scEta, 0.99 * maxPt);
-            else
-                bin = _eleSF_RECO->FindBin(electron->scEta, electron->pt);
-
-            return _eleSF_RECO->GetBinContent(bin);
-        }
-        else
-        {
-            if (electron->pt < minPt)
-                bin = _eleSF_RECO_lowEt->FindBin(electron->scEta, 1.01 * minPt);
-            else
-                bin = _eleSF_RECO_lowEt->FindBin(electron->scEta, electron->pt);
-
-            return _eleSF_RECO_lowEt->GetBinContent(bin);
-        }
-    }
+    TH2 *hist;
+    if (electron->pt < _eleSF_RECO->GetYaxis()->GetXmin())
+        hist = _eleSF_RECO_lowEt;
     else
+        hist = _eleSF_RECO;
+
+    float   maxPt = hist->GetYaxis()->GetXmax();
+    int     bin = hist->FindBin(electron->scEta, min((double) electron->pt, 0.99 * maxPt));
+
+    if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;
+    else
+        return hist->GetBinContent(bin);
 }

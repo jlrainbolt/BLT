@@ -100,12 +100,25 @@ float ParticleSelector::GetMuonIso(const baconhep::TMuon* mu) const
     return mu->chHadIso03 + std::max(0., (double) mu->neuHadIso03 + mu->gammaIso03 - 0.5 * mu->puIso03);
 }
 
-float ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu) const
+float ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu, std::string unc) const
 {
+    float corr, delta;
+
     if (_isRealData)
-        return _rc->kScaleDT(mu->q, mu->pt, mu->eta, mu->phi, 0, 0);
+        corr = _rc->kScaleDT(mu->q, mu->pt, mu->eta, mu->phi, 0, 0);
     else
-        return _rc->kSmearMC(mu->q, mu->pt, mu->eta, mu->phi, mu->nTkLayers, _rng->Rndm(), 0, 0);
+        corr = _rc->kSmearMC(mu->q, mu->pt, mu->eta, mu->phi, mu->nTkLayers, _rng->Rndm(), 0, 0);
+
+    delta = _rc->kScaleDTerror(mu->q, mu->pt, mu->eta, mu->phi);
+
+    if      (unc == "")
+        return corr;
+    else if (unc == "up")
+        return (1 + delta) * corr;
+    else if (unc == "down")
+        return (1 - delta) * corr;
+    else
+        return 0;
 }
 
 
@@ -176,7 +189,14 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
     return el->chHadIso + std::max(0., (double) el->neuHadIso + el->gammaIso - _rhoFactor * effArea);
 }
 
-float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el) const
+float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el, std::string unc) const
 {
-    return el->ecalTrkEnergyPostCorr / el->energy;
+    if      (unc == "")
+        return el->ecalTrkEnergyPostCorr / el->energy;
+    else if (unc == "up")
+        return el->energyScaleUp / el->energy;
+    else if (unc == "down")
+        return el->energyScaleDown / el->energy;
+    else
+        return 0;
 }

@@ -6,12 +6,12 @@ import sys
 ''' Specify parameters '''
 cfg        = bm.JobConfig
 selection  = 'hard'
-period     = '2017'
+period     = '2018'
 executable = 'execBatchGen.sh'
 location   = 'lpc'
 
-#mc_samples  = ['zz_4l', 'zjets']
-mc_samples  = ['zjets']
+mc_samples  = ['zz_4l', 'zjets']
+#mc_samples  = ['zjets']
 
 
 
@@ -26,7 +26,7 @@ path = '/eos/uscms/store/group/lpcbacon/jlr'
 mc_dict['zz_4l'] = \
 [
     cfg(data_name = 'ZZTo4L',
-        path     = '{0}/ZZTo4L_powheg_RunIIFall17_new_pmx_v14-v1'.format(path),
+        path     = '{0}/ZZTo4L_powheg_RunIIAutumn18_v15_ext1-v2'.format(path),
         nJobs    = 15,
         suffix   = 'zz_4l'
         ),
@@ -35,8 +35,8 @@ mc_dict['zz_4l'] = \
 mc_dict['zjets'] = \
 [
     cfg(data_name = 'DYJetsToLL_M-50',
-        path     = '{0}/DYJetsToLL_M-50_amcatnlo_RunIIFall17_new_pmx_v14_ext1-v1'.format(path),
-        nJobs    = 350,
+        path     = '{0}/DYJetsToLL_M-50_madgraph_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 200,
         suffix   = 'zjets_m-50'
         ),
 ]

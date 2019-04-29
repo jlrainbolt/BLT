@@ -83,8 +83,9 @@ public:
     // Event
     Int_t       runNumber,          lumiSection,            evtNumber;
     Bool_t      evtMuonTriggered,   evtElectronTriggered;
-    Float_t     genWeight,          ECALWeight,             PUWeight,               nPU;
+    Float_t     genWeight,          PUWeight,               nPU;
     UShort_t    nPV;
+    Float_t     ECALWeight,         ECALWeightUp,       ECALWeightDown;
     Bool_t      hasTauDecay;
 
     // Counters
@@ -95,7 +96,8 @@ public:
     TClonesArray            *muonP4_                = new TClonesArray("TLorentzVector");
     TClonesArray            *muonUncorrectedP4_     = new TClonesArray("TLorentzVector");
     std::vector<Short_t>    muonCharge;
-    std::vector<Float_t>    muonEnergySF,           muonIDSF,               muonIsolation;
+    std::vector<Float_t>    muonEnergySF,           muonEnergySFUp,         muonEnergySFDown;
+    std::vector<Float_t>    muonIDSF,               muonIsolation;
     std::vector<Bool_t>     muonIsTight,            muonIsLoose,            muonIsIsolated;
     std::vector<Bool_t>     muonIsPF,               muonIsTrackerHighPt; 
     std::vector<Bool_t>     muonFiredLeg1,          muonFiredLeg2;
@@ -106,7 +108,8 @@ public:
     TClonesArray            *electronP4_            = new TClonesArray("TLorentzVector");
     TClonesArray            *electronUncorrectedP4_ = new TClonesArray("TLorentzVector");
     std::vector<Short_t>    electronCharge;
-    std::vector<Float_t>    electronEnergySF,       electronIDSF,           electronRecoSF;
+    std::vector<Float_t>    electronEnergySF,       electronEnergySFUp,     electronEnergySFDown;
+    std::vector<Float_t>    electronIDSF,           electronRecoSF;
     std::vector<Float_t>    electronIsolation,      electronScEta;
     std::vector<Bool_t>     electronIsTight,        electronIsLoose,        electronIsV2Iso;
     std::vector<Bool_t>     electronIsGap;

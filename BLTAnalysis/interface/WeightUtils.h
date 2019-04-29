@@ -68,13 +68,13 @@ class WeightUtils: public TObject {
         // Muon triggers, ID, iso
         TGraphAsymmErrors *_eff_doubleMu_leg1_DATA[4], *_eff_doubleMu_leg1_MC[4];
         TGraphAsymmErrors *_eff_doubleMu_leg2_DATA[4], *_eff_doubleMu_leg2_MC[4];
-        TH2F *_hzz_muIdSF, *_hzz_muIdErr;
+        TH2 *_hzz_muIdSF, *_hzz_muIdErr;
 
         // Electron triggers, ID, iso
-        TH2F *_eff_doubleEle_leg1_DATA, *_eff_doubleEle_leg1_MC;
-        TH2F *_eff_doubleEle_leg2_DATA, *_eff_doubleEle_leg2_MC;
-        TH2F *_eleSF_RECO, *_eleSF_RECO_lowEt;
-        TH2F *_hzz_eleIdSF, *_hzz_eleIdSF_gap;
+        TH2 *_eff_doubleEle_leg1_DATA, *_eff_doubleEle_leg1_MC;
+        TH2 *_eff_doubleEle_leg2_DATA, *_eff_doubleEle_leg2_MC;
+        TH2 *_eleSF_RECO, *_eleSF_RECO_lowEt;
+        TH2 *_hzz_eleIdSF, *_hzz_eleIdSF_gap;
 };
 
 #endif

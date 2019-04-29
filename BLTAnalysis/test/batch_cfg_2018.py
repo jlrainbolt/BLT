@@ -12,8 +12,8 @@ location    = 'lpc'
 
 #data_samples    = ['double_mu', 'egamma']
 #mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
-data_samples    = ['double_mu']
-mc_samples      = ['signal', 'zjets']
+data_samples    = ['egamma']
+mc_samples      = []
 
 
 
@@ -53,22 +53,22 @@ data_dict['egamma'] = \
 [
     cfg(data_name = 'EGamma_Run2018A',
         path     = '{0}/EGamma_Run2018A-17Sep2018-v2'.format(path),
-        nJobs    = 0,
+        nJobs    = 190,
         suffix   = 'electron_2018'
         ),
     cfg(data_name = 'EGamma_Run2018B',
         path     = '{0}/EGamma_Run2018B-17Sep2018-v1'.format(path),
-        nJobs    = 0,
+        nJobs    = 80,
         suffix   = 'electron_2018'
         ),
     cfg(data_name = 'EGamma_Run2018C',
         path     = '{0}/EGamma_Run2018C-17Sep2018-v1'.format(path),
-        nJobs    = 0,
+        nJobs    = 75,
         suffix   = 'electron_2018'
         ),
     cfg(data_name = 'EGamma_Run2018D',
         path     = '{0}/EGamma_Run2018D-PromptReco-v2'.format(path),
-        nJobs    = 0,
+        nJobs    = 330,
         suffix   = 'electron_2018'
         ),
 ]
@@ -97,88 +97,88 @@ mc_dict['zjets'] = \
 
 mc_dict['ttbar'] = \
 [
-#   cfg(data_name = 'TTJets',
-#       path     = '{0}/TTJets_amcatnlo_RunIIFall17_new_pmx_v14-v1'.format(path),
-#       nJobs    = 200,
-#       suffix   = 'ttbar'
-#       ),
-#   cfg(data_name = 'TTTo2L2Nu',
-#       path     = '{0}/TTTo2L2Nu_powheg_RunIIFall17_new_pmx_v14-v1'.format(path),
-#       nJobs    = 30,
-#       suffix   = 'tt_2l2nu'
-#       ),
-#   cfg(data_name = 'TTZTo2L2Nu',
-#       path     = '{0}/TTZToLLNuNu_powheg_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 30,
-#       suffix   = 'ttz_2l2nu'
-#       ),
+    cfg(data_name = 'TTJets',
+        path     = '{0}/TTJets_amcatnlo_RunIIAutumn18_v15_ext1-v2'.format(path),
+        nJobs    = 200,
+        suffix   = 'ttbar'
+        ),
+    cfg(data_name = 'TTTo2L2Nu',
+        path     = '{0}/TTTo2L2Nu_powheg_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 100,
+        suffix   = 'tt_2l2nu'
+        ),
+    cfg(data_name = 'TTZTo2L2Nu',
+        path     = '{0}/TTZToLLNuNu_powheg_RunIIAutumn18_v15_ext1-v2'.format(path),
+        nJobs    = 25,
+        suffix   = 'ttz_2l2nu'
+        ),
 ]
 
 mc_dict['diboson'] = \
 [
-#   cfg(data_name = 'WWTo2L2Nu',
-#       path     = '{0}/WWTo2L2Nu_powheg_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 5,
-#       suffix   = 'ww_2l2nu'
-#       ),
-#   cfg(data_name = 'WZTo2L2Q',
-#       path     = '{0}/WZTo2L2Q_amcatnlo_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 70,
-#       suffix   = 'wz_2l2q'
-#       ),
-#   cfg(data_name = 'WZTo3LNu',
-#       path     = '{0}/WZTo3LNu_amcatnlo_RunIIFall17_new_pmx_v14-v1'.format(path),
-#       nJobs    = 25,
-#       suffix   = 'wz_3lnu'
-#       ),
-#   cfg(data_name = 'ZZTo2L2Nu',
-#       path     = '{0}/ZZTo2L2Nu_powheg_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 20,
-#       suffix   = 'zz_2l2nu'
-#       ),
-#   cfg(data_name = 'ZZTo2L2Q',
-#       path     = '{0}/ZZTo2L2Q_amcatnlo_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 75,
-#       suffix   = 'zz_2l2q'
-#       ),
+    cfg(data_name = 'WWTo2L2Nu',
+        path     = '{0}/WWTo2L2Nu_powheg_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 15,
+        suffix   = 'ww_2l2nu'
+        ),
+    cfg(data_name = 'WZTo2L2Q',
+        path     = '{0}/WZTo2L2Q_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 70,
+        suffix   = 'wz_2l2q'
+        ),
+    cfg(data_name = 'WZTo3LNu',
+        path     = '{0}/WZTo3LNu_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 20,
+        suffix   = 'wz_3lnu'
+        ),
+    cfg(data_name = 'ZZTo2L2Nu',
+        path     = '{0}/ZZTo2L2Nu_powheg_RunIIAutumn18_v15_ext1-v2'.format(path),
+        nJobs    = 15,
+        suffix   = 'zz_2l2nu'
+        ),
+    cfg(data_name = 'ZZTo2L2Q',
+        path     = '{0}/ZZTo2L2Q_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 70,
+        suffix   = 'zz_2l2q'
+        ),
 ]
 
 mc_dict['higgs'] = \
 [
-#   cfg (data_name = 'GluGluHToZZTo4L',
-#       path     = '{0}/GluGluHToZZTo4L_M125_powheg_RunIIFall17_v14_ext1-v1'.format(path),
-#       nJobs    = 2,
-#       suffix   = 'ggH_zz_4l'
-#      ),
-#   cfg(data_name = 'VBF_HToZZTo4L',
-#       path     = '{0}/VBF_HToZZTo4L_M125_powheg_RunIIFall17_v14_ext1-v1'.format(path),
-#       nJobs    = 2,
-#       suffix   = 'vbfH_zz_4l'
-#      ),
+    cfg (data_name = 'GluGluHToZZTo4L',
+        path     = '{0}/GluGluHToZZTo4L_M125_powheg_RunIIAutumn18_v15-v2'.format(path),
+        nJobs    = 2,
+        suffix   = 'ggH_zz_4l'
+       ),
+    cfg(data_name = 'VBF_HToZZTo4L',
+        path     = '{0}/VBF_HToZZTo4L_M125_powheg_RunIIAutumn18_v15-v2'.format(path),
+        nJobs    = 2,
+        suffix   = 'vbfH_zz_4l'
+       ),
 ]
 
 mc_dict['triboson'] = \
 [
-#   cfg(data_name = 'WWZJetsTo4L2Nu',
-#       path     = '{0}/WWZJetsTo4L2Nu_amcatnlo_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 5,
-#       suffix   = 'wwz_4l2nu'
-#       ),
-#   cfg(data_name = 'WZZJetsTo4L2Nu',
-#       path     = '{0}/WZZJetsTo4L2Nu_amcatnlo_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 5,
-#       suffix   = 'wzz_4l2nu'
-#       ),
-#   cfg(data_name = 'ZZZJetsTo4L2Nu',
-#       path     = '{0}/ZZZJetsTo4L2Nu_amcatnlo_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 5,
-#       suffix   = 'zzz_4l2nu'
-#       ),
-#   cfg(data_name = 'ZZGJetsTo4L2Nu',
-#       path     = '{0}/ZZGJetsTo4L2Nu_amcatnlo_RunIIFall17_v14-v1'.format(path),
-#       nJobs    = 5,
-#       suffix   = 'zzg_4l2nu'
-#       ),
+    cfg(data_name = 'WWZJetsTo4L2Nu',
+        path     = '{0}/WWZJetsTo4L2Nu_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 5,
+        suffix   = 'wwz_4l2nu'
+        ),
+    cfg(data_name = 'WZZJetsTo4L2Nu',
+        path     = '{0}/WZZJetsTo4L2Nu_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 5,
+        suffix   = 'wzz_4l2nu'
+        ),
+    cfg(data_name = 'ZZZJetsTo4L2Nu',
+        path     = '{0}/ZZZJetsTo4L2Nu_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 5,
+        suffix   = 'zzz_4l2nu'
+        ),
+    cfg(data_name = 'ZZGJetsTo4L2Nu',
+        path     = '{0}/ZZGJetsTo4L2Nu_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 5,
+        suffix   = 'zzg_4l2nu'
+        ),
 ]
 
 
