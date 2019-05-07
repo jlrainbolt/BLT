@@ -62,7 +62,6 @@ bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCut
            )
             return kTRUE;
 */
-
         // All other ntuples
         bool isHighPt       = mu->pt > cutLevel.pt;
         bool isIdentified   = mu->isTrackerHighPt;

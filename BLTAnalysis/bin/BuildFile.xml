@@ -3,4 +3,5 @@
 <flags CXXFLAGS="-g -Wall"/>
 <bin file="MultileptonAnalyzer.cc" name="MultileptonAnalyzer"></bin>
 <bin file="PhaseSpaceAnalyzer.cc" name="PhaseSpaceAnalyzer"></bin>
+<bin file="TagAndProbeAnalyzer.cc" name="TagAndProbeAnalyzer"></bin>
 <bin file="SelectedEventRetriever.cc" name="SelectedEventRetriever"></bin>

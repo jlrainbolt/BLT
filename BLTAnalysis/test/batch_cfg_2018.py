@@ -10,10 +10,10 @@ period      = '2018'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-#data_samples    = ['double_mu', 'egamma']
+data_samples    = ['double_mu', 'egamma']
 #mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
-data_samples    = ['egamma']
-mc_samples      = []
+#data_samples    = []
+mc_samples      = ['signal', 'zjets']
 
 
 
