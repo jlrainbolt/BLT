@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/04/Summer12_ZZJetsTo4L_TuneZ2star/Summer12_ZZJetsTo4L_TuneZ2star_bacon_0.root

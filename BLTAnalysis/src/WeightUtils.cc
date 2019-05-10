@@ -123,6 +123,12 @@ void WeightUtils::SetDataPeriod(string dataPeriod)
 }
 
 
+void WeightUtils::SetSampleName(string sampleName)
+{
+    _sampleName = sampleName;
+}
+
+
 void WeightUtils::SetSelection(string selection)
 {
     _selection = selection;
@@ -143,6 +149,45 @@ float WeightUtils::GetPUWeight(float nPU) const
         return 0;
 
     return _puReweight->GetBinContent(_puReweight->FindBin(nPU)); 
+}
+
+
+
+//
+//  SAMPLE WEIGHT
+//
+
+float WeightUtils::GetSampleWeight() const
+{
+    if (_isRealData)
+        return 1;
+
+    float xsec = 1, ngen = 1;
+
+    if      ((_sampleName == "ZZTo4e") || (_sampleName == "ZZTo4mu") || (_sampleName == "ZZTo4tau"))
+        xsec = XSEC_4x;
+    else if ((_sampleName == "ZZTo2e2mu") || (_sampleName == "ZZTo2e2tau") || (_sampleName == "ZZTo2mu2tau"))
+        xsec = XSEC_2x2y;
+    else
+        return 1;
+
+    if      (_sampleName == "ZZTo4e")
+        ngen = NGEN_4e;
+    else if (_sampleName == "ZZTo4mu")
+        ngen = NGEN_4mu;
+    else if (_sampleName == "ZZTo4tau")
+        ngen = NGEN_4tau;
+    else if (_sampleName == "ZZTo2e2mu")
+        ngen = NGEN_2e2mu;
+    else if (_sampleName == "ZZTo2e2tau")
+        ngen = NGEN_2e2tau;
+    else if (_sampleName == "ZZTo2mu2tau")
+        ngen = NGEN_2mu2tau;
+
+    xsec /= XSEC_4L;
+    ngen /= NGEN_4L;
+
+    return xsec / ngen;
 }
 
 

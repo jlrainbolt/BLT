@@ -37,14 +37,14 @@ public:
     bool PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCuts& cutLevel) const;
     bool PassMuonIso(const baconhep::TMuon* mu, const Cuts::muIsoCuts& cutLevel) const;
     float GetMuonIso(const baconhep::TMuon* mu) const;
-    TLorentzVector GetRochesterCorrection(const baconhep::TMuon* mu) const;
+    float GetRochesterCorrection(const baconhep::TMuon* mu, std::string unc = "") const;
 
     // Electrons
     bool PassElectronID(const baconhep::TElectron* el, const Cuts::elIDCuts& cutLevel) const;
     bool PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const;
     bool PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel) const;
     float GetElectronIso(const baconhep::TElectron* el) const;
-    float GetElectronCorrection(const baconhep::TElectron* el) const;
+    float GetElectronCorrection(const baconhep::TElectron* el, std::string unc = "") const;
 
 private:
     Parameters      _parameters;

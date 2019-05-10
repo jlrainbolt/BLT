@@ -13,7 +13,7 @@ location    = 'lpc'
 #data_samples    = ['double_mu', 'double_electron']
 #mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs']
 data_samples    = []
-mc_samples      = ['zjets', 'ttbar', 'diboson']
+mc_samples      = ['signal', 'zjets']
 
 
 
@@ -27,50 +27,50 @@ data_dict = {}
 path = '/eos/uscms/store/group/lpcbacon/04'
 data_dict['double_mu'] = \
 [
-#   cfg(data_name = 'DoubleMuParked_2012A',
-#       path     = '{0}/DoubleMuParked_2012A-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'muon_2012'
-#       ),
-#   cfg(data_name = 'DoubleMuParked_2012B',
-#       path     = '{0}/DoubleMuParked_2012B-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'muon_2012'
-#       ),
-#   cfg(data_name = 'DoubleMuParked_2012C',
-#       path     = '{0}/DoubleMuParked_2012C-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'muon_2012'
-#       ),
-#   cfg(data_name = 'DoubleMuParked_2012D',
-#       path     = '{0}/DoubleMuParked_2012D-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'muon_2012'
-#       ),
+    cfg(data_name = 'DoubleMuParked_2012A',
+        path     = '{0}/DoubleMuParked_2012A-22Jan2013'.format(path),
+        nJobs    = 1,
+        suffix   = 'muon_2012'
+        ),
+    cfg(data_name = 'DoubleMuParked_2012B',
+        path     = '{0}/DoubleMuParked_2012B-22Jan2013'.format(path),
+        nJobs    = 8,
+        suffix   = 'muon_2012'
+        ),
+    cfg(data_name = 'DoubleMuParked_2012C',
+        path     = '{0}/DoubleMuParked_2012C-22Jan2013'.format(path),
+        nJobs    = 10,
+        suffix   = 'muon_2012'
+        ),
+    cfg(data_name = 'DoubleMuParked_2012D',
+        path     = '{0}/DoubleMuParked_2012D-22Jan2013'.format(path),
+        nJobs    = 10,
+        suffix   = 'muon_2012'
+        ),
 ]
 
 data_dict['double_electron'] = \
 [
-#   cfg(data_name = 'DoubleElectron_2012A',
-#       path     = '{0}/DoubleElectron_2012A-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'electron_2012'
-#       ),
-#   cfg(data_name = 'DoubleElectron_2012B',
-#       path     = '{0}/DoubleElectron_2012B-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'electron_2012'
-#       ),
-#   cfg(data_name = 'DoubleElectron_2012C',
-#       path     = '{0}/DoubleElectron_2012C-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'electron_2012'
-#       ),
-#   cfg(data_name = 'DoubleElectron_2012D',
-#       path     = '{0}/DoubleElectron_2012D-22Jan2013'.format(path),
-#       nJobs    = 0,
-#       suffix   = 'electron_2012'
-#       ),
+    cfg(data_name = 'DoubleElectron_2012A',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012A-22Jan2013-v1/161006_183851/0000'.format(path),
+        nJobs    = 4,
+        suffix   = 'electron_2012'
+        ),
+    cfg(data_name = 'DoubleElectron_2012B',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012B-22Jan2013-v1/161006_184140/0000'.format(path),
+        nJobs    = 8,
+        suffix   = 'electron_2012'
+        ),
+    cfg(data_name = 'DoubleElectron_2012C',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012C-22Jan2013-v1/161006_184501/0000'.format(path),
+        nJobs    = 12,
+        suffix   = 'electron_2012'
+        ),
+    cfg(data_name = 'DoubleElectron_2012D',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012D-22Jan2013-v1/161006_184923/0000'.format(path),
+        nJobs    = 12,
+        suffix   = 'electron_2012'
+        ),
 ]
 
 
@@ -79,10 +79,35 @@ mc_dict = {}
 
 mc_dict['signal'] = \
 [
+    cfg(data_name = 'ZZTo4L',
+        path     = '{0}/Summer12_ZZJetsTo4L_TuneZ2star'.format(path),
+        nJobs    = 15,
+        suffix   = 'zz_4l'
+        ),
 #   cfg(data_name = 'ZZTo4L',
 #       path     = '{0}/Summer12_ZZTo4L_TuneZ2star'.format(path),
-#       nJobs    = 0,
+#       nJobs    = 15,
 #       suffix   = 'zz_4l'
+#       ),
+#   cfg(data_name = 'ZZTo4mu',
+#       path     = '{0}/Summer12_ZZTo4mu'.format(path),
+#       nJobs    = 3,
+#       suffix   = 'zz_4m'
+#       ),
+#   cfg(data_name = 'ZZTo4mu',
+#       path     = '{0}/Summer12_ZZTo4mu_PU_RD1'.format(path),
+#       nJobs    = 3,
+#       suffix   = 'zz_4m'
+#       ),
+#   cfg(data_name = 'ZZTo2e2mu',
+#       path     = '{0}/Summer12_ZZTo2e2mu_PU_RD1'.format(path),
+#       nJobs    = 3,
+#       suffix   = 'zz_2m2e'
+#       ),
+#   cfg(data_name = 'ZZTo4e',
+#       path     = '{0}/Summer12_ZZTo4e_PU_RD1'.format(path),
+#       nJobs    = 3,
+#       suffix   = 'zz_4e'
 #       ),
 ]
 

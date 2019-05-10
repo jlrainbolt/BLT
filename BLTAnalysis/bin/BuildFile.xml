@@ -1,5 +1,5 @@
 <use name="BLT/BLTAnalysis"/>
 <use name="root"/>
 <flags CXXFLAGS="-g -Wall"/>
-<bin file="AcceptanceAnalyzer.cc" name="AcceptanceAnalyzer"></bin>
+<bin file="PhaseSpaceAnalyzer.cc" name="PhaseSpaceAnalyzer"></bin>
 <bin file="MultileptonAnalyzer.cc" name="MultileptonAnalyzer"></bin>

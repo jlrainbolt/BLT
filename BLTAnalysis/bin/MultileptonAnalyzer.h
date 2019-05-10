@@ -85,6 +85,7 @@ public:
     Bool_t      evtMuonTriggered,   evtElectronTriggered;
     Float_t     genWeight,          ECALWeight,             PUWeight,               nPU;
     UShort_t    nPV;
+    Bool_t      hasTauDecay;
 
     // Counters
     UShort_t    nLooseMuons,        nLooseElectrons,        nLooseLeptons;
@@ -94,7 +95,8 @@ public:
     TClonesArray            *muonP4_                = new TClonesArray("TLorentzVector");
     TClonesArray            *muonUncorrectedP4_     = new TClonesArray("TLorentzVector");
     std::vector<Short_t>    muonCharge;
-    std::vector<Float_t>    muonEnergySF,           muonIDSF,               muonIsolation;
+    std::vector<Float_t>    muonEnergySF,           muonEnergySFUp,         muonEnergySFDown;
+    std::vector<Float_t>    muonIDSF,               muonIsolation;
     std::vector<Bool_t>     muonIsTight,            muonIsLoose,            muonIsIsolated;
     std::vector<Bool_t>     muonIsPF,               muonIsTrackerHighPt; 
     std::vector<Bool_t>     muonFiredLeg1,          muonFiredLeg2;
@@ -105,7 +107,8 @@ public:
     TClonesArray            *electronP4_            = new TClonesArray("TLorentzVector");
     TClonesArray            *electronUncorrectedP4_ = new TClonesArray("TLorentzVector");
     std::vector<Short_t>    electronCharge;
-    std::vector<Float_t>    electronEnergySF,       electronIDSF,           electronRecoSF;
+    std::vector<Float_t>    electronEnergySF,       electronEnergySFUp,     electronEnergySFDown;
+    std::vector<Float_t>    electronIDSF,           electronRecoSF;
     std::vector<Float_t>    electronIsolation,      electronScEta;
     std::vector<Bool_t>     electronIsTight,        electronIsLoose,        electronIsMVA;
     std::vector<Bool_t>     electronIsIsolated,     electronIsGap;
@@ -113,7 +116,7 @@ public:
     std::vector<Float_t>    electronTrigEffLeg1MC,  electronTrigEffLeg1Data;
     std::vector<Float_t>    electronTrigEffLeg2MC,  electronTrigEffLeg2Data;
 
-/*
+
     // Gen particles
 
     // Counters
@@ -133,7 +136,7 @@ public:
     TClonesArray            *hardProcElectronP4_   = new TClonesArray("TLorentzVector");
     std::vector<Short_t>    hardProcMuonQ,         hardProcElectronQ;
     std::vector<UShort_t>   hardProcMuonZIndex,    hardProcElectronZIndex;
-*/
+
 
     //ClassDef(MultileptonAnalyzer,0);
 };

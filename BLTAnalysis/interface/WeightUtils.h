@@ -43,9 +43,11 @@ class WeightUtils: public TObject {
         void    Initialize();
         void    SetDataBit(bool);
         void    SetDataPeriod(string);
+        void    SetSampleName(string);
         void    SetSelection(string);
 
         float   GetPUWeight(float) const;
+        float   GetSampleWeight() const;
         float   GetHZZMuonIDSF(const baconhep::TMuon*) const;
         float   GetHZZElectronIDSF(const baconhep::TElectron*) const;
         float   GetElectronRecoSF(const baconhep::TElectron*) const;
@@ -73,6 +75,12 @@ class WeightUtils: public TObject {
 //      TH2F *_eff_doubleEle_leg1_DATA, *_eff_doubleEle_leg1_MC;
 //      TH2F *_eff_doubleEle_leg2_DATA, *_eff_doubleEle_leg2_MC;
         TH2 *_hzz_eleIdSF;  // Includes ID and reco
+
+        const float XSEC_4x = 0.07691,  XSEC_2x2y = 0.1767,     XSEC_4L = 3 * (XSEC_4x + XSEC_2x2y);
+
+        const float NGEN_4e = 1499093,      NGEN_4mu = 1499064,     NGEN_4tau = 824466;
+        const float NGEN_2e2mu = 1497445,   NGEN_2e2tau = 823911,   NGEN_2mu2tau = 823922;
+        const float NGEN_4L = NGEN_4e + NGEN_4mu + NGEN_4tau + NGEN_2e2mu + NGEN_2e2tau + NGEN_2mu2tau;
 };
 
 #endif

@@ -74,18 +74,20 @@ float ParticleSelector::GetMuonIso(const baconhep::TMuon* mu) const
     return mu->chHadIso04 + std::max(0., (double) mu->neuHadIso04 + mu->gammaIso04 - 0.5 * mu->puIso04);
 }
 
-TLorentzVector ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu) const
+float ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu, std::string unc) const
 {
     TLorentzVector p4;
     copy_p4(mu, MUON_MASS, p4);
-    float qter;
+
+    float corr, qter = 1;
 
     if (_isRealData)
-        _rc->momcor_data(p4, mu->q, 0, qter);
+        corr = _rc->momcor_data(p4, mu->q, 0, qter);
     else
-        _rc->momcor_mc(p4, mu->q, 0, qter);
+        corr = _rc->momcor_mc(p4, mu->q, 0, qter);
 
-    return p4;
+    cout << corr << ", " << qter << endl;
+    return corr;
 }
 
 
@@ -184,7 +186,7 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
     return el->chHadIso04 + std::max(0., (double) el->neuHadIso04 + el->gammaIso04 - _rhoFactor * effArea);
 }
 
-float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el) const
+float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el, std::string unc) const
 {
     return el->ptHZZ4l / el->pt;
 }
