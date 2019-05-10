@@ -43,9 +43,11 @@ class WeightUtils: public TObject {
         void    Initialize();
         void    SetDataBit(bool);
         void    SetDataPeriod(string);
+        void    SetSampleName(string);
         void    SetSelection(string);
 
         float   GetPUWeight(float) const;
+        float   GetSampleWeight() const;
         float   GetHZZMuonIDSF(const baconhep::TMuon*) const;
         float   GetHZZElectronIDSF(const baconhep::TElectron*) const;
         float   GetElectronRecoSF(const baconhep::TElectron*) const;

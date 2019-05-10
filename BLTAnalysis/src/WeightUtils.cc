@@ -146,6 +146,12 @@ void WeightUtils::SetSelection(string selection)
 }
 
 
+void WeightUtils::SetSampleName(string sampleName)
+{
+    _sampleName = sampleName;
+}
+
+
 
 //
 //  PILEUP
@@ -160,6 +166,55 @@ float WeightUtils::GetPUWeight(float nPU) const
         return 0;
 
     return _puReweight->GetBinContent(_puReweight->FindBin(nPU)); 
+}
+
+
+
+//
+//  MC WEIGHT
+//
+
+float WeightUtils::GetSampleWeight() const
+{
+    if (_isRealData)
+        return 1;
+
+    float lumi = 1, xsec = 1, ngen = 1000, eff = 1;
+
+    if      (_dataPeriod == "2016")
+        lumi = 36.42;
+    else if (_dataPeriod == "2017")
+        lumi = 41.37;
+    else if (_dataPeriod == "2018")
+        lumi = 58.83;
+
+    if ((_selection == "ee") && (_dataPeriod == "2017"))
+        eff = 0.991;
+
+    if      (_sampleName == "DYJetsToLL_M-50")
+    {
+        xsec = 5765.4;
+
+        if (_dataPeriod == "2017")
+            ngen = 80924255;
+    }
+    else if (_sampleName == "TTJets")
+    {
+        xsec = 831.76;
+
+        if (_dataPeriod == "2017")
+            ngen = 15173839;
+    }
+    else if (_sampleName == "TTTo2L2Nu")
+    {
+        xsec = 87.31;
+
+        if (_dataPeriod == "2017")
+            ngen = 65899840;
+    }
+    xsec *= 1000.;
+
+    return xsec * lumi * eff / ngen;
 }
 
 

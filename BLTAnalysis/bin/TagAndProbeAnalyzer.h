@@ -55,24 +55,22 @@ float frac_diff(float test, float truth) { return fabs(test - truth) / truth; }
 //  CUTS
 //
 
-const float     MUON_PT_MIN = 5,    MUON_ETA_MAX = 2.4;
-const float     ELEC_PT_MIN = 7,    ELEC_ETA_MAX = 2.5;
+const unsigned  N_MLL = 60;
+const float     MLL_MIN = 60,       MLL_MAX = 120;
+
+const float     MUON_PT_MIN = 5,    MUON_ETA_MAX = 2.4,     MUON_PT_THRESH = 10;
+const float     ELEC_PT_MIN = 7,    ELEC_ETA_MAX = 2.5,     ELEC_PT_THRESH = 12;
 
 const float     MATCH_DR_MAX = 0.3, MATCH_MUON_PT_FRAC = 0.1;
 
-const unsigned  N_PT_MM = 19,   N_ETA_MM = 4;
-const unsigned  N_PT_EE = 0,    N_ETA_EE = 0;
+const unsigned  N_PT_MM = 18,   N_ETA_MM = 4;
+const unsigned  N_PT_EE = 17,   N_ETA_EE = 4;
 
+float   mumuPt[N_PT_MM+1] = {5, 8,  10, 12, 14, 16, 18, 20, 22, 25, 30, 35, 40, 45, 50, 60, 75, 100, 200 };
+float   mumuEta[N_ETA_MM+1]={-2.4,  -1.2,       0,  1.2,    2.4 };
 
-const unsigned  N_MLL = 60;
-const float     MLL_MIN = 60,       MLL_MAX = 120;
-const float     MUON_PT_THRESH = 11;
-
-float   mumuPt[N_PT_MM+1] = { 5,  7,  9, 11, 13, 15, 17, 19, 21, 23, 25, 30, 35, 40, 45, 50, 60, 75, 100, 200 };
-float   mumuEta[N_ETA_MM+1] =   {-2.4,   -1.2,   0,      1.2,    2.4 };
-
-float   *eePt;
-float   *eeEta;
+float   eePt[N_PT_EE+1] =   {7, 10, 12, 14, 16, 18, 20, 22, 25, 30, 35, 40, 45, 50, 60, 75, 100, 200 };
+float   eeEta[N_ETA_EE+1] = {-2.5,  -1.479,     0,  1.479,  2.5 };
 
 
 class TagAndProbeAnalyzer: public BLTSelector {
@@ -95,6 +93,7 @@ public:
     // Params and cuts
     std::unique_ptr<Parameters>         params;
     std::unique_ptr<Cuts>               cuts;
+    TString                             selection;
 
     // Utilities
     std::unique_ptr<ParticleSelector>   particleSelector;
@@ -144,10 +143,8 @@ public:
     // Gen particles
     UShort_t                nGenMuons,              nGenElectrons,          nGenLeptons;
     TLorentzVector          genTagP4,               genProbeP4,             genZP4;
-    Short_t                 genTagQ,                genProbeQ;
-    Short_t                 genTagPDG,              genProbePDG;
     Float_t                 genTagDeltaR,           genProbeDeltaR;
-    Short_t                 genTagStatus,           genProbeStatus;
+    Short_t                 genTagPDG,              genProbePDG;
     Short_t                 genTagMotherPDG,        genProbeMotherPDG;
     UShort_t                nGenTagPhotons,         nGenProbePhotons;
     TClonesArray            *genTagPhotonsP4        = new TClonesArray("TLorentzVector");

@@ -5,15 +5,15 @@ import sys
 
 ''' Specify parameters '''
 cfg         = bm.JobConfig
-selection   = 'mumu'
+selection   = 'mumuIso'
 period      = '2017'
 executable  = 'execBatchTnP.sh'
 location    = 'lpc'
 
-#data_samples    = ['double_mu', 'double_eg']
-mc_samples      = ['zjets']
-data_samples    = ['double_mu']
-#mc_samples      = []
+#data_samples    = ['single_mu', 'single_eg']
+data_samples    = ['single_mu']
+mc_samples      = ['zjets', 'ttbar']
+#mc_samples      = ['ttbar']
 
 
 
@@ -24,32 +24,32 @@ Set job configurations.
 # DATA #
 data_dict = {}
 
-path = '/eos/uscms/store/group/lpcbacon/jlr/'
-data_dict['double_mu'] = \
+path = '/eos/uscms/store/group/lpcbacon/jlr'
+data_dict['single_mu'] = \
 [
     cfg(data_name = 'muon_2017B_v1',
-        path     = '{0}/DoubleMuon_Run2017B-31Mar2018-v1'.format(path),
-        nJobs    = 10,
+        path     = '{0}/SingleMuon_Run2017B-31Mar2018-v1'.format(path),
+        nJobs    = 60,
         suffix   = 'muon_2017'
         ),
     cfg(data_name = 'muon_2017C_v1',
-        path     = '{0}/DoubleMuon_Run2017C-31Mar2018-v1'.format(path),
-        nJobs    = 30,
+        path     = '{0}/SingleMuon_Run2017C-31Mar2018-v1'.format(path),
+        nJobs    = 120,
         suffix   = 'muon_2017'
         ),
     cfg(data_name = 'muon_2017D_v1',
-        path     = '{0}/DoubleMuon_Run2017D-31Mar2018-v1'.format(path),
-        nJobs    = 10,
+        path     = '{0}/SingleMuon_Run2017D-31Mar2018-v1'.format(path),
+        nJobs    = 50,
         suffix   = 'muon_2017'
         ),
     cfg(data_name = 'muon_2017E_v1',
-        path     = '{0}/DoubleMuon_Run2017E-31Mar2018-v1'.format(path),
-        nJobs    = 30,
+        path     = '{0}/SingleMuon_Run2017E-31Mar2018-v1'.format(path),
+        nJobs    = 130,
         suffix   = 'muon_2017'
         ),
     cfg(data_name = 'muon_2017F_v1',
-        path     = '{0}/DoubleMuon_Run2017F-31Mar2018-v1'.format(path),
-        nJobs    = 40,
+        path     = '{0}/SingleMuon_Run2017F-31Mar2018-v1'.format(path),
+        nJobs    = 200,
         suffix   = 'muon_2017'
         ),
 ]
@@ -94,11 +94,15 @@ mc_dict['zjets'] = \
         nJobs    = 350,
         suffix   = 'zjets_m-50'
         ),
-#   cfg(data_name = 'DYJetsToLL_M-10to50',
-#       path     = '{0}/DYJetsToLL_M-10to50_madgraph_RunIIFall17_v14_ext1-v2'.format(path),
-#       nJobs    = 65,
-#       suffix   = 'zjets_m-10'
-#       ),
+]
+
+mc_dict['ttbar'] = \
+[
+    cfg(data_name = 'TTJets',
+        path     = '{0}/TTJets_amcatnlo_RunIIFall17_new_pmx_v14-v1'.format(path),
+        nJobs    = 200,
+        suffix   = 'ttbar'
+        ),
 ]
 
 

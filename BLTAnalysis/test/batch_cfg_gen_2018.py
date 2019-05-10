@@ -10,8 +10,8 @@ period     = '2018'
 executable = 'execBatchGen.sh'
 location   = 'lpc'
 
-mc_samples  = ['zz_4l', 'zjets']
-#mc_samples  = ['zjets']
+#mc_samples  = ['zz_4l', 'zjets']
+mc_samples  = ['zz_4l']
 
 
 

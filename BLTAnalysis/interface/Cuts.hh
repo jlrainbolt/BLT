@@ -22,11 +22,11 @@ public:
         std::string cutName;
 
         float   pt,     eta,    dxy,    dz,     SIP3d,      ptFracError;
-        bool    IsGLB,  IsTRK,  IsPF,   IsTrackerHighPt,    IsLoose,    IsIsolated;
+        bool    IsGLB,  IsTRK,  IsPF,   IsTrackerHighPt,    IsLoose,    IsIdentified,   IsIsolated;
         float   NumberOfMatchedStations,    NumberOfValidPixelHits,     TrackLayersWithMeasurement;
         int     BestTrackType;
     }
-    looseHZZMuonID, tightHZZMuonID, trackerHighPtMuonID;
+    looseHZZMuonID, tightHZZMuonID, noIsoHZZMuonID, trackerHighPtMuonID;
 
     struct muIsoCuts
     {

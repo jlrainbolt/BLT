@@ -49,34 +49,27 @@ bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCut
     }
     else if (cutLevel.cutName == "trackerHighPtMuonID")
     {
-/*
-        // "Outdated" 2016 ntuples
-        if (
-                    mu->pt                  > cutLevel.pt
-                &&  fabs(mu->d0)            < cutLevel.dxy
-                &&  fabs(mu->dz)            < cutLevel.dz
-                &&  (mu->ptErr / mu->pt)    < cutLevel.ptFracError
-                &&  mu->nMatchStn           > cutLevel.NumberOfMatchedStations
-                &&  mu->nPixHits            > cutLevel.NumberOfValidPixelHits
-                &&  mu->nTkLayers           > cutLevel.TrackLayersWithMeasurement
-           )
-            return kTRUE;
-*/
-        // All other ntuples
         bool isHighPt       = mu->pt > cutLevel.pt;
         bool isIdentified   = mu->isTrackerHighPt;
 
         if (isHighPt && isIdentified)
             return kTRUE;
     }
-    else if (cutLevel.cutName == "tightHZZMuonID")
+    else if (cutLevel.cutName == "noIsoHZZMuonID")
     {
         bool isLoose            = this->PassMuonID(mu, _cuts.looseHZZMuonID)        == cutLevel.IsLoose;
         bool isPF               = test_bits(mu->typeBits, baconhep::kPFMuon)        == cutLevel.IsPF;
         bool isTrackerHighPt    = this->PassMuonID(mu, _cuts.trackerHighPtMuonID)   == cutLevel.IsTrackerHighPt;
-        bool isIsolated         = this->PassMuonIso(mu, _cuts.wpHZZMuonIso)         == cutLevel.IsIsolated;
 
-        if (isLoose && isIsolated && (isPF || isTrackerHighPt))
+        if (isLoose && (isPF || isTrackerHighPt))
+            return kTRUE;
+    }
+    else if (cutLevel.cutName == "tightHZZMuonID")
+    {
+        bool isIdentified   = this->PassMuonID(mu, _cuts.noIsoHZZMuonID)    == cutLevel.IsIdentified;
+        bool isIsolated     = this->PassMuonIso(mu, _cuts.wpHZZMuonIso)     == cutLevel.IsIsolated;
+
+        if (isIdentified && isIsolated)
             return kTRUE;
     }
     return kFALSE;

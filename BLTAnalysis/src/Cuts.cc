@@ -33,10 +33,13 @@ Cuts::Cuts() {
     trackerHighPtMuonID.NumberOfMatchedStations     = 1;
     trackerHighPtMuonID.TrackLayersWithMeasurement  = 5;
 
+    noIsoHZZMuonID.cutName                          = "noIsoHZZMuonID";
+    noIsoHZZMuonID.IsLoose                          = kTRUE;
+    noIsoHZZMuonID.IsPF                             = kTRUE;
+    noIsoHZZMuonID.IsTrackerHighPt                  = kTRUE;
+
     tightHZZMuonID.cutName                          = "tightHZZMuonID";
-    tightHZZMuonID.IsLoose                          = kTRUE;
-    tightHZZMuonID.IsPF                             = kTRUE;
-    tightHZZMuonID.IsTrackerHighPt                  = kTRUE;
+    tightHZZMuonID.IsIdentified                     = kTRUE;
     tightHZZMuonID.IsIsolated                       = kTRUE;
 
 

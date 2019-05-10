@@ -83,8 +83,7 @@ public:
     //
     
     // Event
-    Int_t       runNumber,  lumiSection;
-    Long64_t    evtNumber;
+    UInt_t      runNumber,  evtNumber,  lumiSection;
     Float_t     genWeight,  nomWeight;
 
     UShort_t    decayChannel;

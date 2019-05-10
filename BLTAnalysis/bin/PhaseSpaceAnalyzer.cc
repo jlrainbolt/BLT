@@ -53,7 +53,7 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
 
     // Event
     outTree->Branch(    "runNumber",                &runNumber);
-    outTree->Branch(    "evtNumber",                &evtNumber,                 "eventNumber/l");
+    outTree->Branch(    "evtNumber",                &evtNumber);
     outTree->Branch(    "lumiSection",              &lumiSection);
     outTree->Branch(    "genWeight",                &genWeight);
     outTree->Branch(    "decayChannel",             &decayChannel);

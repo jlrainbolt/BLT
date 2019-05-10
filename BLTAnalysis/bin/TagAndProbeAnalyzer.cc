@@ -47,6 +47,7 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
     // Particle selector, cuts
     cuts.reset(new Cuts());
     particleSelector.reset(new ParticleSelector(*params, *cuts));
+    selection = params->selection;
 
     // Weight utilities
     weights.reset(new WeightUtils(params->period, params->selection, false));
@@ -124,13 +125,13 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "tagIsTight",               &tagIsTight);
     outTree->Branch(    "tagFiredSingle",           &tagFiredSingle);
 
-    if      (params->selection == "mumu")
+    if      (selection.Contains("mumu"))
     {
         outTree->Branch(    "tagIsIsolated",            &tagIsIsolated);
         outTree->Branch(    "tagIsPF",                  &tagIsPF);
         outTree->Branch(    "tagIsTrackerHighPt",       &tagIsTrackerHighPt);
     }
-    else if (params->selection == "ee")
+    else if (selection.Contains("ee"))
     {
         outTree->Branch(    "tagScEta",                 &tagScEta);
         outTree->Branch(    "tagIsGap",                 &tagIsGap);
@@ -147,13 +148,13 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "probeIsTight",             &probeIsTight);
     outTree->Branch(    "probeFiredSingle",         &probeFiredSingle);
 
-    if      (params->selection == "mumu")
+    if      (selection.Contains("mumu"))
     {
         outTree->Branch(    "probeIsIsolated",          &probeIsIsolated);
         outTree->Branch(    "probeIsPF",                &probeIsPF);
         outTree->Branch(    "probeIsTrackerHighPt",     &probeIsTrackerHighPt);
     }
-    else if (params->selection == "ee")
+    else if (selection.Contains("ee"))
     {
         outTree->Branch(    "probeScEta",               &probeScEta);
         outTree->Branch(    "probeIsGap",               &probeIsGap);
@@ -168,21 +169,17 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
         outTree->Branch(    "nGenLeptons",              &nGenLeptons);
 
         outTree->Branch(    "genTagP4",                 &genTagP4);
-        outTree->Branch(    "genTagQ",                  &genTagQ);
-        outTree->Branch(    "genTagPDG",                &genTagPDG);
         outTree->Branch(    "genTagDeltaR",             &genTagDeltaR);
-        outTree->Branch(    "genTagStatus",             &genTagStatus);
+        outTree->Branch(    "genTagPDG",                &genTagPDG);
         outTree->Branch(    "genTagMotherPDG",          &genTagMotherPDG);
         outTree->Branch(    "nGenTagPhotons",           &nGenTagPhotons);
         outTree->Branch(    "genTagPhotonsP4",          &genTagPhotonsP4,       32000,      1);
 
         outTree->Branch(    "genProbeP4",               &genProbeP4);
-        outTree->Branch(    "genProbeQ",                &genProbeQ);
-        outTree->Branch(    "genProbePDG",              &genProbePDG);
         outTree->Branch(    "genProbeDeltaR",           &genProbeDeltaR);
-        outTree->Branch(    "genProbeStatus",           &genProbeStatus);
+        outTree->Branch(    "genProbePDG",              &genProbePDG);
         outTree->Branch(    "genProbeMotherPDG",        &genProbeMotherPDG);
-        outTree->Branch(    "nGenProbePhotons",         &nGenTagPhotons);
+        outTree->Branch(    "nGenProbePhotons",         &nGenProbePhotons);
         outTree->Branch(    "genProbePhotonsP4",        &genProbePhotonsP4,     32000,      1);
 
         outTree->Branch(    "genZP4",                   &genZP4);
@@ -201,22 +198,28 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
     outFile->mkdir(outDirName.c_str());
     outFile->cd(outDirName.c_str());
 
-    const unsigned  N_PT = (params->selection == "mumu") ? N_PT_MM : N_PT_EE;
-    const unsigned  N_ETA = (params->selection == "mumu") ? N_ETA_MM : N_ETA_EE;
+    const unsigned  N_PT = selection.Contains("mumu") ? N_PT_MM : N_PT_EE;
+    const unsigned  N_ETA = selection.Contains("mumu") ? N_ETA_MM : N_ETA_EE;
 
-    float   *binsPt = (params->selection == "mumu") ? mumuPt : eePt;
-    float   *binsEta = (params->selection == "mumu") ? mumuEta : eeEta;
+    float   *binsPt = selection.Contains("mumu") ? mumuPt : eePt;
+    float   *binsEta = selection.Contains("mumu") ? mumuEta : eeEta;
 
     passed2d = new TH2F("passed_2d", "Passed", N_ETA, binsEta, N_PT, binsPt);
     failed2d = new TH2F("failed_2d", "Failed", N_ETA, binsEta, N_PT, binsPt);
 
     passedAll = new TH1F("passed_all", "Passed", N_MLL, MLL_MIN, MLL_MAX);
     failedAll = new TH1F("failed_all", "Failed", N_MLL, MLL_MIN, MLL_MAX);
+    passedAll->SetMinimum(0);   failedAll->SetMinimum(0);
 
+    string genDirName = params->get_output_treename("gen_hists");
     if (storeGenInfo)
     {
+        outFile->mkdir(genDirName.c_str());
+        outFile->cd(genDirName.c_str());
         genPassedAll = new TH1F("gen_passed_all", "Gen Passed", N_MLL, MLL_MIN, MLL_MAX);
         genFailedAll = new TH1F("gen_failed_all", "Gen Failed", N_MLL, MLL_MIN, MLL_MAX);
+        genPassedAll->SetMinimum(0);    genFailedAll->SetMinimum(0);
+        outFile->cd(outDirName.c_str());
     }
 
     for (unsigned i = 0; i <= N_PT; i++)
@@ -244,11 +247,15 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
 
             passedVec.push_back(new TH1F("passed" + name, "Passed" + title, N_MLL, MLL_MIN, MLL_MAX));
             failedVec.push_back(new TH1F("failed" + name, "Failed" + title, N_MLL, MLL_MIN, MLL_MAX));
+            passedVec.back()->SetMinimum(0);    failedVec.back()->SetMinimum(0);
 
             if (storeGenInfo)
             {
+                outFile->cd(genDirName.c_str());
                 genPassedVec.push_back(new TH1F("gen_passed" + name, "Gen Passed" + title, N_MLL, MLL_MIN, MLL_MAX));
                 genFailedVec.push_back(new TH1F("gen_failed" + name, "Gen Failed" + title, N_MLL, MLL_MIN, MLL_MAX));
+                genPassedVec.back()->SetMinimum(0);     genFailedVec.back()->SetMinimum(0);
+                outFile->cd(outDirName.c_str());
             }
         }
         passedBin.push_back(passedVec);
@@ -256,8 +263,10 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
 
         if (storeGenInfo)
         {
+            outFile->cd(genDirName.c_str());
             genPassedBin.push_back(genPassedVec);
             genFailedBin.push_back(genFailedVec);
+            outFile->cd(outDirName.c_str());
         }
     }
 
@@ -275,7 +284,6 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
     ////    START
     ////
     ////
-    
 
     GetEntry(entry, 1);  // load all branches
     this->totalEvents++;
@@ -290,6 +298,7 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
     const bool isData = (fInfo->runNum != 1);
     particleSelector->SetRealData(isData);
     weights->SetDataBit(isData);
+    weights->SetSampleName(params->dataset);
 
     const bool storeGenInfo = params->datasetgroup == "zjets_m-50";
 
@@ -308,6 +317,8 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
     {
         // Gen weight
         genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
+        genWeight *= weights->GetSampleWeight();
+
         if (genWeight < 0)
             hTotalEvents->Fill(10);
 
@@ -394,6 +405,16 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         if (fabs(muon->eta) > MUON_ETA_MAX)
             continue;
 
+        // ID or isolation
+        bool isIsolated = particleSelector->PassMuonIso(muon, cuts->wpHZZMuonIso);
+        bool isIdentified = particleSelector->PassMuonID(muon, cuts->noIsoHZZMuonID);
+
+        if (selection.Contains("Iso") && !isIsolated)
+            continue;
+
+        if (selection.Contains("ID") && !isIdentified)
+            continue;
+
         muons.push_back(muon);
     }
     sort(muons.begin(), muons.end(), sort_by_higher_pt<TMuon>);
@@ -414,6 +435,8 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         if (fabs(electron->eta) > ELEC_ETA_MAX)
             continue;
 
+        // FIXME ID or isolation?
+
         electrons.push_back(electron);
     }
     sort(electrons.begin(), electrons.end(), sort_by_higher_pt<TElectron>);
@@ -433,14 +456,14 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
 
     // Require exactly two leptons of given flavor
 
-    if      (params->selection == "mumu")
+    if      (selection.Contains("mumu"))
     {
         if (nMuons != 2)
             return kTRUE;
         if (nElectrons != 0)
             return kTRUE;
     }
-    else if (params->selection == "electron")
+    else if (selection.Contains("ee"))
     {
         if (nElectrons != 2)
             return kTRUE;
@@ -471,7 +494,7 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
     //  MUONS
     //
 
-    if (params->selection == "mumu")
+    if (selection.Contains("mumu"))
     {
         // Charge requirement
         if (muons[0]->q == muons[1]->q)
@@ -558,9 +581,8 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         hTotalEvents->Fill(6);
 
         genTagP4.Clear();       genProbeP4.Clear();     genZP4.Clear();
-        genTagQ = 0;            genProbeQ = 0;          genTagPDG = 0;          genProbePDG = 0;
-        genTagDeltaR = 0;       genProbeDeltaR = 0;     genTagStatus = 0;       genProbeStatus = 0;
-        genTagMotherPDG = 0;    genProbeMotherPDG = 0;  nGenTagPhotons = 0;     nGenProbePhotons = 0;
+        genTagPDG = 0;          genProbePDG = 0;        genTagMotherPDG = 0;    genProbeMotherPDG = 0;
+        genTagDeltaR = 0;       genProbeDeltaR = 0;     nGenTagPhotons = 0;     nGenProbePhotons = 0;
         genTagPhotonsP4->Delete();                      genProbePhotonsP4->Delete();
 
 
@@ -569,7 +591,7 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         //  GEN PARTICLES
         //
 
-        vector<TGenParticle*> genMuons, genElectrons, genPhotons;
+        vector<TGenParticle*> genParticles, genMuons, genElectrons, genPhotons;
 
         for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
         {
@@ -578,20 +600,20 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
             if ((particle->pdgId == 23) && (particle->status == 62))    // this is the Z
                 copy_p4(particle, genZP4);
 
-            if (particle->status != 1)          // use final-state leptons
+            if (particle->status != 1)          // use final-state particles
                 continue;
+
+            genParticles.push_back(particle);
 
             if      (abs(particle->pdgId) == 13)
                 genMuons.push_back(particle);
-
             else if (abs(particle->pdgId) == 11)
                 genElectrons.push_back(particle);
-
             else if (abs(particle->pdgId) == 22)
                 genPhotons.push_back(particle);
         }
-        sort(genMuons.begin(), genMuons.end(), sort_by_higher_pt<TGenParticle>);
-        sort(genElectrons.begin(), genElectrons.end(), sort_by_higher_pt<TGenParticle>);
+        sort(genParticles.begin(), genParticles.end(), sort_by_higher_pt<TGenParticle>);
+        unsigned nGenParticles = genParticles.size();
 
         nGenMuons       = genMuons.size();
         nGenElectrons   = genElectrons.size();
@@ -603,27 +625,19 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         //  MATCHING
         //
 
-        TGenParticle *genTag, *genProbe;
-        vector<TGenParticle*> genFlavor;
-
-        if      (params->selection == "mumu")
-            genFlavor = genMuons;
-        else if (params->selection == "ee")
-            genFlavor = genElectrons;
-
-        unsigned nGenFlavor = genFlavor.size();
-
-        if (nGenFlavor == 0)   // don't try to match if there are no gen leptons
+        if (nGenParticles < 2)  // don't try to match if there aren't enough final-state particles
             goto fill;
 
+        TGenParticle *genTag, *genProbe;
 
-        // Find DeltaR for all gen leptons (of selected flavor)
-        vector<float> tagDeltaR(nGenFlavor), probeDeltaR(nGenFlavor);
 
-        for (unsigned i = 0; i < nGenFlavor; i++)
+        // Find DeltaR for all gen particles
+        vector<float> tagDeltaR(nGenParticles), probeDeltaR(nGenParticles);
+
+        for (unsigned i = 0; i < nGenParticles; i++)
         {
             TLorentzVector genP4;
-            copy_p4(genFlavor[i], genP4);
+            copy_p4(genParticles[i], genP4);
             tagDeltaR[i] = tagP4.DeltaR(genP4);
             probeDeltaR[i] = probeP4.DeltaR(genP4);
         }
@@ -634,32 +648,26 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
 
 
         // Fill tag info
-        genTag = genFlavor[T];
+        genTag = genParticles[T];
         copy_p4(genTag, genTagP4);
         genTagDeltaR    = tagP4.DeltaR(genTagP4);
         genTagPDG       = genTag->pdgId;
-        genTagQ         = genTagPDG < 0 ? 1 : -1;
-        genTagStatus    = genTag->status;
 
         TGenParticle *tagMother = genTag;
-        do
+        while ((tagMother->pdgId == genTagPDG) && (tagMother->parent >= 0))
             tagMother = (TGenParticle*) fGenParticleArr->At(tagMother->parent);
-        while ((tagMother->pdgId == genTagPDG) && (tagMother->parent >= 0));
         genTagMotherPDG = tagMother->pdgId;
 
 
         // Fill probe info
-        genProbe = genFlavor[P];
+        genProbe = genParticles[P];
         copy_p4(genProbe, genProbeP4);
         genProbeDeltaR  = probeP4.DeltaR(genProbeP4);
         genProbePDG     = genProbe->pdgId;
-        genProbeQ       = genProbePDG < 0 ? 1 : -1;
-        genProbeStatus  = genProbe->status;
 
         TGenParticle *probeMother = genProbe;
-        do
+        while ((probeMother->pdgId == genProbePDG) && (probeMother->parent >= 0))
             probeMother = (TGenParticle*) fGenParticleArr->At(probeMother->parent);
-        while ((probeMother->pdgId == genProbePDG) && (probeMother->parent >= 0));
         genProbeMotherPDG = probeMother->pdgId;
 
 
@@ -690,7 +698,8 @@ fill:
     //  FILL
     //
 
-    const unsigned  N_ETA = (params->selection == "mumu") ? N_ETA_MM : N_ETA_EE;
+    const unsigned  N_PT = selection.Contains("mumu") ? N_PT_MM : N_PT_EE;
+    const unsigned  N_ETA = selection.Contains("mumu") ? N_ETA_MM : N_ETA_EE;
 
     unsigned I = passed2d->GetYaxis()->FindBin(probeP4.Pt()) - 1;
     unsigned J = passed2d->GetXaxis()->FindBin(probeP4.Eta()) - 1;
@@ -699,31 +708,49 @@ fill:
     {
         passed2d->Fill(probeP4.Eta(), probeP4.Pt(), weight);
         passedAll->Fill(totalP4.M(), weight);
-        passedBin[I][J]->Fill(totalP4.M(), weight);
-        passedBin[I][N_ETA]->Fill(totalP4.M(), weight);
+
+        if (I <= N_PT)
+        {
+            passedBin[I][N_ETA]->Fill(totalP4.M(), weight);
+            if (J<= N_ETA)
+                passedBin[I][J]->Fill(totalP4.M(), weight);
+        }
 
         if (storeGenInfo)
         {
             genPassedAll->Fill(genZP4.M(), weight);
-            genPassedBin[I][J]->Fill(genZP4.M(), weight);
-            genPassedBin[I][N_ETA]->Fill(genZP4.M(), weight);
+
+            if (I <= N_PT)
+            {
+                genPassedBin[I][N_ETA]->Fill(genZP4.M(), weight);
+                if (J<= N_ETA)
+                    genPassedBin[I][J]->Fill(genZP4.M(), weight);
+            }
         }
     }
     else
     {
         failed2d->Fill(probeP4.Eta(), probeP4.Pt(), weight);
         failedAll->Fill(totalP4.M(), weight);
-        failedBin[I][J]->Fill(totalP4.M(), weight);
-        failedBin[I][N_ETA]->Fill(totalP4.M(), weight);
+
+        if (I <= N_PT)
+        {
+            failedBin[I][N_ETA]->Fill(totalP4.M(), weight);
+            if (J<= N_ETA)
+                failedBin[I][J]->Fill(totalP4.M(), weight);
+        }
 
         if (storeGenInfo)
         {
             genFailedAll->Fill(genZP4.M(), weight);
-            genFailedBin[I][J]->Fill(genZP4.M(), weight);
-            genFailedBin[I][N_ETA]->Fill(genZP4.M(), weight);
+            if (I <= N_PT)
+            {
+                genFailedBin[I][N_ETA]->Fill(genZP4.M(), weight);
+                if (J<= N_ETA)
+                    genFailedBin[I][J]->Fill(genZP4.M(), weight);
+            }
         }
     }
-
 
     if (isData)
         hTotalEvents->Fill(6);
