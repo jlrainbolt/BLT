@@ -10,9 +10,9 @@ period      = '2012'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-#data_samples    = ['double_mu', 'double_electron']
+data_samples    = ['double_mu', 'double_electron']
 #mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs']
-data_samples    = []
+#data_samples    = []
 mc_samples      = ['signal', 'zjets']
 
 
@@ -79,36 +79,46 @@ mc_dict = {}
 
 mc_dict['signal'] = \
 [
-    cfg(data_name = 'ZZTo4L',
-        path     = '{0}/Summer12_ZZJetsTo4L_TuneZ2star'.format(path),
-        nJobs    = 15,
-        suffix   = 'zz_4l'
-        ),
+#   cfg(data_name = 'ZZTo4L',
+#       path     = '{0}/Summer12_ZZJetsTo4L_TuneZ2star'.format(path),
+#       nJobs    = 15,
+#       suffix   = 'zz_4l'
+#       ),
 #   cfg(data_name = 'ZZTo4L',
 #       path     = '{0}/Summer12_ZZTo4L_TuneZ2star'.format(path),
 #       nJobs    = 15,
 #       suffix   = 'zz_4l'
 #       ),
-#   cfg(data_name = 'ZZTo4mu',
-#       path     = '{0}/Summer12_ZZTo4mu'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_4m'
-#       ),
-#   cfg(data_name = 'ZZTo4mu',
-#       path     = '{0}/Summer12_ZZTo4mu_PU_RD1'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_4m'
-#       ),
-#   cfg(data_name = 'ZZTo2e2mu',
-#       path     = '{0}/Summer12_ZZTo2e2mu_PU_RD1'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_2m2e'
-#       ),
-#   cfg(data_name = 'ZZTo4e',
-#       path     = '{0}/Summer12_ZZTo4e_PU_RD1'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_4e'
-#       ),
+    cfg(data_name = 'ZZTo4mu',
+        path     = '{0}/Summer12_ZZTo4mu'.format(path),
+        nJobs    = 3,
+        suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo2e2mu',
+        path     = '{0}/Summer12_ZZTo2e2mu'.format(path),
+        nJobs    = 2,
+        suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo4e',
+        path     = '{0}/Summer12_ZZTo4e'.format(path),
+        nJobs    = 2,
+        suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo4tau',
+        path     = '{0}/Summer12_ZZTo4tau'.format(path),
+        nJobs    = 1,
+        suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo2e2tau',
+        path     = '{0}/Summer12_ZZTo2e2tau'.format(path),
+        nJobs    = 1,
+        suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo2mu2tau',
+        path     = '{0}/Summer12_ZZTo2mu2tau'.format(path),
+        nJobs    = 1,
+        suffix   = 'zz_4l'
+        ),
 ]
 
 mc_dict['zjets'] = \
@@ -118,11 +128,11 @@ mc_dict['zjets'] = \
         nJobs    = 8,
         suffix   = 'zjets_m-50'
         ),
-    cfg(data_name = 'DYJetsToLL_M-10to50',
-        path     = '{0}/Summer12_DYJetsToLL_M-10To50_TuneZ2Star'.format(path),
-        nJobs    = 9,
-        suffix   = 'zjets_m-10'
-        ),
+#   cfg(data_name = 'DYJetsToLL_M-10to50',
+#       path     = '{0}/Summer12_DYJetsToLL_M-10To50_TuneZ2Star'.format(path),
+#       nJobs    = 9,
+#       suffix   = 'zjets_m-10'
+#       ),
 ]
 
 mc_dict['ttbar'] = \

@@ -505,6 +505,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         muonCharge.push_back(muon->q);
 
         // Rochester correction
+        muonEnergySFUp.push_back(particleSelector->GetRochesterCorrection(muon, "up"));
+        muonEnergySFDown.push_back(particleSelector->GetRochesterCorrection(muon, "down"));
+
         float corr = particleSelector->GetRochesterCorrection(muon);
         muon->pt *= corr;
         copy_p4(muon, MUON_MASS, corrP4);
@@ -572,6 +575,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         electronCharge.push_back(electron->q);
 
         // Energy correction
+        electronEnergySFUp.push_back(particleSelector->GetElectronCorrection(electron, "up"));
+        electronEnergySFDown.push_back(particleSelector->GetElectronCorrection(electron, "down"));
         electronEnergySF.push_back(particleSelector->GetElectronCorrection(electron));
         electron->pt = electron->ptHZZ4l;
         copy_p4(electrons[i], ELE_MASS, corrP4);

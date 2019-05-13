@@ -79,7 +79,7 @@ float ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu, std::s
     TLorentzVector p4;
     copy_p4(mu, MUON_MASS, p4);
 
-    float corr = 0, qter = 1, delta = 1;
+    float corr = 0, qter = 1;
 
     if (_isRealData)
         _rc->momcor_data(p4, mu->q, 0, qter);
@@ -87,14 +87,15 @@ float ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu, std::s
         _rc->momcor_mc(p4, mu->q, 0, qter);
 
     corr = p4.Pt() / mu->pt;
-    _rc->momcor_data(p4, mu->q, 0, delta);  // to get delta/qter/whatever...
+
+    _rc->momcor_data(p4, mu->q, 0, qter);  // to get delta/qter/whatever...
 
     if      (unc == "")
         return corr;
     else if (unc == "up")
-        return (1 + delta) * corr;
+        return qter;
     else if (unc == "down")
-        return (1 - delta) * corr;
+        return corr - fabs(qter - corr);
     else
         return 0;
 }
@@ -197,5 +198,12 @@ float ParticleSelector::GetElectronIso(const baconhep::TElectron* el) const
 
 float ParticleSelector::GetElectronCorrection(const baconhep::TElectron* el, std::string unc) const
 {
-    return el->ptHZZ4l / el->pt;
+    if      (unc == "")
+        return el->ptHZZ4l / el->pt;
+    else if (unc == "up")
+        return (el->ptHZZ4l + el->ptErrHZZ4l) / el->pt;
+    else if (unc == "down")
+        return (el->ptHZZ4l - el->ptErrHZZ4l) / el->pt;
+    else
+        return 0;
 }

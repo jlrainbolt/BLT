@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/04/Summer12_ZZTo4e/Summer12_ZZTo4e_bacon_0.root
