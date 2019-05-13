@@ -14,8 +14,8 @@ PERIOD=$5
 TOPDIR=$PWD
 
 # lpc
-export SCRAM_ARCH=slc6_amd64_gcc491
-export CMSSW_VERSION=CMSSW_7_4_16_patch2
+export SCRAM_ARCH=slc6_amd64_gcc700
+export CMSSW_VERSION=CMSSW_10_2_13
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 tar -xzf source.tar.gz
