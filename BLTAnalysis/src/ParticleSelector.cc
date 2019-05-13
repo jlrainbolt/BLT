@@ -79,15 +79,24 @@ float ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu, std::s
     TLorentzVector p4;
     copy_p4(mu, MUON_MASS, p4);
 
-    float corr, qter = 1;
+    float corr = 0, qter = 1, delta = 1;
 
     if (_isRealData)
-        corr = _rc->momcor_data(p4, mu->q, 0, qter);
+        _rc->momcor_data(p4, mu->q, 0, qter);
     else
-        corr = _rc->momcor_mc(p4, mu->q, 0, qter);
+        _rc->momcor_mc(p4, mu->q, 0, qter);
 
-    cout << corr << ", " << qter << endl;
-    return corr;
+    corr = p4.Pt() / mu->pt;
+    _rc->momcor_data(p4, mu->q, 0, delta);  // to get delta/qter/whatever...
+
+    if      (unc == "")
+        return corr;
+    else if (unc == "up")
+        return (1 + delta) * corr;
+    else if (unc == "down")
+        return (1 - delta) * corr;
+    else
+        return 0;
 }
 
 

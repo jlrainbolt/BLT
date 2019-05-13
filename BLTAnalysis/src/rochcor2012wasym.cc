@@ -272,7 +272,7 @@ rochcor2012::rochcor2012(int seed){
   }
 }
 
-double rochcor2012::momcor_mc( TLorentzVector& mu, float charge, int ntrk, float& qter){
+void rochcor2012::momcor_mc( TLorentzVector& mu, float charge, int ntrk, float& qter){
   
   //sysdev == num : deviation = num
 
@@ -289,7 +289,6 @@ double rochcor2012::momcor_mc( TLorentzVector& mu, float charge, int ntrk, float
   int mu_etabin = etabin(mueta);
   int mu_aetabin = aetabin(mueta);
   
-  double pt_corr = 0;
   if(mu_phibin>=0 && mu_etabin>=0){
     
     double Mf = (mcor_bf[mu_phibin][mu_etabin] + mptsys_mc_dm[mu_phibin][mu_etabin]*mcor_bfer[mu_phibin][mu_etabin])/(mpavg[mu_phibin][mu_etabin]+mmavg[mu_phibin][mu_etabin]);
@@ -330,15 +329,16 @@ double rochcor2012::momcor_mc( TLorentzVector& mu, float charge, int ntrk, float
 
     double momscl = sqrt(px*px + py*py)/ptmu;
     qter *= sqrt(momscl*momscl + (1.0-tune)*(1.0-tune));
-    pt_corr = pt_tune / pt;
+    
+    
   }
   
   mu.SetPxPyPzE(px,py,pz,e);
-  return pt_corr;
+  
 }
 
 
-double rochcor2012::momcor_data( TLorentzVector& mu, float charge, int runopt, float& qter){
+void rochcor2012::momcor_data( TLorentzVector& mu, float charge, int runopt, float& qter){
   
   double ptmu = mu.Pt();
 
@@ -354,7 +354,6 @@ double rochcor2012::momcor_data( TLorentzVector& mu, float charge, int runopt, f
   int mu_etabin = etabin(mueta);
   int mu_aetabin = aetabin(mueta);
 
-  double pt_corr = 0;
   if(mu_phibin>=0 && mu_etabin>=0){
 
     double Mf = (dcor_bf[mu_phibin][mu_etabin]+mptsys_da_dm[mu_phibin][mu_etabin]*dcor_bfer[mu_phibin][mu_etabin])/(dpavg[mu_phibin][mu_etabin]+dmavg[mu_phibin][mu_etabin]);
@@ -388,11 +387,11 @@ double rochcor2012::momcor_data( TLorentzVector& mu, float charge, int runopt, f
 
     double momscl = sqrt(px*px + py*py)/ptmu;
     qter *= momscl;
-    pt_corr = pt_tune/pt;
+
   }
   
   mu.SetPxPyPzE(px,py,pz,e);
-  return pt_corr;
+  
 }
 
 Int_t rochcor2012::phibin(double phi){
