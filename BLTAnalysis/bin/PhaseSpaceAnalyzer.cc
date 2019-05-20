@@ -41,6 +41,8 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
+    const bool isSignal     = params->datasetgroup == "zz_4l";
+//  const bool isDrellYan   = params->datasetgroup == "zjets_m-50";
 
     // Prepare the output tree
     string outFileName = params->get_output_filename("output");
@@ -57,12 +59,20 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     //
 
     // Event
+    if (isSignal)
+        outTree->Branch(    "sampleName",               &sampleName);
     outTree->Branch(    "runNumber",                &runNumber);
-    outTree->Branch(    "evtNumber",                &evtNumber,                 "eventNumber/l");
+    outTree->Branch(    "evtNumber",                &evtNumber);
     outTree->Branch(    "lumiSection",              &lumiSection);
     outTree->Branch(    "genWeight",                &genWeight);
     outTree->Branch(    "decayChannel",             &decayChannel);
-    outTree->Branch(    "foundTauDecay",            &foundTauDecay);
+    outTree->Branch(    "isFiducial",               &isFiducial);
+
+    outTree->Branch(    "nomWeight",                &nomWeight);
+    outTree->Branch(    "qcdID",                    &qcdID);
+    outTree->Branch(    "qcdWeight",                &qcdWeight);
+    outTree->Branch(    "pdfID",                    &pdfID);
+    outTree->Branch(    "pdfWeight",                &pdfWeight);
 
 
     // Counters
@@ -142,13 +152,15 @@ void PhaseSpaceAnalyzer::Init(TTree *tree)
     fChain = tree;
     fCurrentFile = tree->GetCurrentFile();
 
-    fInfo                    = 0;
-    fGenEvtInfo              = 0;
-    fGenParticleArr          = 0;
+    fInfo           = 0;
+    fGenEvtInfo     = 0;
+    fGenParticleArr = 0;
+//  fLHEWeightArr   = 0;
 
-    fChain->SetBranchAddress("Info", &fInfo, &b_Info);
-    fChain->SetBranchAddress("GenEvtInfo", &fGenEvtInfo, &b_GenEvtInfo);
-    fChain->SetBranchAddress("GenParticle", &fGenParticleArr, &b_GenParticleArr);
+    fChain->SetBranchAddress(   "Info",         &fInfo,             &b_Info);
+    fChain->SetBranchAddress(   "GenEvtInfo",   &fGenEvtInfo,       &b_GenEvtInfo);
+    fChain->SetBranchAddress(   "GenParticle",  &fGenParticleArr,   &b_GenParticleArr);
+//  fChain->SetBranchAddress(   "LHEWeight",    &fLHEWeightArr,     &b_LHEWeightArr);
 }
 
 Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
@@ -158,8 +170,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     //  CLEAR CONTAINERS
     //
 
-    foundTauDecay = kFALSE;
-    decayChannel = 0;
+    isFiducial = kFALSE;                qcdID.clear();                      qcdWeight.clear();
+    decayChannel = 0;                   pdfID.clear();                      pdfWeight.clear();
+    genWeight = 1;                      nomWeight = 1;
 
     nFinalStateMuons = 0;               nFinalStateElectrons = 0;           nFinalStateLeptons = 0;
     nHardProcMuons = 0;                 nHardProcElectrons = 0;             nHardProcLeptons = 0;
@@ -195,11 +208,11 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
             << " Lumi: " << fInfo->lumiSec << " Event: " << fInfo->evtNum
             << std::endl;
 
-    const bool isData = (fInfo->runNum != 1);
+    const bool isData       = (fInfo->runNum != 1);
+    const bool isSignal     = params->datasetgroup == "zz_4l";
+    const bool isDrellYan   = params->datasetgroup == "zjets_m-50";
 
-    TString dataSetGroup = params->datasetgroup;
-    const bool isSignal = dataSetGroup.EqualTo("zz_4l") || dataSetGroup.EqualTo("ZZJetsTo4L");
-    const bool isDrellYan = dataSetGroup.EqualTo("zjets_m-50") || dataSetGroup.EqualTo("DYJetsToLL");
+    sampleName = params->dataset;
 
     // Reject (accidental?) data events
     if (isData)
@@ -220,6 +233,34 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     lumiSection = fInfo->lumiSec;
 
 
+
+    //
+    //  EVENT INFO
+    //
+
+    runNumber   = fInfo->runNum;
+    evtNumber   = fInfo->evtNum;
+    lumiSection = fInfo->lumiSec;
+/*
+    for (int i = 0; i < fLHEWeightArr->GetEntries(); i++)
+    {
+        TLHEWeight* lhe = (TLHEWeight*) fLHEWeightArr->At(i);
+
+        // QCD scales
+        if (i < 9)
+        {
+            qcdID.push_back(lhe->id);
+            qcdWeight.push_back(lhe->weight / nomWeight);
+        }
+
+        // PDF sets
+        else
+        {
+            pdfID.push_back(lhe->id);
+            pdfWeight.push_back(lhe->weight / nomWeight);
+        }
+    }
+*/
 
 
 
@@ -242,6 +283,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     vector<int>             s22ZMother,     fsZStatus;
     vector<unsigned>        s22ZIndex;
 
+    bool foundTauDecay = kFALSE;
 
 
     for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
@@ -370,6 +412,8 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     } // END particle loop
 
+    if (foundTauDecay)
+        return kTRUE;
 
     nFinalStateLeptons  = nFinalStateMuons  + nFinalStateElectrons;
     nHardProcLeptons    = nHardProcMuons    + nHardProcElectrons;
@@ -560,6 +604,33 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         decayChannel = C;
 
 
+        // Fiducial acceptance
+        std::vector<TLorentzVector> sorted_leps = fsMuonP4;
+        sorted_leps.insert(sorted_leps.end(), fsElecP4.begin(), fsElecP4.end());
+        sort(sorted_leps.begin(), sorted_leps.end(), P4SortCondition);
+
+        isFiducial = kTRUE;
+
+        for (unsigned i = 0; i < sorted_leps.size(); i++)
+        {
+            if (fabs(sorted_leps[i].Eta()) > ETA_MAX)
+                isFiducial = kFALSE;
+        }
+
+        if (sorted_leps[0].Pt() < PT1_MIN)
+            isFiducial = kFALSE;
+        if (sorted_leps[1].Pt() < PT2_MIN)
+            isFiducial = kFALSE;
+
+        if (decayChannel > 4)
+        {
+            if (sorted_leps[2].Pt() < PT_MIN)
+                isFiducial = kFALSE;
+            if (sorted_leps[3].Pt() < PT_MIN)
+                isFiducial = kFALSE;
+        }
+
+
     } // END "final" case
 
 
@@ -651,6 +722,34 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         decayChannel = C;
 
 
+        // Fiducial acceptance
+
+        std::vector<TLorentzVector> sorted_leps = hpMuonP4;
+        sorted_leps.insert(sorted_leps.end(), hpElecP4.begin(), hpElecP4.end());
+        sort(sorted_leps.begin(), sorted_leps.end(), P4SortCondition);
+
+        isFiducial = kTRUE;
+
+        for (unsigned i = 0; i < sorted_leps.size(); i++)
+        {
+            if (fabs(sorted_leps[i].Eta()) > ETA_MAX)
+                isFiducial = kFALSE;
+        }
+
+        if (sorted_leps[0].Pt() < PT1_MIN)
+            isFiducial = kFALSE;
+        if (sorted_leps[1].Pt() < PT2_MIN)
+            isFiducial = kFALSE;
+
+        if (isSignal)
+        {
+            if (sorted_leps[2].Pt() < PT_MIN)
+                isFiducial = kFALSE;
+            if (sorted_leps[3].Pt() < PT_MIN)
+                isFiducial = kFALSE;
+        }
+
+
     } // END "hard" case
 
     else if (params->selection != "all")
@@ -665,8 +764,8 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     //
 
 
-    if (nHardProcLeptons != nFinalStateLeptons)
-//  if (kTRUE)
+//  if (nHardProcLeptons != nFinalStateLeptons)
+    if (kFALSE)
     {
         cout << nFinalStateMuons << " fs muons\t" << nFinalStateElectrons << " fs elecs" << endl;
         cout << nHardProcMuons << " hp muons\t" << nHardProcElectrons << " hp elecs" << endl;

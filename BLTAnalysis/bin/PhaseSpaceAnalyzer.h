@@ -80,12 +80,15 @@ public:
     //
 
     // Event
-    Int_t       runNumber,  lumiSection;
-    Long64_t    evtNumber;
-    Float_t     genWeight;
+    TString     sampleName;
+    UInt_t      runNumber,  evtNumber,  lumiSection;
+    Float_t     genWeight,  nomWeight;
 
     UShort_t    decayChannel;
-    Bool_t      foundTauDecay;  // traced a tau to a Z
+    Bool_t      isFiducial;
+
+    std::vector<UShort_t>   qcdID,      pdfID;
+    std::vector<Float_t>    qcdWeight,  pdfWeight;
 
 
     // Counters

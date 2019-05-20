@@ -24,36 +24,31 @@ mc_dict = {}
 path = '/eos/uscms/store/group/lpcbacon/04'
 mc_dict['signal'] = \
 [
-    cfg(data_name = 'ZZJetsTo4L',
-        path     = '{0}/Summer12_ZZJetsTo4L_TuneZ2star'.format(path),
-        nJobs    = 15,
-        suffix   = 'zz_4l'
-        ),
+#   cfg(data_name = 'ZZJetsTo4L',
+#       path     = '{0}/Summer12_ZZJetsTo4L_TuneZ2star'.format(path),
+#       nJobs    = 15,
+#       suffix   = 'zz_4l'
+#       ),
 #   cfg(data_name = 'ZZTo4L',
 #       path     = '{0}/Summer12_ZZTo4L_TuneZ2star'.format(path),
 #       nJobs    = 15,
 #       suffix   = 'zz_4l'
 #       ),
-#   cfg(data_name = 'ZZTo4mu',
-#       path     = '{0}/Summer12_ZZTo4mu'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_4m'
-#       ),
-#   cfg(data_name = 'ZZTo4mu',
-#       path     = '{0}/Summer12_ZZTo4mu_PU_RD1'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_4m'
-#       ),
-#   cfg(data_name = 'ZZTo2e2mu',
-#       path     = '{0}/Summer12_ZZTo2e2mu_PU_RD1'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_2m2e'
-#       ),
-#   cfg(data_name = 'ZZTo4e',
-#       path     = '{0}/Summer12_ZZTo4e_PU_RD1'.format(path),
-#       nJobs    = 3,
-#       suffix   = 'zz_4e'
-#       ),
+    cfg(data_name = 'ZZTo4mu',
+        path     = '{0}/Summer12_ZZTo4mu'.format(path),
+        nJobs    = 3,
+        suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo2e2mu',
+        path     = '{0}/Summer12_ZZTo2e2mu'.format(path),
+        nJobs    = 2,
+        suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo4e',
+        path     = '{0}/Summer12_ZZTo4e'.format(path),
+        nJobs    = 2,
+        suffix   = 'zz_4l'
+        ),
 ]
 
 mc_dict['zjets'] = \

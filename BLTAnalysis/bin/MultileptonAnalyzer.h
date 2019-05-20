@@ -81,9 +81,11 @@ public:
     //
 
     // Event
+    TString     sampleName;
     Int_t       runNumber,          lumiSection,            evtNumber;
     Bool_t      evtMuonTriggered,   evtElectronTriggered;
-    Float_t     genWeight,          ECALWeight,             PUWeight,               nPU;
+    Float_t     genWeight,          ECALWeight,             PUWeight;
+    Float_t     nPU,                nPUUp,                  nPUDown;
     UShort_t    nPV;
     Bool_t      hasTauDecay;
 

@@ -42,7 +42,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
-    const bool isSignal = params->datasetgroup == "zz_4l";
+    const bool isSignal     = params->datasetgroup == "zz_4l";
+    const bool isDrellYan   = params->datasetgroup == "zjets_m-50";
 
     // Particle selector, cuts
     cuts.reset(new Cuts());
@@ -85,6 +86,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
 
     // Branches
+    if (isSignal)
+        outTree->Branch(    "sampleName",               &sampleName);
     outTree->Branch(    "runNumber",                &runNumber);
     outTree->Branch(    "evtNumber",                &evtNumber);
     outTree->Branch(    "lumiSection",              &lumiSection);
@@ -94,6 +97,11 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "ECALWeight",               &ECALWeight);
     outTree->Branch(    "PUWeight",                 &PUWeight);
     outTree->Branch(    "nPU",                      &nPU);
+    if (isSignal || isDrellYan)
+    {
+        outTree->Branch(    "nPUUp",                    &nPUUp);
+        outTree->Branch(    "nPUDown",                  &nPUDown);
+    }
     outTree->Branch(    "nPV",                      &nPV);
     outTree->Branch(    "hasTauDecay",              &hasTauDecay);
 
@@ -187,10 +195,12 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     //  CLEAR CONTAINERS
     //
 
+    sampleName.Clear();
     nLooseMuons     = 0;            nLooseElectrons = 0;            nLooseLeptons   = 0;
     nTightMuons     = 0;            nTightElectrons = 0;            nTightLeptons   = 0; 
-    genWeight       = 1;            PUWeight        = 1;            nPU             = 0;
-    ECALWeight      = 1;            hasTauDecay     = kFALSE;
+    genWeight       = 1;            ECALWeight      = 1;            PUWeight        = 1;
+    nPU             = 0;            nPUUp           = 0;            nPUDown         = 0;
+    hasTauDecay     = kFALSE;
 
     muonP4_->Delete();              muonUncorrectedP4_->Delete();   muonCharge.clear();
     muonEnergySF.clear();           muonEnergySFUp.clear();         muonEnergySFDown.clear();
@@ -241,7 +251,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     const bool isData = (fInfo->runNum != 1);
     particleSelector->SetRealData(isData);
     weights->SetDataBit(isData);
+
     weights->SetSampleName(params->dataset);
+    sampleName = params->dataset;
  
     const bool isSignal     = params->datasetgroup == "zz_4l";
     const bool isDrellYan   = params->datasetgroup == "zjets_m-50";
@@ -265,6 +277,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         // Pileup weight
         nPU = fInfo->nPUmean;
+        nPUUp = fInfo->nPUmean + fabs((float) fInfo->nPUp - (float) fInfo->nPU);
+        nPUDown = fInfo->nPUmean - fabs((float) fInfo->nPUm - (float) fInfo->nPU);
         PUWeight = weights->GetPUWeight(nPU);
     }
     else
