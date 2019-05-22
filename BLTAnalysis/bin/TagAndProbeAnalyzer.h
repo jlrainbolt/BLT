@@ -57,11 +57,9 @@ float frac_diff(float test, float truth) { return fabs(test - truth) / truth; }
 
 const unsigned  N_MLL = 60;
 const float     MLL_MIN = 60,       MLL_MAX = 120;
+const float     MUON_PT_THRESH = 10,ELEC_PT_THRESH = 12;
 
-const float     MUON_PT_MIN = 5,    MUON_ETA_MAX = 2.4,     MUON_PT_THRESH = 10;
-const float     ELEC_PT_MIN = 7,    ELEC_ETA_MAX = 2.5,     ELEC_PT_THRESH = 12;
-
-const float     MATCH_DR_MAX = 0.3, MATCH_MUON_PT_FRAC = 0.1;
+const float     DR_MIN = 0.02;
 
 const unsigned  N_PT_MM = 18,   N_ETA_MM = 4;
 const unsigned  N_PT_EE = 17,   N_ETA_EE = 4;
@@ -158,6 +156,7 @@ public:
 
     TH2F    *passed2d,      *failed2d;
     TH1F    *passedAll,     *failedAll,     *genPassedAll,  *genFailedAll;
+    TH1F    *gapPassedAll,  *gapFailedAll;
     vector<vector<TH1F*>>   passedBin,      failedBin,      genPassedBin,   genFailedBin;
 };
 

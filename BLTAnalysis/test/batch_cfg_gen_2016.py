@@ -21,12 +21,12 @@ Set job configurations.
 # MONTE CARLO #
 mc_dict = {}
 
-path = '/eos/uscms/store/user/jrainbol/Bacon/2016'
+path = '/eos/uscms/store/group/lpcbacon/jlr'
 mc_dict['zz_4l'] = \
 [
     cfg(data_name = 'ZZTo4L',
-        path     = '{0}/Summer16_ZZTo4L_powheg'.format(path),
-        nJobs    = 7,
+        path     = '{0}/ZZTo4L_powheg_RunIISummer16_v3-v1'.format(path),
+        nJobs    = 15,
         suffix   = 'zz_4l'
         ),
 ]
@@ -34,8 +34,8 @@ mc_dict['zz_4l'] = \
 mc_dict['zjets'] = \
 [
     cfg(data_name = 'DYJetsToLL_M-50',
-        path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
-        nJobs    = 100,
+        path     = '{0}/DYJetsToLL_M-50_amcatnlo_RunIISummer16_v3_ext2-v1'.format(path),
+        nJobs    = 240,
         suffix   = 'zjets_m-50'
         ),
 ]

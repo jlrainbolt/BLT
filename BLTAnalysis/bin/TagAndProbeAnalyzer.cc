@@ -211,6 +211,13 @@ void TagAndProbeAnalyzer::Begin(TTree *tree)
     failedAll = new TH1F("failed_all", "Failed", N_MLL, MLL_MIN, MLL_MAX);
     passedAll->SetMinimum(0);   failedAll->SetMinimum(0);
 
+    if (selection.Contains("ee"))
+    {
+        gapPassedAll = new TH1F("gap_passed_all", "Gap Passed", N_MLL, MLL_MIN, MLL_MAX);
+        gapFailedAll = new TH1F("gap_failed_all", "Gap Failed", N_MLL, MLL_MIN, MLL_MAX);
+        gapPassedAll->SetMinimum(0);    gapFailedAll->SetMinimum(0);
+    }
+
     string genDirName = params->get_output_treename("gen_hists");
     if (storeGenInfo)
     {
@@ -301,6 +308,7 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
     weights->SetSampleName(params->dataset);
 
     const bool storeGenInfo = params->datasetgroup == "zjets_m-50";
+    const bool doSameSign = selection.Contains("SS");
 
 
 
@@ -398,22 +406,18 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         TMuon* muon = (TMuon*) fMuonArr->At(i);
         assert(muon);
 
-        // Kinematic requirements
-        if (muon->pt < MUON_PT_MIN)
-            continue;
+        // Kinematic and IP requirements
+        bool passedVeto = particleSelector->PassMuonID(muon, cuts->vetoHZZMuonID);
 
-        if (fabs(muon->eta) > MUON_ETA_MAX)
+        if (!passedVeto)
             continue;
 
         // ID or isolation
-        bool isIsolated = particleSelector->PassMuonIso(muon, cuts->wpHZZMuonIso);
-        bool isIdentified = particleSelector->PassMuonID(muon, cuts->noIsoHZZMuonID);
+//      bool isIsolated = particleSelector->PassMuonIso(muon, cuts->wpHZZMuonIso);
+//      bool isIdentified = particleSelector->PassMuonID(muon, cuts->noIsoHZZMuonID);
 
-        if (selection.Contains("Iso") && !isIsolated)
-            continue;
-
-        if (selection.Contains("ID") && !isIdentified)
-            continue;
+//      if (!isIsolated)
+//          continue;
 
         muons.push_back(muon);
     }
@@ -428,14 +432,16 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         TElectron* electron = (TElectron*) fElectronArr->At(i);
         assert(electron);
 
-        // Kinematic requirements
-        if (electron->pt < ELEC_PT_MIN)
+        // Kinematic and IP requirements
+        bool isLoose = particleSelector->PassElectronID(electron, cuts->looseHZZElectronID);
+
+        if (!isLoose)
             continue;
 
-        if (fabs(electron->eta) > ELEC_ETA_MAX)
-            continue;
-
-        // FIXME ID or isolation?
+        // Isolation
+//      bool isIsolated = particleSelector->PassElectronIso(electron, cuts->wpHZZElectronIso);
+//      if (!isIsolated)
+//          continue;
 
         electrons.push_back(electron);
     }
@@ -497,16 +503,17 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
     if (selection.Contains("mumu"))
     {
         // Charge requirement
-        if (muons[0]->q == muons[1]->q)
-            return kTRUE;
+        bool isSameSign = (muons[0]->q == muons[1]->q);
 
-        TLorentzVector  muon1P4,  muon2P4;
+        if (isSameSign != doSameSign)
+            return kTRUE;
 
 
         // Energy corrections
         for (unsigned i = 0; i < 2; i++)
             muons[i]->pt *= particleSelector->GetRochesterCorrection(muons[i]);
 
+        TLorentzVector  muon1P4,  muon2P4;
         copy_p4(muons[0], MUON_MASS, muon1P4);
         copy_p4(muons[1], MUON_MASS, muon2P4);
 
@@ -515,6 +522,10 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
 
         // Mass requirement
         if ((totalP4.M() < MLL_MIN) || (totalP4.M() > MLL_MAX))
+            return kTRUE;
+
+        // DeltaR requirement
+        if (muon1P4.DeltaR(muon2P4) < DR_MIN)
             return kTRUE;
 
 
@@ -570,6 +581,106 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         for (unsigned i = 0; i < muonTriggerNames.size(); i++)
         {
             if (trigger->passObj(muonTriggerNames[i], 1, probe->hltMatchBits))
+                probeFiredSingle = kTRUE;
+        }
+    }
+
+
+
+    //
+    //  ELECTRONS
+    //
+
+    if (selection.Contains("ee"))
+    {
+        // Charge requirement
+        bool isSameSign = (electrons[0]->q == electrons[1]->q);
+
+        if (isSameSign != doSameSign)
+            return kTRUE;
+
+
+        // Energy corrections
+        TLorentzVector  elec1P4,  elec2P4;
+        copy_p4(electrons[0], ELE_MASS, elec1P4);
+        copy_p4(electrons[1], ELE_MASS, elec2P4);
+
+        elec1P4 *= particleSelector->GetElectronCorrection(electrons[0]);
+        electrons[0]->pt = elec1P4.Pt();
+        electrons[0]->eta = elec1P4.Eta();
+        electrons[0]->phi = elec1P4.Phi();
+
+        elec2P4 *= particleSelector->GetElectronCorrection(electrons[1]);
+        electrons[1]->pt = elec2P4.Pt();
+        electrons[1]->eta = elec2P4.Eta();
+        electrons[1]->phi = elec2P4.Phi();
+
+        totalP4 = elec1P4 + elec2P4;
+
+
+        // Mass requirement
+        if ((totalP4.M() < MLL_MIN) || (totalP4.M() > MLL_MAX))
+            return kTRUE;
+
+        // DeltaR requirement
+        if (elec1P4.DeltaR(elec2P4) < DR_MIN)
+            return kTRUE;
+
+
+        // Randomly pick muon 1 or 2 to try as tag
+        unsigned T = round(rng.Rndm());
+
+        if (electrons[T]->pt < ELEC_PT_THRESH)  // if pt is too low, switch to the other one
+            T = 1 - T;
+
+        TElectron *tag = electrons[T];
+        
+        // Check trigger
+        tagFiredSingle = kFALSE;
+        for (unsigned i = 0; i < electronTriggerNames.size(); i++)
+        {
+            if (trigger->passObj(electronTriggerNames[i], 1, tag->hltMatchBits))
+                tagFiredSingle = kTRUE;
+        }
+        if (!tagFiredSingle)
+            return kTRUE;
+
+        // Check tight ID
+        tagIsTight = particleSelector->PassElectronID(tag, cuts->tightHZZElectronID);
+        if (!tagIsTight)
+            return kTRUE;
+
+
+        // Fill containers
+        TElectron *probe = electrons[1-T];
+
+        copy_p4(tag, ELE_MASS, tagP4);
+        tagQ                    = tag->q;
+        tagPDG                  = -11 * tagQ;
+        tagIsolation            = particleSelector->GetElectronIso(tag);
+        tagScEta                = tag->scEta;
+        tagEnergySF             = particleSelector->GetElectronCorrection(tag);
+        tagIsLoose              = particleSelector->PassElectronID(tag, cuts->looseHZZElectronID);
+        tagIsIsolated           = particleSelector->PassElectronIso(tag, cuts->wpHZZElectronIso);
+        tagIsGap                = tag->fiducialBits & kIsGap;
+        tagIsV2Iso              = tag->pass2017isoV2wpHZZ;
+
+        copy_p4(probe, ELE_MASS, probeP4);
+        probeQ                  = probe->q;
+        probePDG                = -11 * probeQ;
+        probeIsolation          = particleSelector->GetElectronIso(probe);
+        probeScEta              = probe->scEta;
+        probeEnergySF           = particleSelector->GetElectronCorrection(probe);
+        probeIsLoose            = particleSelector->PassElectronID(probe, cuts->looseHZZElectronID);
+        probeIsTight            = particleSelector->PassElectronID(probe, cuts->tightHZZElectronID);
+        probeIsIsolated         = particleSelector->PassElectronIso(probe, cuts->wpHZZElectronIso);
+        probeIsGap              = probe->fiducialBits & kIsGap;
+        probeIsV2Iso            = probe->pass2017isoV2wpHZZ;
+        
+        probeFiredSingle = kFALSE;
+        for (unsigned i = 0; i < electronTriggerNames.size(); i++)
+        {
+            if (trigger->passObj(electronTriggerNames[i], 1, probe->hltMatchBits))
                 probeFiredSingle = kTRUE;
         }
     }
@@ -709,7 +820,10 @@ fill:
         passed2d->Fill(probeP4.Eta(), probeP4.Pt(), weight);
         passedAll->Fill(totalP4.M(), weight);
 
-        if (I <= N_PT)
+        if (selection.Contains("ee") && probeIsGap)
+            gapPassedAll->Fill(totalP4.M(), weight);
+
+        else if (I <= N_PT)
         {
             passedBin[I][N_ETA]->Fill(totalP4.M(), weight);
             if (J<= N_ETA)
@@ -732,6 +846,9 @@ fill:
     {
         failed2d->Fill(probeP4.Eta(), probeP4.Pt(), weight);
         failedAll->Fill(totalP4.M(), weight);
+
+        if (selection.Contains("ee") && probeIsGap)
+            gapFailedAll->Fill(totalP4.M(), weight);
 
         if (I <= N_PT)
         {

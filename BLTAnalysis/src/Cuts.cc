@@ -12,13 +12,15 @@ Cuts::Cuts() {
     //
 
     // Cut-based ID
+    vetoHZZMuonID.cutName                           = "vetoHZZMuonID";
+    vetoHZZMuonID.pt                                = 5;
+    vetoHZZMuonID.eta                               = 2.4;
+    vetoHZZMuonID.dxy                               = 0.5;
+    vetoHZZMuonID.dz                                = 1;
+    vetoHZZMuonID.SIP3d                             = 4;
 
     looseHZZMuonID.cutName                          = "looseHZZMuonID";
-    looseHZZMuonID.pt                               = 5;
-    looseHZZMuonID.eta                              = 2.4;
-    looseHZZMuonID.dxy                              = 0.5;
-    looseHZZMuonID.dz                               = 1;
-    looseHZZMuonID.SIP3d                            = 4;
+    looseHZZMuonID.IsVetoed                         = kFALSE;
     looseHZZMuonID.IsGLB                            = kTRUE;
     looseHZZMuonID.IsTRK                            = kTRUE;
     looseHZZMuonID.NumberOfMatchedStations          = 0;
@@ -44,9 +46,11 @@ Cuts::Cuts() {
 
 
     // Isolation
-
     wpHZZMuonIso.cutName                            = "wpHZZMuonIso";
     wpHZZMuonIso.relCombIso03                       = 0.35;
+
+    wpTightMuonIso.cutName                          = "wpTightMuonIso";
+    wpTightMuonIso.relCombIso03                     = 0.15;
 
 
     

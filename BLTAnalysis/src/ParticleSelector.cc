@@ -30,22 +30,35 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
 
 bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCuts& cutLevel) const
 {
+    if      (cutLevel.cutName == "vetoHZZMuonID")
+    {
+        if (mu->pt < cutLevel.pt)
+            return kFALSE;
+        if (fabs(mu->eta) > cutLevel.eta)
+            return kFALSE;
+        if (fabs(mu->d0) > cutLevel.dxy)
+            return kFALSE;
+        if (fabs(mu->dz) > cutLevel.dz)
+            return kFALSE;
+        if (fabs(mu->sip3d) > cutLevel.SIP3d)
+            return kFALSE;
+        
+        return kTRUE;
+    }
     if      (cutLevel.cutName == "looseHZZMuonID")
     {
+        bool isVetoed       = !(this->PassMuonID(mu, _cuts.vetoHZZMuonID));
         bool isGlobal       = test_bits(mu->typeBits, baconhep::kGlobal)    == cutLevel.IsGLB;
         bool isTracker      = test_bits(mu->typeBits, baconhep::kTracker)   == cutLevel.IsTRK;
         bool isArbitrated   = mu->nMatchStn > cutLevel.NumberOfMatchedStations;
 
-        if (
-                    mu->pt          > cutLevel.pt
-                &&  fabs(mu->eta)   < cutLevel.eta
-                &&  fabs(mu->d0)    < cutLevel.dxy
-                &&  fabs(mu->dz)    < cutLevel.dz
-                &&  mu->sip3d       < cutLevel.SIP3d
-                &&  mu->btt        != cutLevel.BestTrackType
-                &&  (isGlobal || (isTracker && isArbitrated))
-           )
+        if (isVetoed != cutLevel.IsVetoed)
+            return kFALSE;
+
+        if (isGlobal || (isTracker && isArbitrated))
             return kTRUE;
+        else
+            return kFALSE;
     }
     else if (cutLevel.cutName == "trackerHighPtMuonID")
     {
