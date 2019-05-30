@@ -407,17 +407,15 @@ Bool_t TagAndProbeAnalyzer::Process(Long64_t entry)
         assert(muon);
 
         // Kinematic and IP requirements
-        bool passedVeto = particleSelector->PassMuonID(muon, cuts->vetoHZZMuonID);
+        bool passedVeto = particleSelector->PassMuonID(muon, cuts->vetoMuonID);
 
         if (!passedVeto)
             continue;
 
-        // ID or isolation
-//      bool isIsolated = particleSelector->PassMuonIso(muon, cuts->wpHZZMuonIso);
-//      bool isIdentified = particleSelector->PassMuonID(muon, cuts->noIsoHZZMuonID);
-
-//      if (!isIsolated)
-//          continue;
+        // Isolation
+        bool isIsolated = particleSelector->PassMuonIso(muon, cuts->wpHZZMuonIso);
+        if (!isIsolated)
+            continue;
 
         muons.push_back(muon);
     }

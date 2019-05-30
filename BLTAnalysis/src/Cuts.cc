@@ -12,15 +12,19 @@ Cuts::Cuts() {
     //
 
     // Cut-based ID
-    vetoHZZMuonID.cutName                           = "vetoHZZMuonID";
-    vetoHZZMuonID.pt                                = 5;
-    vetoHZZMuonID.eta                               = 2.4;
-    vetoHZZMuonID.dxy                               = 0.5;
-    vetoHZZMuonID.dz                                = 1;
-    vetoHZZMuonID.SIP3d                             = 4;
+    vetoMuonID.cutName                              = "vetoMuonID";
+    vetoMuonID.pt                                   = 5;
+    vetoMuonID.eta                                  = 2.4;
+    vetoMuonID.dxy                                  = 0.05;
+    vetoMuonID.dz                                   = 0.1;
+    vetoMuonID.SIP3d                                = 1.5;
 
     looseHZZMuonID.cutName                          = "looseHZZMuonID";
-    looseHZZMuonID.IsVetoed                         = kFALSE;
+    looseHZZMuonID.pt                               = 5;
+    looseHZZMuonID.eta                              = 2.4;
+    looseHZZMuonID.dxy                              = 0.5;
+    looseHZZMuonID.dz                               = 1;
+    looseHZZMuonID.SIP3d                            = 4;
     looseHZZMuonID.IsGLB                            = kTRUE;
     looseHZZMuonID.IsTRK                            = kTRUE;
     looseHZZMuonID.NumberOfMatchedStations          = 0;
@@ -60,6 +64,13 @@ Cuts::Cuts() {
     //
 
     // Cut-based ID
+
+    vetoElectronID.cutName                          = "vetoElectronID";
+    vetoElectronID.pt                               = 7;
+    vetoElectronID.eta                              = 2.5;
+    vetoElectronID.dxy                              = 0.05;
+    vetoElectronID.dz                               = 0.1;
+    vetoElectronID.SIP3d                            = 1.5;
 
     looseHZZElectronID.cutName                      = "looseHZZElectronID";
     looseHZZElectronID.pt                           = 7;

@@ -10,10 +10,10 @@ period      = '2018'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-data_samples    = ['double_mu', 'egamma']
-#mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+data_samples    = ['double_mu', 'single_mu', 'egamma']
 #data_samples    = []
-mc_samples      = ['signal', 'zjets']
+mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+#mc_samples      = [']
 
 
 
@@ -21,10 +21,11 @@ mc_samples      = ['signal', 'zjets']
 Set job configurations.  
 '''
 
+path = '/eos/uscms/store/group/lpcbacon/jlr/'
+
 # DATA #
 data_dict = {}
 
-path = '/eos/uscms/store/group/lpcbacon/jlr/'
 data_dict['double_mu'] = \
 [
     cfg(data_name = 'DoubleMuon_Run2018A',
@@ -45,6 +46,30 @@ data_dict['double_mu'] = \
     cfg(data_name = 'DoubleMuon_Run2018D',
         path     = '{0}/DoubleMuon_Run2018D-PromptReco-v2'.format(path),
         nJobs    = 70,
+        suffix   = 'muon_2018'
+        ),
+]
+
+data_dict['single_mu'] = \
+[
+    cfg(data_name = 'SingleMuon_Run2018A',
+        path     = '{0}/SingleMuon_Run2018A-17Sep2018-v2'.format(path),
+        nJobs    = 190,
+        suffix   = 'muon_2018'
+        ),
+    cfg(data_name = 'SingleMuon_Run2018B',
+        path     = '{0}/SingleMuon_Run2018B-17Sep2018-v1'.format(path),
+        nJobs    = 90,
+        suffix   = 'muon_2018'
+        ),
+    cfg(data_name = 'SingleMuon_Run2018C',
+        path     = '{0}/SingleMuon_Run2018C-17Sep2018-v1'.format(path),
+        nJobs    = 85,
+        suffix   = 'muon_2018'
+        ),
+    cfg(data_name = 'SingleMuon_Run2018D',
+        path     = '{0}/SingleMuon_Run2018D-PromptReco-v2'.format(path),
+        nJobs    = 385,
         suffix   = 'muon_2018'
         ),
 ]

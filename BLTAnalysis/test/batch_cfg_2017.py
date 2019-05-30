@@ -10,10 +10,10 @@ period      = '2017'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-data_samples    = ['double_mu', 'double_eg']
-#mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+data_samples    = ['double_mu', 'double_eg', 'single_mu', 'single_e']
 #data_samples    = []
-mc_samples      = ['zjets', 'signal']
+mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+#mc_samples      = []
 
 
 
@@ -21,64 +21,123 @@ mc_samples      = ['zjets', 'signal']
 Set job configurations.  
 '''
 
+path = '/eos/uscms/store/group/lpcbacon/jlr/'
+
 # DATA #
 data_dict = {}
 
-path = '/eos/uscms/store/group/lpcbacon/jlr/'
 data_dict['double_mu'] = \
 [
-    cfg(data_name = 'muon_2017B_v1',
+    cfg(data_name = 'DoubleMuon_Run2017B',
         path     = '{0}/DoubleMuon_Run2017B-31Mar2018-v1'.format(path),
         nJobs    = 10,
         suffix   = 'muon_2017'
         ),
-    cfg(data_name = 'muon_2017C_v1',
+    cfg(data_name = 'DoubleMuon_Run2017C',
         path     = '{0}/DoubleMuon_Run2017C-31Mar2018-v1'.format(path),
         nJobs    = 30,
         suffix   = 'muon_2017'
         ),
-    cfg(data_name = 'muon_2017D_v1',
+    cfg(data_name = 'DoubleMuon_Run2017D',
         path     = '{0}/DoubleMuon_Run2017D-31Mar2018-v1'.format(path),
         nJobs    = 10,
         suffix   = 'muon_2017'
         ),
-    cfg(data_name = 'muon_2017E_v1',
-        path     = '{0}/DoubleMuon_Run2017E-31Mar2018-v1'.format(path),
+    cfg(data_name = 'DoubleMuon_Run2017E',
+        path     = '{0}/DoubleMuon_Run20-31Mar2018-v1'.format(path),
         nJobs    = 30,
         suffix   = 'muon_2017'
         ),
-    cfg(data_name = 'muon_2017F_v1',
+    cfg(data_name = 'DoubleMuon_Run2017F',
         path     = '{0}/DoubleMuon_Run2017F-31Mar2018-v1'.format(path),
         nJobs    = 40,
         suffix   = 'muon_2017'
         ),
 ]
 
+data_dict['single_mu'] = \
+[
+    cfg(data_name = 'SingleMuon_Run2017B',
+        path     = '{0}/SingleMuon_Run2017B-31Mar2018-v1'.format(path),
+        nJobs    = 60,
+        suffix   = 'muon_2017'
+        ),
+    cfg(data_name = 'SingleMuon_Run2017C',
+        path     = '{0}/SingleMuon_Run2017C-31Mar2018-v1'.format(path),
+        nJobs    = 120,
+        suffix   = 'muon_2017'
+        ),
+    cfg(data_name = 'SingleMuon_Run2017D',
+        path     = '{0}/SingleMuon_Run2017D-31Mar2018-v1'.format(path),
+        nJobs    = 50,
+        suffix   = 'muon_2017'
+        ),
+    cfg(data_name = 'SingleMuon_Run2017E',
+        path     = '{0}/DoubleMuon_Run2017E-31Mar2018-v1'.format(path),
+        nJobs    = 130,
+        suffix   = 'muon_2017'
+        ),
+    cfg(data_name = 'SingleMuon_Run2017F',
+        path     = '{0}/DoubleMuon_Run2017F-31Mar2018-v1'.format(path),
+        nJobs    = 200,
+        suffix   = 'muon_2017'
+        ),
+]
+
 data_dict['double_eg'] = \
 [
-    cfg(data_name = 'electron_2017B_v1',
+    cfg(data_name = 'DoubleEG_Run2017B',
         path     = '{0}/DoubleEG_Run2017B-31Mar2018-v1'.format(path),
         nJobs    = 15,
         suffix   = 'electron_2017'
         ),
-    cfg(data_name = 'electron_2017C_v1',
+    cfg(data_name = 'DoubleEG_Run2017C',
         path     = '{0}/DoubleEG_Run2017C-31Mar2018-v1'.format(path),
         nJobs    = 30,
         suffix   = 'electron_2017'
         ),
-    cfg(data_name = 'electron_2017D_v1',
+    cfg(data_name = 'DoubleEG_Run2017D',
         path     = '{0}/DoubleEG_Run2017D-31Mar2018-v1'.format(path),
         nJobs    = 5,
         suffix   = 'electron_2017'
         ),
-    cfg(data_name = 'electron_2017E_v1',
+    cfg(data_name = 'DoubleEG_Run2017E',
         path     = '{0}/DoubleEG_Run2017E-31Mar2018-v1'.format(path),
         nJobs    = 20,
         suffix   = 'electron_2017'
         ),
-    cfg(data_name = 'electron_2017F_v1',
+    cfg(data_name = 'DoubleEG_Run2017F',
         path     = '{0}/DoubleEG_Run2017F-31Mar2018-v1'.format(path),
         nJobs    = 25,
+        suffix   = 'electron_2017'
+        ),
+]
+
+data_dict['single_e'] = \
+[
+    cfg(data_name = 'SingleElectron_Run2017B',
+        path     = '{0}/SingleElectron_Run2017B-31Mar2018-v1'.format(path),
+        nJobs    = 50,
+        suffix   = 'electron_2017'
+        ),
+    cfg(data_name = 'SingleElectron_Run2017C',
+        path     = '{0}/SingleElectron_Run2017C-31Mar2018-v1'.format(path),
+        nJobs    = 110,
+        suffix   = 'electron_2017'
+        ),
+    cfg(data_name = 'SingleElectron_Run2017D',
+        path     = '{0}/SingleElectron_Run2017D-31Mar2018-v1'.format(path),
+        nJobs    = 40,
+        suffix   = 'electron_2017'
+        ),
+    cfg(data_name = 'SingleElectron_Run2017E',
+        path     = '{0}/SingleElectron_Run2017E-31Mar2018-v1'.format(path),
+        nJobs    = 90,
+        suffix   = 'electron_2017'
+        ),
+    cfg(data_name = 'SingleElectron_Run2017F',
+        path     = '{0}/SingleElectron_Run2017F-31Mar2018-v1'.format(path),
+        nJobs    = 110,
         suffix   = 'electron_2017'
         ),
 ]

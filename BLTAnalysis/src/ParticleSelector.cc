@@ -30,32 +30,38 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
 
 bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCuts& cutLevel) const
 {
-    if      (cutLevel.cutName == "vetoHZZMuonID")
+    if      (cutLevel.cutName == "vetoMuonID")
     {
-        if (mu->pt < cutLevel.pt)
+        if      (mu->pt < cutLevel.pt)
             return kFALSE;
-        if (fabs(mu->eta) > cutLevel.eta)
+        else if (fabs(mu->eta) > cutLevel.eta)
             return kFALSE;
-        if (fabs(mu->d0) > cutLevel.dxy)
+        else if (fabs(mu->d0) > cutLevel.dxy)
             return kFALSE;
-        if (fabs(mu->dz) > cutLevel.dz)
+        else if (fabs(mu->dz) > cutLevel.dz)
             return kFALSE;
-        if (fabs(mu->sip3d) > cutLevel.SIP3d)
+        else if (fabs(mu->sip3d) > cutLevel.SIP3d)
             return kFALSE;
-        
-        return kTRUE;
+        else
+            return kTRUE;
     }
     if      (cutLevel.cutName == "looseHZZMuonID")
     {
-        bool isVetoed       = !(this->PassMuonID(mu, _cuts.vetoHZZMuonID));
         bool isGlobal       = test_bits(mu->typeBits, baconhep::kGlobal)    == cutLevel.IsGLB;
         bool isTracker      = test_bits(mu->typeBits, baconhep::kTracker)   == cutLevel.IsTRK;
         bool isArbitrated   = mu->nMatchStn > cutLevel.NumberOfMatchedStations;
 
-        if (isVetoed != cutLevel.IsVetoed)
+        if      (mu->pt < cutLevel.pt)
             return kFALSE;
-
-        if (isGlobal || (isTracker && isArbitrated))
+        else if (fabs(mu->eta) > cutLevel.eta)
+            return kFALSE;
+        else if (fabs(mu->d0) > cutLevel.dxy)
+            return kFALSE;
+        else if (fabs(mu->dz) > cutLevel.dz)
+            return kFALSE;
+        else if (fabs(mu->sip3d) > cutLevel.SIP3d)
+            return kFALSE;
+        else if (isGlobal || (isTracker && isArbitrated))
             return kTRUE;
         else
             return kFALSE;
@@ -134,15 +140,20 @@ float ParticleSelector::GetRochesterCorrection(const baconhep::TMuon* mu, std::s
 
 bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts::elIDCuts& cutLevel) const 
 {
-    if      (cutLevel.cutName == "looseHZZElectronID")
+    if  ((cutLevel.cutName == "looseHZZElectronID")
+            || (cutLevel.cutName == "vetoElectronID"))
     {
-        if (
-                    el->pt          > cutLevel.pt
-                &&  fabs(el->eta)   < cutLevel.eta
-                &&  fabs(el->d0)    < cutLevel.dxy
-                &&  fabs(el->dz)    < cutLevel.dz
-                &&  el->sip3d       < cutLevel.SIP3d
-           )
+        if      (el->pt < cutLevel.pt)
+            return kFALSE;
+        else if (fabs(el->eta) > cutLevel.eta)
+            return kFALSE;
+        else if (fabs(el->d0) > cutLevel.dxy)
+            return kFALSE;
+        else if (fabs(el->dz) > cutLevel.dz)
+            return kFALSE;
+        else if (fabs(el->sip3d) > cutLevel.SIP3d)
+            return kFALSE;
+        else
             return kTRUE;
     }
     else if (cutLevel.cutName == "tightHZZElectronID")

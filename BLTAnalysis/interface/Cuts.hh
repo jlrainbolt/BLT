@@ -23,11 +23,11 @@ public:
 
         float   pt,     eta,    dxy,    dz,     SIP3d,      ptFracError;
         bool    IsGLB,  IsTRK,  IsPF,   IsTrackerHighPt;
-        bool    IsVetoed,       IsLoose,    IsIdentified,   IsIsolated;
+        bool    IsLoose,    IsIdentified,   IsIsolated;
         float   NumberOfMatchedStations,    NumberOfValidPixelHits,     TrackLayersWithMeasurement;
         int     BestTrackType;
     }
-    vetoHZZMuonID, looseHZZMuonID, tightHZZMuonID, noIsoHZZMuonID, trackerHighPtMuonID;
+    vetoMuonID, looseHZZMuonID, tightHZZMuonID, noIsoHZZMuonID, trackerHighPtMuonID;
 
     struct muIsoCuts
     {
@@ -49,7 +49,7 @@ public:
         float   pt,     eta,    dxy,    dz,     SIP3d;
         bool    IsLoose,        IsMVA;
     }
-    looseHZZElectronID, tightHZZElectronID;
+    vetoElectronID, looseHZZElectronID, tightHZZElectronID;
 
     struct elIsoCuts
     {

@@ -19,72 +19,9 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
     fileName = data_dir + "pu_weights_" + _dataPeriod + ".root";
     TFile* puFile = new TFile(fileName.c_str(), "OPEN");
-    _puReweight = (TH1*)puFile->Get("weights");
-
-
-
-    //
-    //  TRIGGERS    FIXME
-    //
-
-    // Double muon
-
-    // Leg 1
-    fileName = data_dir + "/muon_trigger/sf_Mu17Leg_Eta0to09.root";
-    TFile* f_DoubleMuTrigSF_leg1_0 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg1_DATA[0] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_0->Get("eff_data");
-    _eff_doubleMu_leg1_MC[0]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_0->Get("eff_mc"); 
-
-    fileName = data_dir + "/muon_trigger/sf_Mu17Leg_Eta09to12.root";
-    TFile* f_DoubleMuTrigSF_leg1_1 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg1_DATA[1] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_1->Get("eff_data");
-    _eff_doubleMu_leg1_MC[1]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_1->Get("eff_mc"); 
-
-    fileName = data_dir + "/muon_trigger/sf_Mu17Leg_Eta12to21.root";
-    TFile* f_DoubleMuTrigSF_leg1_2 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg1_DATA[2] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_2->Get("eff_data");
-    _eff_doubleMu_leg1_MC[2]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_2->Get("eff_mc"); 
-
-    fileName = data_dir + "/muon_trigger/sf_Mu17Leg_Eta21to24.root";
-    TFile* f_DoubleMuTrigSF_leg1_3 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg1_DATA[3] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_3->Get("eff_data");
-    _eff_doubleMu_leg1_MC[3]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg1_3->Get("eff_mc"); 
-
-    // Leg 2
-    fileName = data_dir + "/muon_trigger/sf_Mu8Leg_Eta0to09.root";
-    TFile* f_DoubleMuTrigSF_leg2_0 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg2_DATA[0] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_0->Get("eff_data");
-    _eff_doubleMu_leg2_MC[0]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_0->Get("eff_mc"); 
-
-    fileName = data_dir + "/muon_trigger/sf_Mu8Leg_Eta09to12.root";
-    TFile* f_DoubleMuTrigSF_leg2_1 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg2_DATA[1] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_1->Get("eff_data");
-    _eff_doubleMu_leg2_MC[1]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_1->Get("eff_mc"); 
-
-    fileName = data_dir + "/muon_trigger/sf_Mu8Leg_Eta12to21.root";
-    TFile* f_DoubleMuTrigSF_leg2_2 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg2_DATA[2] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_2->Get("eff_data");
-    _eff_doubleMu_leg2_MC[2]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_2->Get("eff_mc"); 
-
-    fileName = data_dir + "/muon_trigger/sf_Mu8Leg_Eta21to24.root";
-    TFile* f_DoubleMuTrigSF_leg2_3 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleMu_leg2_DATA[3] = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_3->Get("eff_data");
-    _eff_doubleMu_leg2_MC[3]   = (TGraphAsymmErrors*)f_DoubleMuTrigSF_leg2_3->Get("eff_mc"); 
-
-
-    // Double electron
-
-    // Leg 1
-    fileName = data_dir + "/electron_trigger/SFs_Leg1_Ele23_HZZSelection_Tag35.root";
-    TFile* f_elTrigSF_leg1 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleEle_leg1_DATA = (TH2*)f_elTrigSF_leg1->Get("EGamma_EffData2D");
-    _eff_doubleEle_leg1_MC   = (TH2*)f_elTrigSF_leg1->Get("EGamma_EffMC2D"); 
-
-    // Leg 2
-    fileName = data_dir + "/electron_trigger/SFs_Leg2_Ele12_HZZSelection_Tag35.root";
-    TFile* f_elTrigSF_leg2 = new TFile(fileName.c_str(), "OPEN");
-    _eff_doubleEle_leg2_DATA = (TH2*)f_elTrigSF_leg2->Get("EGamma_EffData2D");
-    _eff_doubleEle_leg2_MC   = (TH2*)f_elTrigSF_leg2->Get("EGamma_EffMC2D");
+    puFile->GetObject("weights", _puReweight);
+    _puReweight->SetDirectory(0);
+    puFile->Close();
 
 
 
@@ -95,8 +32,9 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     // Muon HZZ ID
     fileName = data_dir + "muon_id_sf_" + _dataPeriod + ".root";
     TFile* f_hzz_muIdSF = new TFile(fileName.c_str(), "OPEN");
-    _hzz_muIdSF = (TH2*) f_hzz_muIdSF->Get("FINAL");
-    _hzz_muIdErr = (TH2*) f_hzz_muIdSF->Get("ERROR");
+    f_hzz_muIdSF->GetObject("FINAL", _hzz_muIdSF);
+    _hzz_muIdSF->SetDirectory(0);
+    f_hzz_muIdSF->Close();
 
 
     // Electron
@@ -104,21 +42,32 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     // HZZ ID
     fileName = data_dir + "electron_id_sf_" + _dataPeriod + ".root";
     TFile* f_hzz_eleIdSF = new TFile(fileName.c_str(), "OPEN"); 
-    _hzz_eleIdSF = (TH2*) f_hzz_eleIdSF->Get("EGamma_SF2D");
+    f_hzz_eleIdSF->GetObject("EGamma_SF2D", _hzz_eleIdSF);
+    _hzz_eleIdSF->SetDirectory(0);
+    f_hzz_eleIdSF->Close();
 
     fileName = data_dir + "electron_id_sf_" + _dataPeriod + "_gap.root";
     TFile* f_hzz_eleIdSF_gap = new TFile(fileName.c_str(), "OPEN"); 
-    _hzz_eleIdSF_gap = (TH2*) f_hzz_eleIdSF_gap->Get("EGamma_SF2D");
+    f_hzz_eleIdSF_gap->GetObject("EGamma_SF2D", _hzz_eleIdSF_gap);
+    _hzz_eleIdSF_gap->SetDirectory(0);
+    f_hzz_eleIdSF_gap->Close();
 
 
     // Reco
     fileName = data_dir + "electron_reco_sf_" + _dataPeriod + ".root";
     TFile* f_eleRecoSF = new TFile(fileName.c_str(), "OPEN"); 
-    _eleSF_RECO = (TH2*) f_eleRecoSF->Get("EGamma_SF2D");
+    f_eleRecoSF->GetObject("EGamma_SF2D", _eleSF_RECO);
+    _eleSF_RECO->SetDirectory(0);
+    f_eleRecoSF->Close();
 
-    fileName = data_dir + "electron_reco_sf_" + _dataPeriod + "_lowEt.root";
-    TFile* f_eleRecoSF_lowEt = new TFile(fileName.c_str(), "OPEN"); 
-    _eleSF_RECO_lowEt = (TH2*) f_eleRecoSF_lowEt->Get("EGamma_SF2D");
+    if (_dataPeriod != "2018")
+    {
+        fileName = data_dir + "electron_reco_sf_" + _dataPeriod + "_lowEt.root";
+        TFile* f_eleRecoSF_lowEt = new TFile(fileName.c_str(), "OPEN"); 
+        f_eleRecoSF_lowEt->GetObject("EGamma_SF2D", _eleSF_RECO_lowEt);
+        _eleSF_RECO_lowEt->SetDirectory(0);
+        f_eleRecoSF_lowEt->Close();
+    }
 }
 
 
@@ -219,69 +168,6 @@ float WeightUtils::GetSampleWeight() const
 
 
 
-
-//
-//  TRIGGERS
-//
-
-// THIS IS FOR 2016!
-std::pair<float, float> WeightUtils::GetDoubleMuonTriggerEff(const baconhep::TMuon* muon, const int leg) const
-{
-    float effData = 1, effMC = 1;
-
-    if (_isRealData)
-        return std::make_pair(effData, effMC);
-
-    float binningEta[] = {0, 0.9, 1.2, 2.1, 2.4};
-    unsigned etaBin = 0;
-    for (int i = 0; i < 4; i++)
-    {
-        if (fabs(muon->eta) > binningEta[i] && fabs(muon->eta) <= binningEta[i+1])
-        {
-            etaBin = i;
-            break;
-        }
-    }
-
-    if      (leg == 1)
-    {
-        effData = _eff_doubleMu_leg1_DATA[etaBin]->Eval(muon->pt);
-        effMC   = _eff_doubleMu_leg1_MC[etaBin]->Eval(muon->pt);
-    }
-    else if (leg == 2)
-    {
-        effData = _eff_doubleMu_leg2_DATA[etaBin]->Eval(muon->pt);
-        effMC   = _eff_doubleMu_leg2_MC[etaBin]->Eval(muon->pt);
-    }
-
-    return std::make_pair(effData, effMC);
-}
-
-
-// THIS IS FOR 2016!
-std::pair<float, float> WeightUtils::GetDoubleElectronTriggerEff(const baconhep::TElectron* electron, const int leg) const
-{
-    float effData = 1, effMC = 1;
-
-    if (_isRealData)
-        return std::make_pair(effData, effMC);
-
-    if      (leg == 1)
-    {
-        effData = _eff_doubleEle_leg1_DATA->GetBinContent(_eff_doubleEle_leg1_DATA->FindBin(electron->scEta, electron->pt));
-        effMC   = _eff_doubleEle_leg1_MC->GetBinContent(_eff_doubleEle_leg1_MC->FindBin(electron->scEta, electron->pt));
-    }
-    else if (leg == 2)
-    {
-        effData = _eff_doubleEle_leg2_DATA->GetBinContent(_eff_doubleEle_leg2_DATA->FindBin(electron->scEta, electron->pt));
-        effMC   = _eff_doubleEle_leg2_MC->GetBinContent(_eff_doubleEle_leg2_MC->FindBin(electron->scEta, electron->pt));
-    }
-
-    return std::make_pair(effData, effMC);
-}
-
-
-
 //
 //  ID & RECO
 //
@@ -293,8 +179,14 @@ float WeightUtils::GetHZZMuonIDSF(const baconhep::TMuon* muon) const
 
     TH2 *hist = _hzz_muIdSF;
 
+    float   minPt = hist->GetYaxis()->GetXmin();
     float   maxPt = hist->GetYaxis()->GetXmax();
-    int     bin = hist->FindBin(muon->eta, min((double) muon->pt, 0.99 * maxPt));
+
+    double  pt = muon->pt;
+    pt = min(pt, 0.99 * maxPt);
+    pt = max(pt, 1.01 * minPt);
+
+    int bin = hist->FindBin(muon->eta, pt);
 
     if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;
@@ -314,8 +206,14 @@ float WeightUtils::GetHZZElectronIDSF(const baconhep::TElectron* electron) const
     else
         hist = _hzz_eleIdSF;
 
+    float   minPt = hist->GetYaxis()->GetXmin();
     float   maxPt = hist->GetYaxis()->GetXmax();
-    int     bin = hist->FindBin(electron->scEta, min((double) electron->pt, 0.99 * maxPt));
+
+    double  pt = electron->pt;
+    pt = min(pt, 0.99 * maxPt);
+    pt = max(pt, 1.01 * minPt);
+
+    int bin = hist->FindBin(electron->scEta, pt);
 
     if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;
@@ -328,14 +226,24 @@ float WeightUtils::GetElectronRecoSF(const baconhep::TElectron* electron) const
     if (_isRealData)
         return 1;
 
-    TH2 *hist;
-    if (electron->pt < _eleSF_RECO->GetYaxis()->GetXmin())
-        hist = _eleSF_RECO_lowEt;
-    else
-        hist = _eleSF_RECO;
+    TH2 *hist = _eleSF_RECO;
 
+    float   minPt = hist->GetYaxis()->GetXmin();
     float   maxPt = hist->GetYaxis()->GetXmax();
-    int     bin = hist->FindBin(electron->scEta, min((double) electron->pt, 0.99 * maxPt));
+
+    double  pt = electron->pt;
+
+    if ((pt < minPt) && (_dataPeriod != "2018"))
+    {
+        hist = _eleSF_RECO_lowEt;
+        minPt = hist->GetYaxis()->GetXmin();
+        maxPt = hist->GetYaxis()->GetXmax();
+    }
+
+    pt = min(pt, 0.99 * maxPt);
+    pt = max(pt, 1.01 * minPt);
+
+    int bin = hist->FindBin(electron->scEta, pt);
 
     if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;

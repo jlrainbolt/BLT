@@ -5,7 +5,7 @@ import sys
 
 ''' Specify parameters '''
 cfg        = bm.JobConfig
-selection  = 'hard'
+selection  = 'dressed'
 period     = '2016'
 executable = 'execBatchGen.sh'
 location   = 'lpc'
@@ -18,10 +18,11 @@ mc_samples  = ['zz_4l', 'zjets']
 Set job configurations.  
 '''
 
+path = '/eos/uscms/store/group/lpcbacon/jlr'
+
 # MONTE CARLO #
 mc_dict = {}
 
-path = '/eos/uscms/store/group/lpcbacon/jlr'
 mc_dict['zz_4l'] = \
 [
     cfg(data_name = 'ZZTo4L',

@@ -67,56 +67,31 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
 
 
     // Counters
-    outTree->Branch(    "nStatus22Zs",              &nStatus22Zs);
-
-    outTree->Branch(    "nFinalStateMuons",         &nFinalStateMuons);
-    outTree->Branch(    "nFinalStateElectrons",     &nFinalStateElectrons);
-    outTree->Branch(    "nFinalStateLeptons",       &nFinalStateLeptons);
-    outTree->Branch(    "nFinalStateZs",            &nFinalStateZs);
-
-    outTree->Branch(    "nHardProcMuons",           &nHardProcMuons);
-    outTree->Branch(    "nHardProcElectrons",       &nHardProcElectrons);
-    outTree->Branch(    "nHardProcLeptons",         &nHardProcLeptons);
+    outTree->Branch(    "nMuons",                   &nMuons);
+    outTree->Branch(    "nElectrons",               &nElectrons);
+    outTree->Branch(    "nLeptons",                 &nLeptons);
+    outTree->Branch(    "nZs",                      &nZs);
 
 
-    // Final state leptons
-    outTree->Branch(    "finalStateMuonP4",         &finalStateMuonP4,          32000,      1);
-    outTree->Branch(    "finalStateMuonQ",          &finalStateMuonQ);
-    outTree->Branch(    "finalStateMuonMother",     &finalStateMuonMother);
-    outTree->Branch(    "finalStateMuonZIndex",     &finalStateMuonZIndex);
+    // Leptons
+    outTree->Branch(    "muonP4",                   &muonP4_,       32000,      1);
+    outTree->Branch(    "muonQ",                    &muonQ);
+    outTree->Branch(    "muonMother",               &muonMother);
+    outTree->Branch(    "muonZIndex",               &muonZIndex);
 
-    outTree->Branch(    "finalStateElectronP4",     &finalStateElectronP4,      32000,      1);
-    outTree->Branch(    "finalStateElectronQ",      &finalStateElectronQ);
-    outTree->Branch(    "finalStateElectronMother", &finalStateElectronMother);
-    outTree->Branch(    "finalStateElectronZIndex", &finalStateElectronZIndex);
+    outTree->Branch(    "electronP4",               &electronP4_,   32000,      1);
+    outTree->Branch(    "electronQ",                &electronQ);
+    outTree->Branch(    "electronMother",           &electronMother);
+    outTree->Branch(    "electronZIndex",           &electronZIndex);
 
-    outTree->Branch(    "finalStateLeptonsP4",      &finalStateLeptonsP4);
-
-
-    // Hard process leptons
-    outTree->Branch(    "hardProcMuonP4",           &hardProcMuonP4,            32000,      1);
-    outTree->Branch(    "hardProcMuonQ",            &hardProcMuonQ);
-    outTree->Branch(    "hardProcMuonStatus",       &hardProcMuonStatus);
-    outTree->Branch(    "hardProcMuonZIndex",       &hardProcMuonZIndex);
-
-    outTree->Branch(    "hardProcElectronP4",       &hardProcElectronP4,        32000,      1);
-    outTree->Branch(    "hardProcElectronQ",        &hardProcElectronQ);
-    outTree->Branch(    "hardProcElectronStatus",   &hardProcElectronStatus);
-    outTree->Branch(    "hardProcElectronZIndex",   &hardProcElectronZIndex);
-
-    outTree->Branch(    "hardProcLeptonsP4",        &hardProcLeptonsP4);
+    outTree->Branch(    "leptonsP4",                &leptonsP4);
 
 
     // Z bosons
-    outTree->Branch(    "status22ZP4",              &status22ZP4);
-    outTree->Branch(    "status22ZMother",          &status22ZMother);
-    outTree->Branch(    "status22ZIndex",           &status22ZIndex);
-    outTree->Branch(    "status22ZsP4",             &status22ZsP4);
-
-    outTree->Branch(    "finalStateZP4",            &finalStateZP4);
-    outTree->Branch(    "finalStateZStatus",        &finalStateZStatus);
-    outTree->Branch(    "finalStateZIndex",         &finalStateZIndex);
-    outTree->Branch(    "finalStateZsP4",           &finalStateZsP4);
+    outTree->Branch(    "zP4",                      &zP4_,          32000,      1);
+    outTree->Branch(    "zStatus",                  &zStatus);
+    outTree->Branch(    "zIndex",                   &zIndex);
+    outTree->Branch(    "zsP4",                     &zsP4);
 
 
 
@@ -163,27 +138,16 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     //  CLEAR CONTAINERS
     //
     
-    isFiducial = kFALSE;                qcdID.clear();                      qcdWeight.clear();
-    decayChannel = 0;                   pdfID.clear();                      pdfWeight.clear();
+    isFiducial = kFALSE;        qcdID.clear();              qcdWeight.clear();
+    decayChannel = 0;           pdfID.clear();              pdfWeight.clear();
 
-    nFinalStateMuons = 0;               nFinalStateElectrons = 0;           nFinalStateLeptons = 0; 
-    nHardProcMuons = 0;                 nHardProcElectrons = 0;             nHardProcLeptons = 0; 
-    nStatus22Zs = 0;                    nFinalStateZs = 0;
+    nMuons = 0;                 nElectrons = 0;             nLeptons = 0;               nZs = 0;
 
-    finalStateMuonP4ptr.Delete();       finalStateMuonQ.clear();            finalStateMuonMother.clear();
-    finalStateElectronP4ptr.Delete();   finalStateElectronQ.clear();        finalStateElectronMother.clear();
-    finalStateMuonZIndex.clear();       finalStateElectronZIndex.clear();
-    finalStateLeptonsP4.Clear();
+    muonP4_->Delete();          muonQ.clear();              muonMother.clear();
+    electronP4_->Delete();      electronQ.clear();          electronMother.clear();
+    muonZIndex.clear();         electronZIndex.clear();     leptonsP4.Clear();
 
-    hardProcMuonP4ptr.Delete();         hardProcMuonQ.clear();              hardProcMuonStatus.clear();
-    hardProcElectronP4ptr.Delete();     hardProcElectronQ.clear();          hardProcElectronStatus.clear();
-    hardProcMuonZIndex.clear();         hardProcElectronZIndex.clear();
-    hardProcLeptonsP4.Clear();
-
-    status22ZP4ptr.Delete();            status22ZMother.clear();            status22ZIndex.clear();
-    status22ZsP4.Clear();
-    finalStateZP4ptr.Delete();          finalStateZStatus.clear();          finalStateZIndex.clear();
-    finalStateZsP4.Clear();
+    zP4_->Delete();             zStatus.clear();            zIndex.clear();             zsP4.Clear();
 
 
 
@@ -219,7 +183,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
     if (genWeight < 0)
         hTotalEvents->Fill(10);
-    nomWeight = fGenEvtInfo->weight; 
 
     runNumber   = fInfo->runNum;
     evtNumber   = fInfo->evtNum;
@@ -229,6 +192,10 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     for (int i = 0; i < fLHEWeightArr->GetEntries(); i++)
     {
         TLHEWeight* lhe = (TLHEWeight*) fLHEWeightArr->At(i);
+
+        // Get nominal weight (mu_R = mu_F = 1)
+        if (i == 0)
+            nomWeight = lhe->weight; 
 
         // QCD scales
         if (i < 9)
@@ -258,154 +225,107 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     hPhaseSpaceEvents->Fill(1, genWeight);
 
-    vector<TLorentzVector>  fsMuonP4,       fsElecP4,       hpMuonP4,       hpElecP4;
-    vector<int>             fsMuonQ,        fsElecQ,        hpMuonQ,        hpElecQ;
-    vector<int>             fsMuonMother,   fsElecMother,   hpMuonStatus,   hpElecStatus;
-    vector<unsigned>        fsMuonZIndex,   fsElecZIndex,   hpMuonZIndex,   hpElecZIndex;
+    vector<TLorentzVector>  muonP4,       elecP4;
+    vector<int>             muonQ,        elecQ;
+    vector<int>             muonMother,   elecMother;
+    vector<unsigned>        muonZIndex,   elecZIndex;
 
-    vector<TLorentzVector>  s22ZP4,         fsZP4;
-    vector<int>             s22ZMother,     fsZStatus;
-    vector<unsigned>        s22ZIndex;
+    vector<TLorentzVector>  zP4;
+    vector<int>             zStatus;
+    vector<unsigned>        zIndex;
 
-    bool foundTauDecay = kFALSE;
+    bool hasTauDecay = kFALSE;
 
 
 
     for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
     {
         TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
+        int motherIndex = particle->parent;
 
+        if (motherIndex < 0)            // seg faults are bad!
+            continue;
 
+        TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(motherIndex);
+        int motherID = mother->pdgId;
 
-        //
-        //  LEPTONS
-        //
-
-
-        if (((abs(particle->pdgId) == 13) || (abs(particle->pdgId) == 11)) && particle->parent >= 0)
+        // Look for taus
+        if (abs(particle->pdgId) == 15)
         {
-            TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
-
-
-            // Hard process ("immediate" mother is a Z)
-
-            if (mother->pdgId == 23)
-            {
-                TLorentzVector p4;
-                int charge = -1 * copysign(1, particle->pdgId);     // Antileptons have negative pdgId...
-
-                if      (abs(particle->pdgId) == 13)
-                {
-                    p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, MUON_MASS);
-                    hpMuonP4.push_back(p4);
-                    hpMuonQ.push_back(charge);
-                    hpMuonStatus.push_back(particle->status);
-                    hpMuonZIndex.push_back(particle->parent);
-                    nHardProcMuons++;
-                }
-                else if (abs(particle->pdgId) == 11)
-                {
-                    p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, ELE_MASS);
-                    hpElecP4.push_back(p4);
-                    hpElecQ.push_back(charge);
-                    hpElecStatus.push_back(particle->status);
-                    hpElecZIndex.push_back(particle->parent);
-                    nHardProcElectrons++;
-                }
-            }
-
-
-            // Final state (have status 1 & can be traced to a Z)
-
-            if (particle->status == 1)
-            {
-                int motherID = mother->pdgId;   // Store ID of "immediate" mother
-                int motherIndex = particle->parent;
-
-                // Trace the decay chain all the way back, allowing only e or mu as an intermediate state
-                while ((abs(mother->pdgId) == 13 || abs(mother->pdgId) == 11) && mother->parent >= 0)
-                {
-                    motherIndex = mother->parent;
-                    mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
-                }
-
-                // If the "ultimate mother" is a Z, we have a final-state lepton from a Z decay
-                if (mother->pdgId == 23)
-                {
-                    TLorentzVector p4;
-                    int charge = -1 * copysign(1, particle->pdgId);     // Antileptons have negative pdgId...
-
-                    if      (abs(particle->pdgId) == 13)
-                    {
-                        p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, MUON_MASS);
-                        fsMuonP4.push_back(p4);
-                        fsMuonQ.push_back(charge);
-                        fsMuonMother.push_back(motherID);
-                        fsMuonZIndex.push_back(motherIndex);
-                        nFinalStateMuons++;
-                    }
-                    else if (abs(particle->pdgId) == 11)
-                    {
-                        p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, ELE_MASS);
-                        fsElecP4.push_back(p4);
-                        fsElecQ.push_back(charge);
-                        fsElecMother.push_back(motherID);
-                        fsElecZIndex.push_back(motherIndex);
-                        nFinalStateElectrons++;
-                    }
-                }
-            }
-
-        } // END lepton case
-
-
-
-        //
-        //  TAU TAGGING
-        //
-
-        else if ((abs(particle->pdgId) == 15) && particle->parent >= 0)
-        {
-            TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
-
-            // Trace the decay chain all the way back, allowing any lepton as an intermediate state
-            // (maybe it could be done only allowing tau?)
-            while (((abs(mother->pdgId) == 15) || (abs(mother->pdgId) == 13) || (abs(mother->pdgId) == 11)) && mother->parent >= 0)
+            while ((mother->pdgId == particle->pdgId) && (mother->parent >= 0))
                 mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
 
-            // If the "ultimate mother" is a Z, we have a tau from a Z decay
             if (mother->pdgId == 23)
-                foundTauDecay = kTRUE;
+                hasTauDecay = kTRUE;
         }
 
+        // Now look for electrons and muons
+        if ((abs(particle->pdgId) != 13) && (abs(particle->pdgId) != 11))
+            continue;
+        if (particle->status != 1)      // no point in saving Born leptons anymore...
+            continue;
 
+        // Try to trace back to a Z
+        while ((mother->pdgId == particle->pdgId) && (mother->parent >= 0))
+            mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
 
-        //
-        //  Z BOSONS
-        //
+        if (mother->pdgId != 23)
+            continue;
 
-        else if ((particle->pdgId == 23) && (particle->status == 22))   // status 22 is apparently hard process
+        // FSR recovery
+        if (params->selection == "dressed")
         {
-            TLorentzVector p4;
-            p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
+            TLorentzVector lepP4;
+            copy_p4(particle, lepP4);
 
-            s22ZP4.push_back(p4);
-            s22ZMother.push_back(particle->parent);
-            s22ZIndex.push_back(i);
-            nStatus22Zs++;
+            for (int j = 0; j < fGenParticleArr->GetEntries(); j++)
+            {
+                TGenParticle* gamma = (TGenParticle*) fGenParticleArr->At(i);
+
+                if ((gamma->pdgId != 22) || (gamma->status != 1))
+                    continue;
+
+                TLorentzVector gammaP4;
+                copy_p4(gamma, 0, gammaP4);
+
+                if (lepP4.DeltaR(gammaP4) < DR_DRESS)
+                    lepP4 = lepP4 + gammaP4;
+            }
+
+            particle->pt = lepP4.Pt();
+            particle->eta = lepP4.Eta();
+            particle->phi = lepP4.Phi();
+            particle->mass = lepP4.M();
         }
 
+        int charge = -1 * copysign(1, particle->pdgId);
+
+        if      (abs(particle->pdgId) == 13)
+        {
+            TLorentzVector *p4 = (TLorentzVector*) muonP4_->ConstructedAt(nMuons);
+            copy_p4(particle, MUON_MASS, p4);
+            leptonsP4 = leptonsP4 + *p4;
+            muonQ.push_back(charge);
+            muonMother.push_back(motherID);
+            muonZIndex.push_back(motherIndex);
+            nMuons++;
+        }
+        else if (abs(particle->pdgId) == 11)
+        {
+            TLorentzVector *p4 = (TLorentzVector*) electronP4_->ConstructedAt(nElectrons);
+            copy_p4(particle, ELE_MASS, p4);
+            leptonsP4 = leptonsP4 + *p4;
+            electronQ.push_back(charge);
+            electronMother.push_back(motherID);
+            electronZIndex.push_back(motherIndex);
+            nElectrons++;
+        }
     } // END particle loop
 
-    if (foundTauDecay)
+    if (hasTauDecay)
         return kTRUE;
 
-
-    nFinalStateLeptons  = nFinalStateMuons  + nFinalStateElectrons;
-    nHardProcLeptons    = nHardProcMuons    + nHardProcElectrons;
-
-
-
+    nLeptons = nMuons + nElectrons;
 
 
 
@@ -413,90 +333,41 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     //  Z COUNTING
     //
 
-
-    // Status 22
-    TLorentzVector s22ZsP4;
-
-    for (unsigned i = 0; i < nStatus22Zs; i++)
-        s22ZsP4 += s22ZP4[i];
-
-
-
-    // Final state
-    vector<unsigned> fsZIndex;
-
-    for (unsigned i = 0; i < nFinalStateMuons; i++)
+    for (unsigned i = 0; i < nMuons; i++)
     {
         // If this muon's mother Z has not already been found
-        if (find(fsZIndex.begin(), fsZIndex.end(), fsMuonZIndex[i]) == fsZIndex.end())
+        if (find(zIndex.begin(), zIndex.end(), muonZIndex[i]) == zIndex.end())
         {
-            fsZIndex.push_back(fsMuonZIndex[i]);
-            nFinalStateZs++;
+            zIndex.push_back(muonZIndex[i]);
+            nZs++;
         }
     }
-    for (unsigned i = 0; i < nFinalStateElectrons; i++)
+    for (unsigned i = 0; i < nElectrons; i++)
     {
         // If this electron's mother Z has not already been found
-        if (find(fsZIndex.begin(), fsZIndex.end(), fsElecZIndex[i]) == fsZIndex.end())
+        if (find(zIndex.begin(), zIndex.end(), elecZIndex[i]) == zIndex.end())
         {
-            fsZIndex.push_back(fsElecZIndex[i]);
-            nFinalStateZs++;
+            zIndex.push_back(elecZIndex[i]);
+            nZs++;
         }
     }
 
-
     // Get the (unique) Zs from GenParticleArray
-    for (unsigned i = 0; i < nFinalStateZs; i++)
+    for (unsigned i = 0; i < nZs; i++)
     {
-        TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(fsZIndex[i]);
+        TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(zIndex[i]);
 
         TLorentzVector p4;
         p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
 
-        fsZP4.push_back(p4);
-        fsZStatus.push_back(particle->status);
+        zP4.push_back(p4);
+        zStatus.push_back(particle->status);
     }
 
 
     // Sum them all up
-    TLorentzVector fsZsP4;
-
-    for (unsigned i = 0; i < nFinalStateZs; i++)
-        fsZsP4 += fsZP4[i];
-
-
-
-
-    //
-    //  LEPTON SUMS 
-    //
-
-
-    // Sort
-
-
-    // Final state
-
-    TLorentzVector fsMuonsP4, fsElecsP4;
-
-    for (unsigned i = 0; i < nFinalStateMuons; i++)
-        fsMuonsP4 += fsMuonP4[i];
-    for (unsigned i = 0; i < nFinalStateElectrons; i++)
-        fsElecsP4 += fsElecP4[i];
-
-    TLorentzVector fsLepsP4 = fsMuonsP4 + fsElecsP4;
-
-
-    // Hard process
-
-    TLorentzVector hpMuonsP4, hpElecsP4;
-
-    for (unsigned i = 0; i < nHardProcMuons; i++)
-        hpMuonsP4 += hpMuonP4[i];
-    for (unsigned i = 0; i < nHardProcElectrons; i++)
-        hpElecsP4 += hpElecP4[i];
-
-    TLorentzVector hpLepsP4 = hpMuonsP4 + hpElecsP4;
+    for (unsigned i = 0; i < nZs; i++)
+        zsP4 += zP4[i];
 
 
 
@@ -510,361 +381,128 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     ////
 
 
-    //
-    //  FINAL STATE
-    //
-
-    if      (params->selection == "final")
-    {
-        // Require four final-state leptons
-        // (because they are what will be detected)
-
-        if (isSignal && (nFinalStateLeptons != 4))
-            return kTRUE;
-        if (isDrellYan && (nFinalStateLeptons != 2))
-            return kTRUE;
-        hTotalEvents->Fill(2);
-
-
-
-        // 4-lepton mass
-
-        if (fsLepsP4.M() < M_MIN || fsLepsP4.M() > M_MAX)
-            return kTRUE;
-        hTotalEvents->Fill(3);
-
-
-
-        // Dilepton mass
-
-        for (unsigned j = 1; j < nFinalStateMuons; j++)
-        {
-            for (unsigned i = 0; i < j; i++)
-            {
-                if (fsMuonQ[i] != fsMuonQ[j])
-                {
-                    TLorentzVector dimuonP4 = fsMuonP4[i] + fsMuonP4[j];
-
-                    if (dimuonP4.M() < MLL_MIN)
-                        return kTRUE;
-                }
-            }
-        }
-        for (unsigned j = 1; j < nFinalStateElectrons; j++)
-        {
-            for (unsigned i = 0; i < j; i++)
-            {
-                if (fsElecQ[i] != fsElecQ[j])
-                {
-                    TLorentzVector dielecP4 = fsElecP4[i] + fsElecP4[j];
-
-                    if (dielecP4.M() < MLL_MIN)
-                        return kTRUE;
-                }
-            }
-        }
-        hTotalEvents->Fill(4);
-
-
-
-        // Categorize
-
-        hPhaseSpaceEvents->Fill(1, genWeight);
-        unsigned C = 0;                                                 // Index
-
-        if      (nFinalStateMuons == 2 && nFinalStateElectrons == 0)    // mumu = 3
-            C = 3;
-
-        else if (nFinalStateMuons == 0 && nFinalStateElectrons == 2)    // ee   = 4
-            C = 4;
-
-        else if (nFinalStateMuons == 4 && nFinalStateElectrons == 0)    // 4m   = 6
-            C = 6;
-
-        else if (nFinalStateMuons == 2 && nFinalStateElectrons == 2     // 2m2e = 7
-                && fsMuonsP4.M() > fsElecsP4.M())
-            C = 7;
-
-        else if (nFinalStateMuons == 2 && nFinalStateElectrons == 2     // 2e2m = 8
-                && fsMuonsP4.M() < fsElecsP4.M())
-            C = 8;
-
-        else if (nFinalStateMuons == 0 && nFinalStateElectrons == 4)    // 4e   = 9
-            C = 9;
-
-        unsigned D = (C < 6) ? 2 : 5;
-        hPhaseSpaceEvents->Fill(C, genWeight);
-        hPhaseSpaceEvents->Fill(D, genWeight);
-        decayChannel = C;
-
-
-
-        // Fiducial acceptance
-        
-        std::vector<TLorentzVector> sorted_leps = fsMuonP4;
-        sorted_leps.insert(sorted_leps.end(), fsElecP4.begin(), fsElecP4.end());
-        sort(sorted_leps.begin(), sorted_leps.end(), P4SortCondition);
-
-        isFiducial = kTRUE;
-
-        for (unsigned i = 0; i < sorted_leps.size(); i++)
-        {
-            if (fabs(sorted_leps[i].Eta()) > ETA_MAX)
-                isFiducial = kFALSE;
-        }
-
-        if (sorted_leps[0].Pt() < PT1_MIN)
-            isFiducial = kFALSE;
-        if (sorted_leps[1].Pt() < PT2_MIN)
-            isFiducial = kFALSE;
-
-        if (decayChannel > 4)
-        {
-            if (sorted_leps[2].Pt() < PT_MIN)
-                isFiducial = kFALSE;
-            if (sorted_leps[3].Pt() < PT_MIN)
-                isFiducial = kFALSE;
-        }
-
-
-    } // END "final" case
-
-
-
-    //
-    //  HARD PROCESS
-    //
-
-    else if (params->selection == "hard")
-    {
-        // Require four hard-process leptons
-
-
-        if (isSignal && (nHardProcLeptons != 4))
-            return kTRUE;
-        if (isDrellYan && (nHardProcLeptons != 2))
-            return kTRUE;
-        hTotalEvents->Fill(2);
-
-
-
-        // 4-lepton mass
-
-        if (hpLepsP4.M() < M_MIN || hpLepsP4.M() > M_MAX)
-            return kTRUE;
-        hTotalEvents->Fill(3);
-
-
-
-        // Dilepton mass
-
-        for (unsigned j = 1; j < nHardProcMuons; j++)
-        {
-            for (unsigned i = 0; i < j; i++)
-            {
-                if (hpMuonQ[i] != hpMuonQ[j])
-                {
-                    TLorentzVector dimuonP4 = hpMuonP4[i] + hpMuonP4[j];
-
-                    if (dimuonP4.M() < MLL_MIN)
-                        return kTRUE;
-                }
-            }
-        }
-        for (unsigned j = 1; j < nHardProcElectrons; j++)
-        {
-            for (unsigned i = 0; i < j; i++)
-            {
-                if (hpElecQ[i] != hpElecQ[j])
-                {
-                    TLorentzVector dielecP4 = hpElecP4[i] + hpElecP4[j];
-
-                    if (dielecP4.M() < MLL_MIN)
-                        return kTRUE;
-                }
-            }
-        }
-        hTotalEvents->Fill(4);
-
-
-
-        // Categorize
-
-        hPhaseSpaceEvents->Fill(1, genWeight);
-        unsigned C = 0;                                             // Index
-
-        if      (nHardProcMuons == 2 && nHardProcElectrons == 0)    // mumu = 3
-            C = 3;
-
-        else if (nHardProcMuons == 0 && nHardProcElectrons == 2)    // ee   = 4
-            C = 4;
-
-        else if (nHardProcMuons == 4 && nHardProcElectrons == 0)    // 4m   = 6
-            C = 6;
-
-        else if (nHardProcMuons == 2 && nHardProcElectrons == 2     // 2m2e = 7
-                && hpMuonsP4.M() > hpElecsP4.M())
-            C = 7;
-
-        else if (nHardProcMuons == 2 && nHardProcElectrons == 2     // 2e2m = 8
-                && hpMuonsP4.M() < hpElecsP4.M())
-            C = 8;
-
-        else if (nHardProcMuons == 0 && nHardProcElectrons == 4)    // 4e   = 9
-            C = 9;
-
-        unsigned D = (C < 6) ? 2 : 5;
-        hPhaseSpaceEvents->Fill(C, genWeight);
-        hPhaseSpaceEvents->Fill(D, genWeight);
-        decayChannel = C;
-
-
-
-        // Fiducial acceptance
-        
-        std::vector<TLorentzVector> sorted_leps = hpMuonP4;
-        sorted_leps.insert(sorted_leps.end(), hpElecP4.begin(), hpElecP4.end());
-        sort(sorted_leps.begin(), sorted_leps.end(), P4SortCondition);
-
-        isFiducial = kTRUE;
-
-        for (unsigned i = 0; i < sorted_leps.size(); i++)
-        {
-            if (fabs(sorted_leps[i].Eta()) > ETA_MAX)
-                isFiducial = kFALSE;
-        }
-
-        if (sorted_leps[0].Pt() < PT1_MIN)
-            isFiducial = kFALSE;
-        if (sorted_leps[1].Pt() < PT2_MIN)
-            isFiducial = kFALSE;
-
-        if (isSignal)
-        {
-            if (sorted_leps[2].Pt() < PT_MIN)
-                isFiducial = kFALSE;
-            if (sorted_leps[3].Pt() < PT_MIN)
-                isFiducial = kFALSE;
-        }
-
-
-    } // END "hard" case
-
-    else if (params->selection != "all")
+    if (params->selection != "dressed")
         return kTRUE;
 
-    hTotalEvents->Fill(9);
+
+    // Require correct number of leptons
+
+    if (isSignal && (nLeptons != 4))
+        return kTRUE;
+    if (isDrellYan && (nLeptons != 2))
+        return kTRUE;
+    hTotalEvents->Fill(2);
 
 
 
+    // Total mass
 
-    //
-    //  DEBUG
-    //
+    if (leptonsP4.M() < M_MIN || leptonsP4.M() > M_MAX)
+        return kTRUE;
+    hTotalEvents->Fill(3);
 
 
-//  if (nHardProcLeptons != nFinalStateLeptons)
-    if (kFALSE)
+
+    // Dilepton mass
+
+    for (unsigned j = 1; j < nMuons; j++)
     {
-        cout << nFinalStateMuons << " fs muons\t" << nFinalStateElectrons << " fs elecs" << endl;
-        cout << nHardProcMuons << " hp muons\t" << nHardProcElectrons << " hp elecs" << endl;
-        cout << endl;
-        cout << "Idx" << "\t" << "ID" << "\t" << "Stat" << "\t" << "Mom" << "\t" << "Pt" << endl;
-        for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
+        for (unsigned i = 0; i < j; i++)
         {
-            TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
+            if (muonQ[i] != muonQ[j])
+            {
+                TLorentzVector dimuonP4 = muonP4[i] + muonP4[j];
 
-            if (abs(particle->pdgId) == 11 || abs(particle->pdgId) == 13 || abs(particle->pdgId) == 15 || abs(particle->pdgId) == 23)
-                cout << i << "\t" << particle->pdgId << "\t" << particle->status << "\t" << particle->parent << "\t" << particle->pt << endl;
+                if (dimuonP4.M() < MLL_MIN)
+                    return kTRUE;
+            }
         }
-        cout << endl;
-
-        cout << "hp muons:\t";
-        for (unsigned i = 0; i < nHardProcMuons; i++)
-            cout << hpMuonZIndex[i] << ", ";
-        cout << endl;
-        cout << "hp elecs:\t";
-        for (unsigned i = 0; i < nHardProcElectrons; i++)
-            cout << hpElecZIndex[i] << ", ";
-        cout << endl << endl;
     }
-
-
-
-    //
-    //  FILL TREE
-    //
-
-    // Final state
-
-    // Muons
-    for (unsigned i = 0; i < nFinalStateMuons; i++)
+    for (unsigned j = 1; j < nElectrons; j++)
     {
-        new(finalStateMuonP4ptr[i]) TLorentzVector(fsMuonP4[i]);
-        finalStateMuonQ.push_back(fsMuonQ[i]);
-        finalStateMuonMother.push_back(fsMuonMother[i]);
-        finalStateMuonZIndex.push_back(fsMuonZIndex[i]);
-    }
+        for (unsigned i = 0; i < j; i++)
+        {
+            if (elecQ[i] != elecQ[j])
+            {
+                TLorentzVector dielecP4 = elecP4[i] + elecP4[j];
 
-    // Electrons
-    for (unsigned i = 0; i < nFinalStateElectrons; i++)
+                if (dielecP4.M() < MLL_MIN)
+                    return kTRUE;
+            }
+        }
+    }
+    hTotalEvents->Fill(4);
+
+
+
+    // Categorize
+
+    TLorentzVector muonsP4, elecsP4;
+
+    for (unsigned i = 0; i < nMuons; i++)
+        muonsP4 += muonP4[i];
+    for (unsigned i = 0; i < nElectrons; i++)
+        elecsP4 += elecP4[i];
+
+    hPhaseSpaceEvents->Fill(1, genWeight);
+    unsigned C = 0;                             // Index
+
+    if      (nMuons == 2 && nElectrons == 0)    // mumu = 3
+        C = 3;
+
+    else if (nMuons == 0 && nElectrons == 2)    // ee   = 4
+        C = 4;
+
+    else if (nMuons == 4 && nElectrons == 0)    // 4m   = 6
+        C = 6;
+
+    else if (nMuons == 2 && nElectrons == 2     // 2m2e = 7
+            && muonsP4.M() > elecsP4.M())
+        C = 7;
+
+    else if (nMuons == 2 && nElectrons == 2     // 2e2m = 8
+            && muonsP4.M() < elecsP4.M())
+        C = 8;
+
+    else if (nMuons == 0 && nElectrons == 4)    // 4e   = 9
+        C = 9;
+
+    unsigned D = (C < 6) ? 2 : 5;
+    hPhaseSpaceEvents->Fill(C, genWeight);
+    hPhaseSpaceEvents->Fill(D, genWeight);
+    decayChannel = C;
+
+
+
+    // Fiducial acceptance
+
+    std::vector<TLorentzVector> sorted_leps = muonP4;
+    sorted_leps.insert(sorted_leps.end(), elecP4.begin(), elecP4.end());
+    sort(sorted_leps.begin(), sorted_leps.end(), P4SortCondition);
+
+    isFiducial = kTRUE;
+
+    for (unsigned i = 0; i < sorted_leps.size(); i++)
     {
-        new(finalStateElectronP4ptr[i]) TLorentzVector(fsElecP4[i]);
-        finalStateElectronQ.push_back(fsElecQ[i]);
-        finalStateElectronMother.push_back(fsElecMother[i]);
-        finalStateElectronZIndex.push_back(fsElecZIndex[i]);
+        if (fabs(sorted_leps[i].Eta()) > ETA_MAX)
+            isFiducial = kFALSE;
     }
 
-    finalStateLeptonsP4 = fsLepsP4;
+    if (sorted_leps[0].Pt() < PT1_MIN)
+        isFiducial = kFALSE;
+    if (sorted_leps[1].Pt() < PT2_MIN)
+        isFiducial = kFALSE;
 
-
-
-    // Hard process
-
-    // Muons
-    for (unsigned i = 0; i < nHardProcMuons; i++)
+    if (decayChannel > 4)
     {
-        new(hardProcMuonP4ptr[i]) TLorentzVector(hpMuonP4[i]);
-        hardProcMuonQ.push_back(hpMuonQ[i]);
-        hardProcMuonStatus.push_back(hpMuonStatus[i]);
-        hardProcMuonZIndex.push_back(hpMuonZIndex[i]);
+        if (sorted_leps[2].Pt() < PT_MIN)
+            isFiducial = kFALSE;
+        if (sorted_leps[3].Pt() < PT_MIN)
+            isFiducial = kFALSE;
     }
 
-    // Electrons
-    for (unsigned i = 0; i < nHardProcElectrons; i++)
-    {
-        new(hardProcElectronP4ptr[i]) TLorentzVector(hpElecP4[i]);
-        hardProcElectronQ.push_back(hpElecQ[i]);
-        hardProcElectronStatus.push_back(hpElecStatus[i]);
-        hardProcElectronZIndex.push_back(hpElecZIndex[i]);
-    }
 
-    hardProcLeptonsP4 = hpLepsP4;
-
-
-
-    // Z bosons
-
-    // Status 22
-    for (unsigned i = 0; i < nStatus22Zs; i++)
-    {
-        new(status22ZP4ptr[i]) TLorentzVector(s22ZP4[i]);
-        status22ZMother.push_back(s22ZMother[i]);
-        status22ZIndex.push_back(s22ZIndex[i]);
-    }
-    status22ZsP4 = s22ZsP4;
-
-    // "Final state" (traced from FS leptons)
-    for (unsigned i = 0; i < nFinalStateZs; i++)
-    {
-        new(finalStateZP4ptr[i]) TLorentzVector(fsZP4[i]);
-        finalStateZStatus.push_back(fsZStatus[i]);
-        finalStateZIndex.push_back(fsZIndex[i]);
-    }
-    finalStateZsP4 = fsZsP4;
-
-
-
+    // Fill tree
 
     outTree->Fill();
     this->passedEvents++;

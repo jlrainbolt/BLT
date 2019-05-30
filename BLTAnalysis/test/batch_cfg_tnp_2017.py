@@ -9,10 +9,10 @@ period      = '2017'
 executable  = 'execBatchTnP.sh'
 location    = 'lpc'
 
-selection   = 'ee'
+selection   = 'mumu'
 
-data_samples    = ['single_e']
-#data_samples    = ['single_mu']
+#data_samples    = ['single_e']
+data_samples    = ['single_mu']
 #mc_samples      = ['zjets', 'ttbar']
 mc_samples      = ['zjets']
 

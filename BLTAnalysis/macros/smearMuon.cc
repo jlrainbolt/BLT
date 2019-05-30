@@ -12,7 +12,7 @@ void smearMuon(const TString YEAR_STR)
     //  OPTIONS
     //
 
-    const unsigned N = 100;     // Number of histograms to create
+    const unsigned N = 200;     // Number of histograms to create
 
 
 
@@ -54,17 +54,17 @@ void smearMuon(const TString YEAR_STR)
         h_smr[n]->Reset("ICESM");
         h_smr[n]->SetTitle(histName);
 
+        float delta = rng.Gaus(0, 0.01);
+
         for (unsigned i = 1; i <= h_sf->GetNbinsX(); i++)
         {
             for (unsigned j = 1; j <= h_sf->GetNbinsY(); j++)
             {
                 float sf  = h_sf->GetBinContent(i, j);
                 float err = h_err->GetBinContent(i, j);
-                float smr = fabs(rng.Gaus(0, err));
+                float smr = rng.Gaus(0, err);
 
-                float var = n < 50 ? sf + smr : sf - smr;
-
-                h_smr[n]->SetBinContent(i, j, var);
+                h_smr[n]->SetBinContent(i, j, sf * (1 + delta) + smr);
             }
         }
     }
