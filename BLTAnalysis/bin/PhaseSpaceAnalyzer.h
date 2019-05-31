@@ -20,6 +20,7 @@
 #include "BLT/BLTAnalysis/interface/BLTSelector.hh"
 #include "BLT/BLTAnalysis/interface/BLTHelper.hh"
 #include "BLT/BLTAnalysis/interface/Parameters.hh"
+#include "BLT/BLTAnalysis/interface/WeightUtils.h"
 
 // ROOT headers
 #include <TLorentzVector.h>
@@ -55,8 +56,9 @@ public:
     TFile *outFile;
     TTree *outTree;
 
-    // Params and cuts
+    // Params and utilities
     std::unique_ptr<Parameters> params;
+    std::unique_ptr<WeightUtils> weights;
 
     // Histograms
     TH1D *hPhaseSpaceEvents, *hFiducialEvents;
@@ -73,6 +75,9 @@ public:
     // Fiducial requirements
     Float_t     PT1_MIN = 20,   PT2_MIN = 10,   PT_MIN = 5,     ETA_MAX = 2.5;
 
+    // FSR recovery
+    Float_t     DR_DRESS = 0.1;
+
 
 
     //
@@ -87,55 +92,33 @@ public:
     UShort_t    decayChannel;
     Bool_t      isFiducial;
 
-    std::vector<UShort_t>   qcdID,      pdfID;
-    std::vector<Float_t>    qcdWeight,  pdfWeight;
+//  std::vector<UShort_t>   qcdID,      pdfID;
+//  std::vector<Float_t>    qcdWeight,  pdfWeight;
 
 
     // Counters
-    UShort_t    nStatus2Zs,         nFinalStateZs;
-    UShort_t    nFinalStateMuons,   nFinalStateElectrons,   nFinalStateLeptons;
-    UShort_t    nHardProcMuons,     nHardProcElectrons,     nHardProcLeptons;
+    UShort_t    nMuons,   nElectrons,   nLeptons,   nZs;
 
 
-    // Final state leptons
-    TClonesArray    *finalStateMuonP4           = new TClonesArray("TLorentzVector");
-    TClonesArray    &finalStateMuonP4ptr        = *finalStateMuonP4;
+    // Dressed leptons
+    TClonesArray    *muonP4_        = new TClonesArray("TLorentzVector");
+    TClonesArray    *electronP4_    = new TClonesArray("TLorentzVector");
+    TLorentzVector  leptonsP4;
 
-    TClonesArray    *finalStateElectronP4       = new TClonesArray("TLorentzVector");
-    TClonesArray    &finalStateElectronP4ptr    = *finalStateElectronP4;
-
-    std::vector<Short_t>    finalStateMuonQ,        finalStateElectronQ;
-    std::vector<Short_t>    finalStateMuonMother,   finalStateElectronMother;
-    std::vector<UShort_t>   finalStateMuonZIndex,   finalStateElectronZIndex;
-
-    TLorentzVector  finalStateLeptonsP4;
-
-
-    // Hard process leptons
-    TClonesArray    *hardProcMuonP4             = new TClonesArray("TLorentzVector");
-    TClonesArray    &hardProcMuonP4ptr          = *hardProcMuonP4;
-
-    TClonesArray    *hardProcElectronP4         = new TClonesArray("TLorentzVector");
-    TClonesArray    &hardProcElectronP4ptr      = *hardProcElectronP4;
-
-    std::vector<Short_t>    hardProcMuonQ,          hardProcElectronQ;
-    std::vector<Short_t>    hardProcMuonStatus,     hardProcElectronStatus;
-    std::vector<UShort_t>   hardProcMuonZIndex,     hardProcElectronZIndex;
-
-    TLorentzVector  hardProcLeptonsP4;
+    std::vector<Short_t>    muonQ,        electronQ;
+    std::vector<Short_t>    muonMother,   electronMother;
+    std::vector<UShort_t>   muonZIndex,   electronZIndex;
 
 
     // Z bosons
-    TClonesArray    *status2ZP4                 = new TClonesArray("TLorentzVector");
-    TClonesArray    &status2ZP4ptr              = *status2ZP4;
+    TClonesArray    *zP4_           = new TClonesArray("TLorentzVector");
+    TLorentzVector  zsP4;
 
-    TClonesArray    *finalStateZP4              = new TClonesArray("TLorentzVector");
-    TClonesArray    &finalStateZP4ptr           = *finalStateZP4;
+    std::vector<Short_t>    zStatus;
+    std::vector<UShort_t>   zIndex;
 
-    std::vector<Short_t>    status2ZMother,     finalStateZStatus;
-    std::vector<UShort_t>   status2ZIndex,      finalStateZIndex;
 
-    TLorentzVector  status2ZsP4,    finalStateZsP4;
+    //ClassDef(PhaseSpaceAnalyzer,0);
 };
 
 

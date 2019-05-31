@@ -43,7 +43,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params->setup(options);
 
     const bool isSignal     = params->datasetgroup == "zz_4l";
-    const bool isDrellYan   = params->datasetgroup == "zjets_m-50";
 
     // Particle selector, cuts
     cuts.reset(new Cuts());
@@ -66,10 +65,12 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     if (params->period == "2012")
     {
-        muonTriggerNames.push_back("HLT_Mu17_Mu8_v*");
-        muonTriggerNames.push_back("HLT_Mu17_TkMu8_v*");
+        doubleMuonTriggers.push_back("HLT_Mu17_Mu8_v*");
+        doubleMuonTriggers.push_back("HLT_Mu17_TkMu8_v*");
+        singleMuonTriggers.push_back("HLT_IsoMu24_eta2p1_v*");
 
-        electronTriggerNames.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*");
+        doubleElecTriggers.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*");
+        singleElecTriggers.push_back("HLT_Ele27_WP80_v*");
     }
 
 
@@ -92,16 +93,18 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "evtNumber",                &evtNumber);
     outTree->Branch(    "lumiSection",              &lumiSection);
     outTree->Branch(    "evtMuonTriggered",         &evtMuonTriggered);
+    outTree->Branch(    "evtDoubleMuTriggered",     &evtDoubleMuTriggered);
+    outTree->Branch(    "evtSingleMuTriggered",     &evtSingleMuTriggered);
     outTree->Branch(    "evtElectronTriggered",     &evtElectronTriggered);
+    outTree->Branch(    "evtDoubleElTriggered",     &evtDoubleElTriggered);
+    outTree->Branch(    "evtSingleElTriggered",     &evtSingleElTriggered);
+
     outTree->Branch(    "genWeight",                &genWeight);
     outTree->Branch(    "ECALWeight",               &ECALWeight);
     outTree->Branch(    "PUWeight",                 &PUWeight);
+    outTree->Branch(    "PUWeightUp",               &PUWeightUp);
+    outTree->Branch(    "PUWeightDown",             &PUWeightDown);
     outTree->Branch(    "nPU",                      &nPU);
-    if (isSignal || isDrellYan)
-    {
-        outTree->Branch(    "nPUUp",                    &nPUUp);
-        outTree->Branch(    "nPUDown",                  &nPUDown);
-    }
     outTree->Branch(    "nPV",                      &nPV);
     outTree->Branch(    "hasTauDecay",              &hasTauDecay);
 
@@ -112,8 +115,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "nTightElectrons",          &nTightElectrons);
     outTree->Branch(    "nTightLeptons",            &nTightLeptons);
 
-    outTree->Branch(    "muonP4",                   &muonP4_,                       32000,      1);
-    outTree->Branch(    "muonUncorrectedP4",        &muonUncorrectedP4_,            32000,      1);
+    outTree->Branch(    "muonP4",                   &muonP4_,               32000,      1);
+    outTree->Branch(    "muonUncorrP4",             &muonUncorrP4_,         32000,      1);
     outTree->Branch(    "muonQ",                    &muonCharge);
     outTree->Branch(    "muonEnergySF",             &muonEnergySF);
     outTree->Branch(    "muonEnergySFUp",           &muonEnergySFUp);
@@ -127,13 +130,14 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "muonIsTrackerHighPt",      &muonIsTrackerHighPt);
     outTree->Branch(    "muonFiredLeg1",            &muonFiredLeg1);
     outTree->Branch(    "muonFiredLeg2",            &muonFiredLeg2);
-    outTree->Branch(    "muonTrigEffLeg1Data",      &muonTrigEffLeg1Data);
-    outTree->Branch(    "muonTrigEffLeg1MC",        &muonTrigEffLeg1MC);
-    outTree->Branch(    "muonTrigEffLeg2Data",      &muonTrigEffLeg2Data);
-    outTree->Branch(    "muonTrigEffLeg2MC",        &muonTrigEffLeg2MC);
+    outTree->Branch(    "muonFiredSingle",          &muonFiredSingle);
+//  outTree->Branch(    "muonTrigEffLeg1Data",      &muonTrigEffLeg1Data);
+//  outTree->Branch(    "muonTrigEffLeg1MC",        &muonTrigEffLeg1MC);
+//  outTree->Branch(    "muonTrigEffLeg2Data",      &muonTrigEffLeg2Data);
+//  outTree->Branch(    "muonTrigEffLeg2MC",        &muonTrigEffLeg2MC);
 
-    outTree->Branch(    "electronP4",               &electronP4_,                   32000,      1);
-    outTree->Branch(    "electronUncorrectedP4",    &electronUncorrectedP4_,        32000,      1);
+    outTree->Branch(    "electronP4",               &electronP4_,           32000,      1);
+    outTree->Branch(    "electronUncorrP4",         &electronUncorrP4_,     32000,      1);
     outTree->Branch(    "electronQ",                &electronCharge);
     outTree->Branch(    "electronEnergySF",         &electronEnergySF);
     outTree->Branch(    "electronEnergySFUp",       &electronEnergySFUp);
@@ -142,6 +146,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "electronRecoSF",           &electronRecoSF);
     outTree->Branch(    "electronIsolation",        &electronIsolation);
     outTree->Branch(    "electronScEta",            &electronScEta);
+    outTree->Branch(    "electronScEt",             &electronScEt);
     outTree->Branch(    "electronIsTight",          &electronIsTight);
     outTree->Branch(    "electronIsLoose",          &electronIsLoose);
     outTree->Branch(    "electronIsMVA",            &electronIsMVA);
@@ -149,35 +154,24 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "electronIsGap",            &electronIsGap);
     outTree->Branch(    "electronFiredLeg1",        &electronFiredLeg1);
     outTree->Branch(    "electronFiredLeg2",        &electronFiredLeg2);
-    outTree->Branch(    "electronTrigEffLeg1Data",  &electronTrigEffLeg1Data);
-    outTree->Branch(    "electronTrigEffLeg1MC",    &electronTrigEffLeg1MC);
-    outTree->Branch(    "electronTrigEffLeg2Data",  &electronTrigEffLeg2Data);
-    outTree->Branch(    "electronTrigEffLeg2MC",    &electronTrigEffLeg2MC);
+    outTree->Branch(    "electronFiredSingle",      &electronFiredSingle);
+//  outTree->Branch(    "electronTrigEffLeg1Data",  &electronTrigEffLeg1Data);
+//  outTree->Branch(    "electronTrigEffLeg1MC",    &electronTrigEffLeg1MC);
+//  outTree->Branch(    "electronTrigEffLeg2Data",  &electronTrigEffLeg2Data);
+//  outTree->Branch(    "electronTrigEffLeg2MC",    &electronTrigEffLeg2MC);
 
     if (isSignal)
     {
-        outTree->Branch(    "nFinalStateMuons",         &nFinalStateMuons);
-        outTree->Branch(    "nFinalStateElectrons",     &nFinalStateElectrons);
-        outTree->Branch(    "nFinalStateLeptons",       &nFinalStateLeptons);
-        outTree->Branch(    "nHardProcMuons",           &nHardProcMuons);
-        outTree->Branch(    "nHardProcElectrons",       &nHardProcElectrons);
-        outTree->Branch(    "nHardProcLeptons",         &nHardProcLeptons);
-
-        outTree->Branch(    "finalStateLeptonsP4",      &finalStateLeptonsP4);
-        outTree->Branch(    "finalStateMuonP4",         &finalStateMuonP4_,         32000,      1);
-        outTree->Branch(    "finalStateMuonQ",          &finalStateMuonQ);
-        outTree->Branch(    "finalStateMuonZIndex",     &finalStateMuonZIndex);
-        outTree->Branch(    "finalStateElectronP4",     &finalStateElectronP4_,     32000,      1);
-        outTree->Branch(    "finalStateElectronQ",      &finalStateElectronQ);
-        outTree->Branch(    "finalStateElectronZIndex", &finalStateElectronZIndex);
-
-        outTree->Branch(    "hardProcLeptonsP4",        &hardProcLeptonsP4);
-        outTree->Branch(    "hardProcMuonP4",           &hardProcMuonP4_,           32000,      1);
-        outTree->Branch(    "hardProcMuonQ",            &hardProcMuonQ);
-        outTree->Branch(    "hardProcMuonZIndex",       &hardProcMuonZIndex);
-        outTree->Branch(    "hardProcElectronP4",       &hardProcElectronP4_,       32000,      1);
-        outTree->Branch(    "hardProcElectronQ",        &hardProcElectronQ);
-        outTree->Branch(    "hardProcElectronZIndex",   &hardProcElectronZIndex);
+        outTree->Branch(    "nDressedMuons",            &nDressedMuons);
+        outTree->Branch(    "nDressedElectrons",        &nDressedElectrons);
+        outTree->Branch(    "nDressedLeptons",          &nDressedLeptons);
+        outTree->Branch(    "dressedLeptonsP4",         &dressedLeptonsP4);
+        outTree->Branch(    "dressedMuonP4",            &dressedMuonP4_,        32000,      1);
+        outTree->Branch(    "dressedMuonQ",             &dressedMuonQ);
+        outTree->Branch(    "dressedMuonZIndex",        &dressedMuonZIndex);
+        outTree->Branch(    "dressedElectronP4",        &dressedElectronP4_,    32000,      1);
+        outTree->Branch(    "dressedElectronQ",         &dressedElectronQ);
+        outTree->Branch(    "dressedElectronZIndex",    &dressedElectronZIndex);
     }
 
     // Histograms
@@ -196,36 +190,38 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     //
 
     sampleName.Clear();
+    evtMuonTriggered = kFALSE;      evtDoubleMuTriggered = kFALSE;  evtSingleMuTriggered = kFALSE;
+    evtElectronTriggered = kFALSE;  evtDoubleElTriggered = kFALSE;  evtSingleElTriggered = kFALSE;
+
     nLooseMuons     = 0;            nLooseElectrons = 0;            nLooseLeptons   = 0;
     nTightMuons     = 0;            nTightElectrons = 0;            nTightLeptons   = 0; 
-    genWeight       = 1;            ECALWeight      = 1;            PUWeight        = 1;
-    nPU             = 0;            nPUUp           = 0;            nPUDown         = 0;
+    genWeight       = 1;            ECALWeight      = 1;            nPU             = 0;
+    PUWeight        = 1;            PUWeightUp      = 1;            PUWeightDown    = 1;
     hasTauDecay     = kFALSE;
 
-    muonP4_->Delete();              muonUncorrectedP4_->Delete();   muonCharge.clear();
+    muonP4_->Delete();              muonUncorrP4_->Delete();        muonCharge.clear();
     muonEnergySF.clear();           muonEnergySFUp.clear();         muonEnergySFDown.clear();
     muonIDSF.clear();               muonIsolation.clear();
     muonIsTight.clear();            muonIsLoose.clear();            muonIsIsolated.clear();
     muonIsPF.clear();               muonIsTrackerHighPt.clear();
-    muonFiredLeg1.clear();          muonFiredLeg2.clear();          muonTrigEffLeg1Data.clear();
-    muonTrigEffLeg1MC.clear();      muonTrigEffLeg2Data.clear();    muonTrigEffLeg2MC.clear(); 
+    muonFiredLeg1.clear();          muonFiredLeg2.clear();          muonFiredSingle.clear();
+//  muonTrigEffLeg1Data.clear();
+//  muonTrigEffLeg1MC.clear();      muonTrigEffLeg2Data.clear();    muonTrigEffLeg2MC.clear(); 
                                                                                                         
-    electronP4_->Delete();      electronUncorrectedP4_->Delete();   electronCharge.clear();
+    electronP4_->Delete();          electronUncorrP4_->Delete();    electronCharge.clear();
     electronEnergySF.clear();       electronEnergySFUp.clear();     electronEnergySFDown.clear();
     electronIDSF.clear();           electronRecoSF.clear();         electronIsolation.clear();      
-    electronScEta.clear();          electronIsGap.clear();          electronIsIsolated.clear();
+    electronScEta.clear();          electronScEt.clear();           electronIsGap.clear();
+    electronIsIsolated.clear();
     electronIsTight.clear();        electronIsLoose.clear();        electronIsMVA.clear();
-    electronFiredLeg1.clear();      electronFiredLeg2.clear();      electronTrigEffLeg1Data.clear();
-    electronTrigEffLeg1MC.clear();  electronTrigEffLeg2Data.clear();electronTrigEffLeg2MC.clear();
+    electronFiredLeg1.clear();      electronFiredLeg2.clear();      electronFiredSingle.clear();
+//  electronTrigEffLeg1Data.clear();
+//  electronTrigEffLeg1MC.clear();  electronTrigEffLeg2Data.clear();electronTrigEffLeg2MC.clear();
 
-    nFinalStateMuons = 0;           nFinalStateElectrons = 0;       nFinalStateLeptons = 0; 
-    nHardProcMuons = 0;             nHardProcElectrons = 0;         nHardProcLeptons = 0; 
-    finalStateLeptonsP4.Clear();    hardProcLeptonsP4.Clear();
-    finalStateMuonP4_->Delete();    finalStateMuonQ.clear();        finalStateMuonZIndex.clear();
-    finalStateElectronP4_->Delete();finalStateElectronQ.clear();    finalStateElectronZIndex.clear();
-    hardProcMuonP4_->Delete();      hardProcMuonQ.clear();          hardProcMuonZIndex.clear();
-    hardProcElectronP4_->Delete();  hardProcElectronQ.clear();      hardProcElectronZIndex.clear();
-
+    nDressedMuons = 0;              nDressedElectrons = 0;          nDressedLeptons = 0; 
+    dressedMuonP4_->Delete();       dressedMuonQ.clear();           dressedMuonZIndex.clear();
+    dressedElectronP4_->Delete();   dressedElectronQ.clear();       dressedElectronZIndex.clear();
+    dressedLeptonsP4.Clear();
 
 
 
@@ -275,11 +271,15 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         if (isSignal)
             genWeight = weights->GetSampleWeight();
 
+
         // Pileup weight
         nPU = fInfo->nPUmean;
-        nPUUp = fInfo->nPUmean + fabs((float) fInfo->nPUp - (float) fInfo->nPU);
-        nPUDown = fInfo->nPUmean - fabs((float) fInfo->nPUm - (float) fInfo->nPU);
+        float nPUUp = fInfo->nPUmean + fabs((float) fInfo->nPUp - (float) fInfo->nPU);
+        float nPUDown = fInfo->nPUmean - fabs((float) fInfo->nPUm - (float) fInfo->nPU);
+
         PUWeight = weights->GetPUWeight(nPU);
+        PUWeightUp = weights->GetPUWeight(nPUUp);
+        PUWeightDown = weights->GetPUWeight(nPUDown);
     }
     else
     {
@@ -298,97 +298,84 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     if (isSignal || isDrellYan)
     {
-        finalStateLeptonsP4 = TLorentzVector();
-        hardProcLeptonsP4 = TLorentzVector();
+        dressedLeptonsP4 = TLorentzVector();
 
         // Particle loop
         for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
+            int motherIndex = particle->parent;
 
-            if  ((abs(particle->pdgId) == 13 || abs(particle->pdgId) == 11)  &&  particle->parent >= 0)
+            if (motherIndex < 0)            // seg faults are bad!
+                continue;
+
+            TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(motherIndex);
+
+            // Look for taus from a Z
+            if ((abs(particle->pdgId) == 15) && (mother->pdgId == 23))
+                hasTauDecay = kTRUE;
+
+            if (!isSignal)                  // don't waste time if we aren't storing the leptons
+                continue;
+
+            // Now look for electrons and muons
+            if ((abs(particle->pdgId) != 13) && (abs(particle->pdgId) != 11))
+                continue;
+            if (particle->status != 1)      // no point in saving Born leptons anymore...
+                continue;
+
+            // Try to trace back to a Z
+            while ((mother->pdgId == particle->pdgId) && (mother->parent >= 0))
+                mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
+
+            if (mother->pdgId != 23)
+                continue;
+
+            // FSR recovery
+            TLorentzVector lepP4;
+            copy_p4(particle, lepP4);
+
+            for (int j = 0; j < fGenParticleArr->GetEntries(); j++)
             {
-                TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
+                TGenParticle* gamma = (TGenParticle*) fGenParticleArr->At(i);
 
-                // Hard process
-                if (mother->pdgId == 23)
-                {
-                    int charge = -1 * copysign(1, particle->pdgId);
+                if ((gamma->pdgId != 22) || (gamma->status != 1))
+                    continue;
 
-                    if      (abs(particle->pdgId) == 13)
-                    {
-                        TLorentzVector *p4 = (TLorentzVector*)hardProcMuonP4_->ConstructedAt(nHardProcMuons);
-                        copy_p4(particle, MUON_MASS, p4);
-                        hardProcLeptonsP4 = hardProcLeptonsP4 + *p4;
-                        hardProcMuonQ.push_back(charge);
-                        hardProcMuonZIndex.push_back(particle->parent);
-                        nHardProcMuons++;
-                    }
-                    else if (abs(particle->pdgId) == 11)
-                    {
-                        TLorentzVector *p4 = (TLorentzVector*)hardProcElectronP4_->ConstructedAt(nHardProcElectrons);
-                        copy_p4(particle, ELE_MASS, p4);
-                        hardProcLeptonsP4 = hardProcLeptonsP4 + *p4;
-                        hardProcElectronQ.push_back(charge);
-                        hardProcElectronZIndex.push_back(particle->parent);
-                        nHardProcElectrons++;
-                    }
-                }
+                TLorentzVector gammaP4;
+                copy_p4(gamma, 0, gammaP4);
 
-                // Final state
-                if (particle->status == 1)
-                {
-                    int motherIndex = particle->parent;
-
-                    while ((abs(mother->pdgId) == 13 || abs(mother->pdgId) == 11) && mother->parent >= 0)
-                    {
-                        motherIndex = mother->parent;
-                        mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
-                    }
-
-                    if (mother->pdgId == 23)
-                    {
-                        TLorentzVector p4;
-                        int charge = -1 * copysign(1, particle->pdgId);
-
-                        if      (abs(particle->pdgId) == 13)
-                        {
-                            TLorentzVector *p4 = (TLorentzVector*)finalStateMuonP4_->ConstructedAt(nFinalStateMuons);
-                            copy_p4(particle, MUON_MASS, p4);
-                            finalStateLeptonsP4 = finalStateLeptonsP4 + *p4;
-                            finalStateMuonQ.push_back(charge);
-                            finalStateMuonZIndex.push_back(motherIndex);
-                            nFinalStateMuons++;
-                        }
-                        else if (abs(particle->pdgId) == 11)
-                        {
-                            TLorentzVector *p4 = (TLorentzVector*)finalStateElectronP4_->ConstructedAt(nFinalStateElectrons);
-                            copy_p4(particle, ELE_MASS, p4);
-                            finalStateLeptonsP4 = finalStateLeptonsP4 + *p4;
-                            finalStateElectronQ.push_back(charge);
-                            finalStateElectronZIndex.push_back(motherIndex);
-                            nFinalStateElectrons++;
-                        }
-                    }
-                }
+                if (lepP4.DeltaR(gammaP4) < 0.1)
+                    lepP4 = lepP4 + gammaP4;
             }
 
-            else if ((abs(particle->pdgId) == 15) && particle->parent >= 0)
+            particle->pt = lepP4.Pt();
+            particle->eta = lepP4.Eta();
+            particle->phi = lepP4.Phi();
+            particle->mass = lepP4.M();
+
+            int charge = -1 * copysign(1, particle->pdgId);
+
+            if      (abs(particle->pdgId) == 13)
             {
-                TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
-
-                // Trace back tau decay chain
-                while ((abs(mother->pdgId) == 15) && (mother->parent >= 0))
-                    mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
-
-                // If the "ultimate mother" is a Z, we have a tau from a Z decay
-                if (mother->pdgId == 23)
-                    hasTauDecay = kTRUE;
+                TLorentzVector *p4 = (TLorentzVector*)dressedMuonP4_->ConstructedAt(nDressedMuons);
+                copy_p4(particle, MUON_MASS, p4);
+                dressedLeptonsP4 = dressedLeptonsP4 + *p4;
+                dressedMuonQ.push_back(charge);
+                dressedMuonZIndex.push_back(motherIndex);
+                nDressedMuons++;
+            }
+            else if (abs(particle->pdgId) == 11)
+            {
+                TLorentzVector *p4 = (TLorentzVector*)dressedElectronP4_->ConstructedAt(nDressedElectrons);
+                copy_p4(particle, ELE_MASS, p4);
+                dressedLeptonsP4 = dressedLeptonsP4 + *p4;
+                dressedElectronQ.push_back(charge);
+                dressedElectronZIndex.push_back(motherIndex);
+                nDressedElectrons++;
             }
         }
-
-        nFinalStateLeptons      = nFinalStateMuons + nFinalStateElectrons;
-        nHardProcLeptons        = nHardProcMuons + nHardProcElectrons;
+        nDressedLeptons = nDressedMuons + nDressedElectrons;
     }
 
 
@@ -397,21 +384,46 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     //  TRIGGER SELECTION
     //
 
-    evtMuonTriggered = kFALSE;
-    for (unsigned i = 0; i < muonTriggerNames.size(); i++)
+    for (unsigned i = 0; i < doubleMuonTriggers.size(); i++)            // double muon
     {
-        if (trigger->pass(muonTriggerNames[i], fInfo->triggerBits))
-            evtMuonTriggered = kTRUE;
+        if (trigger->pass(doubleMuonTriggers[i], fInfo->triggerBits))
+            evtDoubleMuTriggered = kTRUE;
+    }
+    for (unsigned i = 0; i < singleMuonTriggers.size(); i++)            // single muon
+    {
+        if (trigger->pass(singleMuonTriggers[i], fInfo->triggerBits))
+            evtSingleMuTriggered = kTRUE;
+    }
+    for (unsigned i = 0; i < doubleElecTriggers.size(); i++)            // double electron
+    {
+        if (trigger->pass(doubleElecTriggers[i], fInfo->triggerBits))
+            evtDoubleElTriggered = kTRUE;
+    }
+    for (unsigned i = 0; i < singleElecTriggers.size(); i++)            // single electron
+    {
+        if (trigger->pass(singleElecTriggers[i], fInfo->triggerBits))
+            evtSingleElTriggered = kTRUE;
     }
 
-    evtElectronTriggered = kFALSE;
-    for (unsigned i = 0; i < electronTriggerNames.size(); i++)
-    {
-        if (trigger->pass(electronTriggerNames[i], fInfo->triggerBits))
-            evtElectronTriggered = kTRUE;
-    }
+    evtMuonTriggered = evtSingleMuTriggered || evtDoubleMuTriggered;
+    evtElectronTriggered = evtSingleElTriggered || evtDoubleElTriggered;
 
-    bool passTrigger = evtMuonTriggered || evtElectronTriggered;
+    bool passTrigger;
+    if (isData)
+    {
+        if      (evtDoubleMuTriggered)
+            passTrigger = sampleName.Contains("DoubleMu");
+        else if (evtSingleMuTriggered)
+            passTrigger = sampleName.Contains("SingleMu");
+        else if (evtDoubleElTriggered)
+            passTrigger = sampleName.Contains("DoubleElectron");
+        else if (evtSingleElTriggered)
+            passTrigger = sampleName.Contains("SingleElectron");
+        else
+            passTrigger = kFALSE;
+    }
+    else
+        passTrigger = evtMuonTriggered || evtElectronTriggered;
 
     if (!passTrigger)
         return kTRUE;
@@ -509,10 +521,10 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         TMuon* muon = muons[i];
 
         // Initialize entries in TClonesArrays
-        TLorentzVector *uncorrP4 = (TLorentzVector*)muonUncorrectedP4_->ConstructedAt(i);
-        TLorentzVector *corrP4 = (TLorentzVector*)muonP4_->ConstructedAt(i);
+        TLorentzVector *uncorrP4 = (TLorentzVector*) muonUncorrP4_->ConstructedAt(i);
+        TLorentzVector *corrP4 = (TLorentzVector*) muonP4_->ConstructedAt(i);
 
-        // Uncorrected momentum
+        // Uncorr momentum
         copy_p4(muon, MUON_MASS, uncorrP4);
 
         // Charge
@@ -546,17 +558,25 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             nTightMuons++;
 
         // Trigger bools and SFs
-        bool firedLeg1 = kFALSE, firedLeg2 = kFALSE;
-        for (unsigned i = 0; i < muonTriggerNames.size(); i++)
+        bool firedLeg1 = kFALSE, firedLeg2 = kFALSE, firedSingle = kFALSE;
+
+        for (unsigned i = 0; i < doubleMuonTriggers.size(); i++)
         {
-            if (trigger->passObj(muonTriggerNames[i], 1, muon->hltMatchBits))
+            if (trigger->passObj(doubleMuonTriggers[i], 1, muon->hltMatchBits))
                 firedLeg1 = kTRUE;
-            if (trigger->passObj(muonTriggerNames[i], 2, muon->hltMatchBits))
+            if (trigger->passObj(doubleMuonTriggers[i], 2, muon->hltMatchBits))
                 firedLeg2 = kTRUE;
         }
+        for (unsigned i = 0; i < singleMuonTriggers.size(); i++)
+        {
+            if (trigger->passObj(singleMuonTriggers[i], 1, muon->hltMatchBits))
+                firedSingle = kTRUE;
+        }
+
         muonFiredLeg1.push_back(firedLeg1);
         muonFiredLeg2.push_back(firedLeg2);
-
+        muonFiredSingle.push_back(firedSingle);
+/*
         pair<float, float> trigEff;
         trigEff = weights->GetDoubleMuonTriggerEff(muon, 1);
         muonTrigEffLeg1Data.push_back(trigEff.first);
@@ -565,6 +585,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         trigEff = weights->GetDoubleMuonTriggerEff(muon, 2);
         muonTrigEffLeg2Data.push_back(trigEff.first);
         muonTrigEffLeg2MC.push_back(trigEff.second);
+*/
     }
 
 
@@ -578,12 +599,13 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         TElectron* electron = electrons[i];
 
         // Initialize entries in TClonesArrays
-        TLorentzVector *uncorrP4 = (TLorentzVector*)electronUncorrectedP4_->ConstructedAt(i);
-        TLorentzVector *corrP4 = (TLorentzVector*)electronP4_->ConstructedAt(i);
+        TLorentzVector *uncorrP4 = (TLorentzVector*) electronUncorrP4_->ConstructedAt(i);
+        TLorentzVector *corrP4 = (TLorentzVector*) electronP4_->ConstructedAt(i);
 
-        // Uncorrected momentum
+        // Uncorr momentum
         copy_p4(electrons[i], ELE_MASS, uncorrP4);
         electronScEta.push_back(electron->scEta);
+        electronScEt.push_back(electron->scEt);
 
         // Charge
         electronCharge.push_back(electron->q);
@@ -615,17 +637,25 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             nTightElectrons++;
 
         // Trigger bools and SFs
-        bool firedLeg1 = kFALSE, firedLeg2 = kFALSE;
-        for (unsigned i = 0; i < electronTriggerNames.size(); i++)
+        bool firedLeg1 = kFALSE, firedLeg2 = kFALSE, firedSingle = kFALSE;
+
+        for (unsigned i = 0; i < doubleElecTriggers.size(); i++)
         {
-            if (trigger->passObj(electronTriggerNames[i], 1, electron->hltMatchBits))
+            if (trigger->passObj(doubleElecTriggers[i], 1, electron->hltMatchBits))
                 firedLeg1 = kTRUE;
-            if (trigger->passObj(electronTriggerNames[i], 2, electron->hltMatchBits))
+            if (trigger->passObj(doubleElecTriggers[i], 2, electron->hltMatchBits))
                 firedLeg2 = kTRUE;
         }
+        for (unsigned i = 0; i < singleElecTriggers.size(); i++)
+        {
+            if (trigger->passObj(singleElecTriggers[i], 1, electron->hltMatchBits))
+                firedSingle = kTRUE;
+        }
+
         electronFiredLeg1.push_back(firedLeg1);
         electronFiredLeg2.push_back(firedLeg2);
-
+        electronFiredSingle.push_back(firedSingle);
+/*
         pair<float, float> trigEff;
         trigEff = weights->GetDoubleElectronTriggerEff(electron, 1);
         electronTrigEffLeg1Data.push_back(trigEff.first);
@@ -634,6 +664,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         trigEff = weights->GetDoubleElectronTriggerEff(electron, 2);
         electronTrigEffLeg2Data.push_back(trigEff.first);
         electronTrigEffLeg2MC.push_back(trigEff.second);
+*/
     }
 
     nLooseLeptons = nLooseMuons + nLooseElectrons;
