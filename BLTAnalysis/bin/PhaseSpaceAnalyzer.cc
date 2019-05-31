@@ -234,8 +234,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     vector<int>             zStatus;
     vector<unsigned>        zIndex;
 
-    bool hasTauDecay = kFALSE;
-
 
 
     for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
@@ -249,15 +247,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(motherIndex);
         int motherID = mother->pdgId;
 
-        // Look for taus
-        if (abs(particle->pdgId) == 15)
-        {
-            while ((mother->pdgId == particle->pdgId) && (mother->parent >= 0))
-                mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
-
-            if (mother->pdgId == 23)
-                hasTauDecay = kTRUE;
-        }
+        // Look for taus from a Z
+        if ((abs(particle->pdgId) == 15) && (mother->pdgId == 23))
+            return kTRUE;
 
         // Now look for electrons and muons
         if ((abs(particle->pdgId) != 13) && (abs(particle->pdgId) != 11))
@@ -321,9 +313,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
             nElectrons++;
         }
     } // END particle loop
-
-    if (hasTauDecay)
-        return kTRUE;
 
     nLeptons = nMuons + nElectrons;
 

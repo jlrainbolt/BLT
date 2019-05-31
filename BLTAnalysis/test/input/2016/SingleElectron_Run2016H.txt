@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/jlr/SingleElectron_Run2016H-17Jul2018-v1/SingleElectron_Run2016H-17Jul2018-v1_trimmedBacon_0.root

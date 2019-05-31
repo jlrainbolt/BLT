@@ -128,7 +128,7 @@ public:
     // Counters
     UShort_t    nDressedMuons,          nDressedElectrons,      nDressedLeptons;
 
-    // Final state leptons
+    // Dressed leptons
     TLorentzVector          dressedLeptonsP4;
     TClonesArray            *dressedMuonP4_     = new TClonesArray("TLorentzVector");
     TClonesArray            *dressedElectronP4_ = new TClonesArray("TLorentzVector");

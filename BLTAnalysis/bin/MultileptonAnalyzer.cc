@@ -334,15 +334,12 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
             TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(motherIndex);
 
-            // Look for taus
-            if (abs(particle->pdgId) == 15)
-            {
-                while ((mother->pdgId == particle->pdgId) && (mother->parent >= 0))
-                    mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
+            // Look for taus from a Z
+            if ((abs(particle->pdgId) == 15) && (mother->pdgId == 23))
+                hasTauDecay = kTRUE;
 
-                if (mother->pdgId == 23)
-                    hasTauDecay = kTRUE;
-            }
+            if (!isSignal)                  // don't waste time if we aren't storing the leptons
+                continue;
 
             // Now look for electrons and muons
             if ((abs(particle->pdgId) != 13) && (abs(particle->pdgId) != 11))
@@ -451,7 +448,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     else
         passTrigger = evtMuonTriggered || evtElectronTriggered;
 
-    if (!passTrigger)
+    if (!passTrigger && !isSignal && !isDrellYan)
         return kTRUE;
     hTotalEvents->Fill(3);
 

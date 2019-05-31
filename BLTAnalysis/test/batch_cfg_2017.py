@@ -10,10 +10,10 @@ period      = '2017'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-data_samples    = ['double_mu', 'double_eg', 'single_mu', 'single_e']
-#data_samples    = []
-mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
-#mc_samples      = []
+#data_samples    = ['double_mu', 'double_eg', 'single_mu', 'single_e']
+data_samples    = ['double_mu', 'single_mu']
+#mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+mc_samples      = []
 
 
 
@@ -28,23 +28,23 @@ data_dict = {}
 
 data_dict['double_mu'] = \
 [
-    cfg(data_name = 'DoubleMuon_Run2017B',
-        path     = '{0}/DoubleMuon_Run2017B-31Mar2018-v1'.format(path),
-        nJobs    = 10,
-        suffix   = 'muon_2017'
-        ),
-    cfg(data_name = 'DoubleMuon_Run2017C',
-        path     = '{0}/DoubleMuon_Run2017C-31Mar2018-v1'.format(path),
-        nJobs    = 30,
-        suffix   = 'muon_2017'
-        ),
-    cfg(data_name = 'DoubleMuon_Run2017D',
-        path     = '{0}/DoubleMuon_Run2017D-31Mar2018-v1'.format(path),
-        nJobs    = 10,
-        suffix   = 'muon_2017'
-        ),
+#   cfg(data_name = 'DoubleMuon_Run2017B',
+#       path     = '{0}/DoubleMuon_Run2017B-31Mar2018-v1'.format(path),
+#       nJobs    = 10,
+#       suffix   = 'muon_2017'
+#       ),
+#   cfg(data_name = 'DoubleMuon_Run2017C',
+#       path     = '{0}/DoubleMuon_Run2017C-31Mar2018-v1'.format(path),
+#       nJobs    = 30,
+#       suffix   = 'muon_2017'
+#       ),
+#   cfg(data_name = 'DoubleMuon_Run2017D',
+#       path     = '{0}/DoubleMuon_Run2017D-31Mar2018-v1'.format(path),
+#       nJobs    = 10,
+#       suffix   = 'muon_2017'
+#       ),
     cfg(data_name = 'DoubleMuon_Run2017E',
-        path     = '{0}/DoubleMuon_Run20-31Mar2018-v1'.format(path),
+        path     = '{0}/DoubleMuon_Run2017E-31Mar2018-v1'.format(path),
         nJobs    = 30,
         suffix   = 'muon_2017'
         ),
