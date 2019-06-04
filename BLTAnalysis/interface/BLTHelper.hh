@@ -57,6 +57,10 @@ template<class T>
 void copy_p4(const T* lhs, float mass, TLorentzVector *rhs) {
         rhs->SetPtEtaPhiM(lhs->pt, lhs->eta, lhs->phi, mass);
 }
+template<class T>
+void copy_p4(const T* lhs, TLorentzVector *rhs) {
+        rhs->SetPtEtaPhiM(lhs->pt, lhs->eta, lhs->phi, lhs->mass);
+}
 
 // Sort functions
 template<class T>
