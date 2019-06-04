@@ -59,7 +59,7 @@ public:
     TTree *outTree;
 
     // Params and cuts
-    std::unique_ptr<Parameters>         params;
+    std::unique_ptr<Parameters> params;
 
     // Histograms
     TH1D *hPhaseSpaceEvents, *hFiducialEvents;

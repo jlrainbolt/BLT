@@ -348,8 +348,11 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 continue;
 
             // Try to trace back to a Z
-            while ((mother->pdgId == particle->pdgId) && (mother->parent >= 0))
-                mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
+            while (((abs(mother->pdgId) == 11) || (abs(mother->pdgId) == 13)) && (mother->parent >= 0))
+            {
+                motherIndex = mother->parent;
+                mother = (TGenParticle*) fGenParticleArr->At(motherIndex);
+            }
 
             if (mother->pdgId != 23)
                 continue;

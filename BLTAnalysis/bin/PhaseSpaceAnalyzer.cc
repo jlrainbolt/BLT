@@ -140,6 +140,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     
     isFiducial = kFALSE;        qcdID.clear();              qcdWeight.clear();
     decayChannel = 0;           pdfID.clear();              pdfWeight.clear();
+    genWeight = 1;              nomWeight = 1;
 
     nMuons = 0;                 nElectrons = 0;             nLeptons = 0;               nZs = 0;
 
@@ -225,16 +226,8 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     hPhaseSpaceEvents->Fill(1, genWeight);
 
-    vector<TLorentzVector>  muonP4,       elecP4;
-    vector<int>             muonQ,        elecQ;
-    vector<int>             muonMother,   elecMother;
-    vector<unsigned>        muonZIndex,   elecZIndex;
-
-    vector<TLorentzVector>  zP4;
-    vector<int>             zStatus;
-    vector<unsigned>        zIndex;
-
-
+    vector<TLorentzVector> muonP4, elecP4;
+    leptonsP4 = TLorentzVector();
 
     for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
     {
@@ -258,8 +251,11 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
             continue;
 
         // Try to trace back to a Z
-        while ((mother->pdgId == particle->pdgId) && (mother->parent >= 0))
-            mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
+        while (((abs(mother->pdgId) == 11) || (abs(mother->pdgId) == 13)) && (mother->parent >= 0))
+        {
+            motherIndex = mother->parent;
+            mother = (TGenParticle*) fGenParticleArr->At(motherIndex);
+        }
 
         if (mother->pdgId != 23)
             continue;
@@ -272,7 +268,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
             for (int j = 0; j < fGenParticleArr->GetEntries(); j++)
             {
-                TGenParticle* gamma = (TGenParticle*) fGenParticleArr->At(i);
+                TGenParticle* gamma = (TGenParticle*) fGenParticleArr->At(j);
 
                 if ((gamma->pdgId != 22) || (gamma->status != 1))
                     continue;
@@ -294,9 +290,14 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
         if      (abs(particle->pdgId) == 13)
         {
-            TLorentzVector *p4 = (TLorentzVector*) muonP4_->ConstructedAt(nMuons);
+            TLorentzVector *p4_ = (TLorentzVector*) muonP4_->ConstructedAt(nMuons);
+            copy_p4(particle, MUON_MASS, p4_);
+
+            TLorentzVector p4;
             copy_p4(particle, MUON_MASS, p4);
-            leptonsP4 = leptonsP4 + *p4;
+
+            leptonsP4 = leptonsP4 + p4;
+            muonP4.push_back(p4);
             muonQ.push_back(charge);
             muonMother.push_back(motherID);
             muonZIndex.push_back(motherIndex);
@@ -304,9 +305,14 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         }
         else if (abs(particle->pdgId) == 11)
         {
-            TLorentzVector *p4 = (TLorentzVector*) electronP4_->ConstructedAt(nElectrons);
+            TLorentzVector *p4_ = (TLorentzVector*) electronP4_->ConstructedAt(nElectrons);
+            copy_p4(particle, ELE_MASS, p4_);
+
+            TLorentzVector p4;
             copy_p4(particle, ELE_MASS, p4);
-            leptonsP4 = leptonsP4 + *p4;
+
+            leptonsP4 = leptonsP4 + p4;
+            elecP4.push_back(p4);
             electronQ.push_back(charge);
             electronMother.push_back(motherID);
             electronZIndex.push_back(motherIndex);
@@ -322,6 +328,8 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     //  Z COUNTING
     //
 
+    zsP4 = TLorentzVector();
+
     for (unsigned i = 0; i < nMuons; i++)
     {
         // If this muon's mother Z has not already been found
@@ -334,9 +342,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     for (unsigned i = 0; i < nElectrons; i++)
     {
         // If this electron's mother Z has not already been found
-        if (find(zIndex.begin(), zIndex.end(), elecZIndex[i]) == zIndex.end())
+        if (find(zIndex.begin(), zIndex.end(), electronZIndex[i]) == zIndex.end())
         {
-            zIndex.push_back(elecZIndex[i]);
+            zIndex.push_back(electronZIndex[i]);
             nZs++;
         }
     }
@@ -346,18 +354,14 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     {
         TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(zIndex[i]);
 
-        TLorentzVector p4;
-        p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
+        TLorentzVector *p4_ = (TLorentzVector*) zP4_->ConstructedAt(i);
+        copy_p4(particle, p4_);
 
-        zP4.push_back(p4);
+        TLorentzVector p4;
+        copy_p4(particle, p4);
+        zsP4 = zsP4 + p4;
         zStatus.push_back(particle->status);
     }
-
-
-    // Sum them all up
-    for (unsigned i = 0; i < nZs; i++)
-        zsP4 += zP4[i];
-
 
 
 
@@ -411,7 +415,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     {
         for (unsigned i = 0; i < j; i++)
         {
-            if (elecQ[i] != elecQ[j])
+            if (electronQ[i] != electronQ[j])
             {
                 TLorentzVector dielecP4 = elecP4[i] + elecP4[j];
 
@@ -429,9 +433,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     TLorentzVector muonsP4, elecsP4;
 
     for (unsigned i = 0; i < nMuons; i++)
-        muonsP4 += muonP4[i];
+        muonsP4 = muonsP4 + muonP4[i];
     for (unsigned i = 0; i < nElectrons; i++)
-        elecsP4 += elecP4[i];
+        elecsP4 = elecsP4 + elecP4[i];
 
     hPhaseSpaceEvents->Fill(1, genWeight);
     unsigned C = 0;                             // Index
@@ -456,6 +460,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     else if (nMuons == 0 && nElectrons == 4)    // 4e   = 9
         C = 9;
 
+    else
+        return kTRUE;
+
     unsigned D = (C < 6) ? 2 : 5;
     hPhaseSpaceEvents->Fill(C, genWeight);
     hPhaseSpaceEvents->Fill(D, genWeight);
@@ -465,7 +472,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     // Fiducial acceptance
 
-    std::vector<TLorentzVector> sorted_leps = muonP4;
+    vector<TLorentzVector> sorted_leps = muonP4;
     sorted_leps.insert(sorted_leps.end(), elecP4.begin(), elecP4.end());
     sort(sorted_leps.begin(), sorted_leps.end(), P4SortCondition);
 
@@ -482,13 +489,14 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     if (sorted_leps[1].Pt() < PT2_MIN)
         isFiducial = kFALSE;
 
-    if (decayChannel > 4)
+    if (nLeptons > 2)
     {
         if (sorted_leps[2].Pt() < PT_MIN)
             isFiducial = kFALSE;
         if (sorted_leps[3].Pt() < PT_MIN)
             isFiducial = kFALSE;
     }
+
 
 
     // Fill tree
