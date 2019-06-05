@@ -144,14 +144,14 @@ float WeightUtils::GetHZZMuonIDSF(const baconhep::TMuon* muon) const
 
     TH2 *hist = _hzz_muIdSF;
 
-    float   minPt = hist->GetYaxis()->GetXmin();
-    float   maxPt = hist->GetYaxis()->GetXmax();
+    float   minPt = hist->GetXaxis()->GetXmin();
+    float   maxPt = hist->GetXaxis()->GetXmax();
 
     double  pt = muon->pt;
     pt = min(pt, 0.99 * maxPt);
     pt = max(pt, 1.01 * minPt);
 
-    int bin = hist->FindBin(muon->eta, pt);
+    int bin = hist->FindBin(pt, muon->eta);
 
     if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;
@@ -167,14 +167,14 @@ float WeightUtils::GetHZZElectronIDSF(const baconhep::TElectron* electron) const
 
     TH2 *hist = _hzz_eleIdSF;
 
-    float   minPt = hist->GetYaxis()->GetXmin();
-    float   maxPt = hist->GetYaxis()->GetXmax();
+    float   minPt = hist->GetXaxis()->GetXmin();
+    float   maxPt = hist->GetXaxis()->GetXmax();
 
     double  pt = electron->pt;
     pt = min(pt, 0.99 * maxPt);
     pt = max(pt, 1.01 * minPt);
 
-    int bin = hist->FindBin(electron->scEta, pt);
+    int bin = hist->FindBin(pt, electron->scEta);
 
     if (hist->IsBinUnderflow(bin) || hist->IsBinOverflow(bin))
         return 1;
