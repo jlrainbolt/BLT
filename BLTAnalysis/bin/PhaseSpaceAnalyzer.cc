@@ -9,7 +9,6 @@ using namespace std;
 
 
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
-TLorentzVector GetP4Sum(const vector<TLorentzVector> &p4);
 
 
 PhaseSpaceAnalyzer::PhaseSpaceAnalyzer() : BLTSelector()
@@ -549,22 +548,4 @@ int main(int argc, char **argv)
     }
 
     return EXIT_SUCCESS;
-}
-
-
-
-
-//
-//  HELPERS
-//
-
-
-TLorentzVector GetP4Sum(const vector<TLorentzVector> &p4)
-{
-    TLorentzVector p4sum;
-
-    for (unsigned i = 0; i < p4.size(); i++)
-        p4sum += p4[i];
-
-    return p4sum;
 }

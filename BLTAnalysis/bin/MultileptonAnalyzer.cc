@@ -98,7 +98,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
         singleMuonTriggers.push_back("HLT_IsoMu24_v*");
 
         doubleElecTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
-        singleElecTriggers.push_back("HLT_Ele32_WPTight_Gsf_v*");
+//      singleElecTriggers.push_back("HLT_Ele32_WPTight_Gsf_v*");
+        singleElecTriggers.push_back("HLT_Ele35_WPTight_Gsf_v*");
     }
 
 
