@@ -5,7 +5,7 @@ import sys
 
 ''' Specify parameters '''
 cfg         = bm.JobConfig
-selection   = 'loose'
+selection   = 'tight'
 period      = '2018'
 executable  = 'execBatch.sh'
 location    = 'lpc'
@@ -13,7 +13,7 @@ location    = 'lpc'
 data_samples    = ['double_mu', 'single_mu', 'egamma']
 #data_samples    = []
 mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
-#mc_samples      = [']
+#mc_samples      = []
 
 
 

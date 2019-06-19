@@ -80,6 +80,9 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
         doubleElecTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
         singleElecTriggers.push_back("HLT_Ele27_WPTight_Gsf_v*");
+
+        MUON_LEG1_PT = 17;      MUON_LEG2_PT = 8;       MUON_SINGLE_PT = 24;
+        ELEC_LEG1_PT = 23;      ELEC_LEG2_PT = 12;      ELEC_SINGLE_PT = 27;
     }
 
     else if (params->period == "2017")
@@ -90,6 +93,9 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
         doubleElecTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
         singleElecTriggers.push_back("HLT_Ele35_WPTight_Gsf_v*");
+
+        MUON_LEG1_PT = 17;      MUON_LEG2_PT = 8;       MUON_SINGLE_PT = 27;
+        ELEC_LEG1_PT = 23;      ELEC_LEG2_PT = 12;      ELEC_SINGLE_PT = 35;
     }
 
     else if (params->period == "2018")
@@ -100,6 +106,9 @@ void MultileptonAnalyzer::Begin(TTree *tree)
         doubleElecTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
 //      singleElecTriggers.push_back("HLT_Ele32_WPTight_Gsf_v*");
         singleElecTriggers.push_back("HLT_Ele35_WPTight_Gsf_v*");
+
+        MUON_LEG1_PT = 17;      MUON_LEG2_PT = 8;       MUON_SINGLE_PT = 24;
+        ELEC_LEG1_PT = 23;      ELEC_LEG2_PT = 12;      ELEC_SINGLE_PT = 35;
     }
 
 
@@ -411,46 +420,41 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     //  TRIGGER SELECTION
     //
 
+    std::vector<string> firedDoubleMuTriggers, firedDoubleElTriggers;
+    std::vector<string> firedSingleMuTriggers, firedSingleElTriggers;
+
     for (unsigned i = 0; i < doubleMuonTriggers.size(); i++)            // double muon
     {
         if (trigger->pass(doubleMuonTriggers[i], fInfo->triggerBits))
-            evtDoubleMuTriggered = kTRUE;
+            firedDoubleMuTriggers.push_back(doubleMuonTriggers[i]);
     }
+    evtDoubleMuTriggered = firedDoubleMuTriggers.size() > 0;
+
     for (unsigned i = 0; i < singleMuonTriggers.size(); i++)            // single muon
     {
         if (trigger->pass(singleMuonTriggers[i], fInfo->triggerBits))
-            evtSingleMuTriggered = kTRUE;
+            firedSingleMuTriggers.push_back(singleMuonTriggers[i]);
     }
+    evtSingleMuTriggered = firedSingleMuTriggers.size() > 0;
+
     for (unsigned i = 0; i < doubleElecTriggers.size(); i++)            // double electron
     {
         if (trigger->pass(doubleElecTriggers[i], fInfo->triggerBits))
-            evtDoubleElTriggered = kTRUE;
+            firedDoubleElTriggers.push_back(doubleElecTriggers[i]);
     }
+    evtDoubleElTriggered = firedDoubleElTriggers.size() > 0;
+
     for (unsigned i = 0; i < singleElecTriggers.size(); i++)            // single electron
     {
         if (trigger->pass(singleElecTriggers[i], fInfo->triggerBits))
-            evtSingleElTriggered = kTRUE;
+            firedSingleElTriggers.push_back(singleElecTriggers[i]);
     }
-
+    evtSingleElTriggered = firedSingleElTriggers.size() > 0;
+    
     evtMuonTriggered = evtSingleMuTriggered || evtDoubleMuTriggered;
     evtElectronTriggered = evtSingleElTriggered || evtDoubleElTriggered;
 
-    bool passTrigger;
-    if (isData)
-    {
-        if      (evtDoubleMuTriggered)
-            passTrigger = sampleName.Contains("DoubleMuon");
-        else if (evtSingleMuTriggered)
-            passTrigger = sampleName.Contains("SingleMuon");
-        else if (evtDoubleElTriggered)
-            passTrigger = sampleName.Contains("DoubleEG") || sampleName.Contains("EGamma");
-        else if (evtSingleElTriggered)
-            passTrigger = sampleName.Contains("SingleElectron") || sampleName.Contains("EGamma");
-        else
-            passTrigger = kFALSE;
-    }
-    else
-        passTrigger = evtMuonTriggered || evtElectronTriggered;
+    bool passTrigger = evtMuonTriggered || evtElectronTriggered;
 
     if (!passTrigger && !isSignal && !isDrellYan)
         return kTRUE;
@@ -538,7 +542,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     nLooseElectrons = 0;
 
 
-
     //
     //  MUONS
     //
@@ -583,36 +586,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             nLooseMuons++;
         if (muonIsTight.back())
             nTightMuons++;
-
-        // Trigger bools and SFs
-        bool firedLeg1 = kFALSE, firedLeg2 = kFALSE, firedSingle = kFALSE;
-
-        for (unsigned i = 0; i < doubleMuonTriggers.size(); i++)
-        {
-            if (trigger->passObj(doubleMuonTriggers[i], 1, muon->hltMatchBits))
-                firedLeg1 = kTRUE;
-            if (trigger->passObj(doubleMuonTriggers[i], 2, muon->hltMatchBits))
-                firedLeg2 = kTRUE;
-        }
-        for (unsigned i = 0; i < singleMuonTriggers.size(); i++)
-        {
-            if (trigger->passObj(singleMuonTriggers[i], 1, muon->hltMatchBits))
-                firedSingle = kTRUE;
-        }
-
-        muonFiredLeg1.push_back(firedLeg1);
-        muonFiredLeg2.push_back(firedLeg2);
-        muonFiredSingle.push_back(firedSingle);
-/*
-        pair<float, float> trigEff;
-        trigEff = weights->GetDoubleMuonTriggerEff(muon, 1);
-        muonTrigEffLeg1Data.push_back(trigEff.first);
-        muonTrigEffLeg1MC.push_back(trigEff.second);
-
-        trigEff = weights->GetDoubleMuonTriggerEff(muon, 2);
-        muonTrigEffLeg2Data.push_back(trigEff.first);
-        muonTrigEffLeg2MC.push_back(trigEff.second);
-*/
     }
 
 
@@ -669,41 +642,246 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             nLooseElectrons++;
         if (electronIsTight.back())
             nTightElectrons++;
+    }
 
-        // Trigger bools and SFs
+    nLooseLeptons = nLooseMuons + nLooseElectrons;
+    nTightLeptons = nTightMuons + nTightElectrons;
+
+
+
+
+
+    ////
+    ////
+    ////    TRIGGER MATCHING
+    ////
+    ////
+
+
+    std::vector<string> matchedDoubleMuTriggers, matchedDoubleElTriggers;
+    std::vector<string> matchedSingleMuTriggers, matchedSingleElTriggers;
+
+
+
+    //
+    //  DOUBLE MUON
+    //
+
+    for (unsigned i = 0; i < firedDoubleMuTriggers.size(); i++)
+    {
+        bool matched = kFALSE;
+        for (unsigned j = 0; j < muons.size(); j++)
+        {
+            if (!muonIsTight[j])
+                continue;
+
+            // Did not match leg 1
+            if (muons[j]->pt < MUON_LEG1_PT)
+                continue;
+            if (!trigger->passObj(firedDoubleMuTriggers[i], 1, muons[j]->hltMatchBits))
+                continue;
+
+            // Look for a second lepton passing leg 2
+            for (unsigned k = 0; k < muons.size(); k++)
+            {
+                if (j == k)
+                    continue;
+                if (!muonIsTight[k])
+                    continue;
+
+                if (muons[k]->pt < MUON_LEG2_PT)
+                    continue;
+                if (trigger->passObj(firedDoubleMuTriggers[i], 2, muons[k]->hltMatchBits))
+                    matched = kTRUE;
+            }
+
+        }
+        if (matched)
+            matchedDoubleMuTriggers.push_back(firedDoubleMuTriggers[i]);
+    }
+    evtDoubleMuTriggered = matchedDoubleMuTriggers.size() > 0;
+
+
+
+    //
+    //  SINGLE MUON
+    //
+
+    for (unsigned i = 0; i < firedSingleMuTriggers.size(); i++)
+    {
+        bool matched = kFALSE;
+        for (unsigned j = 0; j < muons.size(); j++)
+        {
+            if (!muonIsTight[j])
+                continue;
+
+            if (muons[j]->pt < MUON_SINGLE_PT)
+                continue;
+            if (trigger->passObj(firedSingleMuTriggers[i], 1, muons[j]->hltMatchBits))
+                matched = kTRUE;
+        }
+        if (matched)
+            matchedSingleMuTriggers.push_back(firedSingleMuTriggers[i]);
+    }
+    evtSingleMuTriggered = matchedSingleMuTriggers.size() > 0;
+
+    evtMuonTriggered = evtSingleMuTriggered || evtDoubleMuTriggered;
+
+
+
+    //
+    //  DOUBLE ELECTRON
+    //
+
+    for (unsigned i = 0; i < firedDoubleElTriggers.size(); i++)
+    {
+        bool matched = kFALSE;
+        for (unsigned j = 0; j < electrons.size(); j++)
+        {
+            if (!electronIsTight[j])
+                continue;
+
+            // Did not match leg 1
+            if (electrons[j]->pt < ELEC_LEG1_PT)
+                continue;
+            if (!trigger->passObj(firedDoubleElTriggers[i], 1, electrons[j]->hltMatchBits))
+                continue;
+
+            // Look for a second lepton passing leg 2
+            for (unsigned k = 0; k < electrons.size(); k++)
+            {
+                if (j == k)
+                    continue;
+                if (!electronIsTight[k])
+                    continue;
+
+                if (electrons[k]->pt < ELEC_LEG2_PT)
+                    continue;
+                if (trigger->passObj(firedDoubleElTriggers[i], 2, electrons[k]->hltMatchBits))
+                    matched = kTRUE;
+            }
+
+        }
+        if (matched)
+            matchedDoubleElTriggers.push_back(firedDoubleElTriggers[i]);
+    }
+    evtDoubleElTriggered = matchedDoubleElTriggers.size() > 0;
+
+
+
+    //
+    //  SINGLE ELECTRON
+    //
+
+    for (unsigned i = 0; i < firedSingleElTriggers.size(); i++)
+    {
+        bool matched = kFALSE;
+        for (unsigned j = 0; j < electrons.size(); j++)
+        {
+            if (!electronIsTight[j])
+                continue;
+
+            if (electrons[j]->pt < ELEC_SINGLE_PT)
+                continue;
+            if (trigger->passObj(firedSingleElTriggers[i], 1, electrons[j]->hltMatchBits))
+                matched = kTRUE;
+        }
+        if (matched)
+            matchedSingleElTriggers.push_back(firedSingleElTriggers[i]);
+    }
+    evtSingleElTriggered = matchedSingleElTriggers.size() > 0;
+
+    evtElectronTriggered = evtSingleElTriggered || evtDoubleElTriggered;
+
+
+
+    //
+    //  DATA HANDLING
+    //
+
+    if (isData)
+    {
+        if      (evtDoubleMuTriggered)
+            passTrigger = sampleName.Contains("DoubleMuon");
+        else if (evtSingleMuTriggered)
+            passTrigger = sampleName.Contains("SingleMuon");
+        else if (evtDoubleElTriggered)
+            passTrigger = sampleName.Contains("DoubleEG") || sampleName.Contains("EGamma");
+        else if (evtSingleElTriggered)
+            passTrigger = sampleName.Contains("SingleElectron") || sampleName.Contains("EGamma");
+        else
+            passTrigger = kFALSE;
+    }
+    else
+        passTrigger = evtMuonTriggered || evtElectronTriggered;
+
+    if (!passTrigger && !isSignal && !isDrellYan)
+        return kTRUE;
+    hTotalEvents->Fill(5);
+
+
+
+    //
+    //  FILL OBJECT INFO
+    //
+
+
+    // Muons
+    for (unsigned j = 0; j < muons.size(); j++)
+    {
+        TMuon* muon = muons[j];
+
         bool firedLeg1 = kFALSE, firedLeg2 = kFALSE, firedSingle = kFALSE;
 
-        for (unsigned i = 0; i < doubleElecTriggers.size(); i++)
+        for (unsigned i = 0; i < matchedDoubleMuTriggers.size(); i++)
         {
-            if (trigger->passObj(doubleElecTriggers[i], 1, electron->hltMatchBits))
+            if (trigger->passObj(matchedDoubleMuTriggers[i], 1, muon->hltMatchBits)
+                    && (muon->pt > MUON_LEG1_PT))
                 firedLeg1 = kTRUE;
-            if (trigger->passObj(doubleElecTriggers[i], 2, electron->hltMatchBits))
+            if (trigger->passObj(matchedDoubleMuTriggers[i], 2, muon->hltMatchBits)
+                    && (muon->pt > MUON_LEG2_PT))
                 firedLeg2 = kTRUE;
         }
-        for (unsigned i = 0; i < singleElecTriggers.size(); i++)
+        for (unsigned i = 0; i < matchedSingleMuTriggers.size(); i++)
         {
-            if (trigger->passObj(singleElecTriggers[i], 1, electron->hltMatchBits))
+            if (trigger->passObj(matchedSingleMuTriggers[i], 1, muon->hltMatchBits)
+                    && (muon->pt > MUON_SINGLE_PT))
+                firedSingle = kTRUE;
+        }
+
+        muonFiredLeg1.push_back(firedLeg1);
+        muonFiredLeg2.push_back(firedLeg2);
+        muonFiredSingle.push_back(firedSingle);
+    }
+
+
+    // Electrons
+    for (unsigned j = 0; j < electrons.size(); j++)
+    {
+        TElectron* electron = electrons[j];
+
+        bool firedLeg1 = kFALSE, firedLeg2 = kFALSE, firedSingle = kFALSE;
+
+        for (unsigned i = 0; i < matchedDoubleElTriggers.size(); i++)
+        {
+            if (trigger->passObj(matchedDoubleElTriggers[i], 1, electron->hltMatchBits)
+                    && (electron->pt > ELEC_LEG1_PT))
+                firedLeg1 = kTRUE;
+            if (trigger->passObj(matchedDoubleElTriggers[i], 2, electron->hltMatchBits)
+                    && (electron->pt > ELEC_LEG2_PT))
+                firedLeg2 = kTRUE;
+        }
+        for (unsigned i = 0; i < matchedSingleElTriggers.size(); i++)
+        {
+            if (trigger->passObj(matchedSingleElTriggers[i], 1, electron->hltMatchBits)
+                    && (electron->pt > ELEC_SINGLE_PT))
                 firedSingle = kTRUE;
         }
 
         electronFiredLeg1.push_back(firedLeg1);
         electronFiredLeg2.push_back(firedLeg2);
         electronFiredSingle.push_back(firedSingle);
-/*
-        pair<float, float> trigEff;
-        trigEff = weights->GetDoubleElectronTriggerEff(electron, 1);
-        electronTrigEffLeg1Data.push_back(trigEff.first);
-        electronTrigEffLeg1MC.push_back(trigEff.second);
-
-        trigEff = weights->GetDoubleElectronTriggerEff(electron, 2);
-        electronTrigEffLeg2Data.push_back(trigEff.first);
-        electronTrigEffLeg2MC.push_back(trigEff.second);
-*/
     }
-
-    nLooseLeptons = nLooseMuons + nLooseElectrons;
-    nTightLeptons = nTightMuons + nTightElectrons;
-
 
 
 
@@ -731,7 +909,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         cout << "Invalid selection criterion" << endl;
         return kTRUE;
     }
-    hTotalEvents->Fill(5);
+    hTotalEvents->Fill(6);
 
 
     outTree->Fill();

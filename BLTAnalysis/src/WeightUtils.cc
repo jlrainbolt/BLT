@@ -131,11 +131,11 @@ float WeightUtils::GetSampleWeight() const
     float lumi = 1, xsec = 1, ngen = 1000, eff = 1;
 
     if      (_dataPeriod == "2016")
-        lumi = 36.42;
+        lumi = 35.92;
     else if (_dataPeriod == "2017")
-        lumi = 41.37;
+        lumi = 41.53;
     else if (_dataPeriod == "2018")
-        lumi = 58.83;
+        lumi = 59.74;
 
     if ((_selection == "ee") && (_dataPeriod == "2017"))
         eff = 0.991;

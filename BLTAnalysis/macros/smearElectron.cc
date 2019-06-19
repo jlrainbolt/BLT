@@ -28,7 +28,7 @@ void smearElectron(const TString YEAR_STR, const TString type, const TString suf
         inName = "../data/electron_" + type + "_sf_" + YEAR_STR + ".root";
     else
         inName = "../data/electron_" + type + "_sf_" + YEAR_STR + "_" + suff + ".root";
-    inName = "../data/electron_" + type + "_sf_" + YEAR_STR + "_full.root";
+//  inName = "../data/electron_" + type + "_sf_" + YEAR_STR + "_full.root";
 
     TFile   *inFile = TFile::Open(inName);
 

@@ -76,6 +76,9 @@ public:
     std::vector<string>                 singleMuonTriggers, singleElecTriggers;
     std::vector<string>                 muonTriggers, elecTriggers;
 
+    float       MUON_LEG1_PT,           MUON_LEG2_PT,           MUON_SINGLE_PT;
+    float       ELEC_LEG1_PT,           ELEC_LEG2_PT,           ELEC_SINGLE_PT;
+
 
 
     //

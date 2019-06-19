@@ -106,6 +106,9 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     outHistName = params->get_output_treename("PhaseSpaceEvents");
     hPhaseSpaceEvents = new TH1D(outHistName.c_str(), "PhaseSpaceEvents", 10, 0.5, 10.5);
 
+    outHistName = params->get_output_treename("FiducialEvents");
+    hFiducialEvents = new TH1D(outHistName.c_str(), "FiducialEvents", 10, 0.5, 10.5);
+
 
     ReportPostBegin();
 }
@@ -222,8 +225,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     ////
     ////
 
-
-    hPhaseSpaceEvents->Fill(1, genWeight);
 
     vector<TLorentzVector> muonP4, elecP4;
     leptonsP4 = TLorentzVector();
@@ -436,7 +437,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     for (unsigned i = 0; i < nElectrons; i++)
         elecsP4 = elecsP4 + elecP4[i];
 
-    hPhaseSpaceEvents->Fill(1, genWeight);
     unsigned C = 0;                             // Index
 
     if      (nMuons == 2 && nElectrons == 0)    // mumu = 3
@@ -463,6 +463,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         return kTRUE;
 
     unsigned D = (C < 6) ? 2 : 5;
+    hPhaseSpaceEvents->Fill(1, genWeight);
     hPhaseSpaceEvents->Fill(C, genWeight);
     hPhaseSpaceEvents->Fill(D, genWeight);
     decayChannel = C;
@@ -494,6 +495,13 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
             isFiducial = kFALSE;
         if (sorted_leps[3].Pt() < PT_MIN)
             isFiducial = kFALSE;
+    }
+
+    if (isFiducial)
+    {
+        hFiducialEvents->Fill(1, genWeight);
+        hFiducialEvents->Fill(C, genWeight);
+        hFiducialEvents->Fill(D, genWeight);
     }
 
 
