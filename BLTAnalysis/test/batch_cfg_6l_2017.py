@@ -6,11 +6,11 @@ import sys
 ''' Specify parameters '''
 cfg        = bm.JobConfig
 selection  = 'dressed'
-period     = '2016'
-executable = 'execBatchGen.sh'
+period     = '2017'
+executable = 'execBatch6l.sh'
 location   = 'lpc'
 
-mc_samples  = ['zz_4l', 'zjets']
+mc_samples  = ['zz_4l']
 
 
 
@@ -26,23 +26,9 @@ mc_dict = {}
 mc_dict['zz_4l'] = \
 [
     cfg(data_name = 'ZZTo4L',
-        path     = '{0}/ZZTo4L_powheg_RunIISummer16_v3-v1'.format(path),
+        path     = '{0}/ZZTo4L_powheg_RunIIFall17_new_pmx_v14-v1'.format(path),
         nJobs    = 15,
         suffix   = 'zz_4l'
-        ),
-    cfg(data_name = 'ZZTo4L_aMC',
-        path     = '{0}/ZZTo4L_amcatnlo_RunIISummer16_v3_ext1-v2'.format(path),
-        nJobs    = 20,
-        suffix   = 'zz_4l_aMC'
-        ),
-]
-
-mc_dict['zjets'] = \
-[
-    cfg(data_name = 'DYJetsToLL_M-50',
-        path     = '{0}/DYJetsToLL_M-50_amcatnlo_RunIISummer16_v3_ext2-v1'.format(path),
-        nJobs    = 240,
-        suffix   = 'zjets_m-50'
         ),
 ]
 

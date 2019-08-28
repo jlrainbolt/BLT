@@ -1,4 +1,4 @@
-#include "PhaseSpaceAnalyzer.h"
+#include "SixLeptonAnalyzer.h"
 
 //
 // See header file for class documentation
@@ -11,17 +11,17 @@ using namespace std;
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
 
 
-PhaseSpaceAnalyzer::PhaseSpaceAnalyzer() : BLTSelector()
+SixLeptonAnalyzer::SixLeptonAnalyzer() : BLTSelector()
 {
 
 }
 
-PhaseSpaceAnalyzer::~PhaseSpaceAnalyzer()
+SixLeptonAnalyzer::~SixLeptonAnalyzer()
 {
 
 }
 
-void PhaseSpaceAnalyzer::Begin(TTree *tree)
+void SixLeptonAnalyzer::Begin(TTree *tree)
 {
     // Parse command line option
     std::string tmp_option = GetOption();
@@ -57,12 +57,6 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "genWeight",                &genWeight);
     outTree->Branch(    "decayChannel",             &decayChannel);
     outTree->Branch(    "isFiducial",               &isFiducial);
-
-    outTree->Branch(    "nomWeight",                &nomWeight);
-    outTree->Branch(    "qcdID",                    &qcdID);
-    outTree->Branch(    "qcdWeight",                &qcdWeight);
-    outTree->Branch(    "pdfID",                    &pdfID);
-    outTree->Branch(    "pdfWeight",                &pdfWeight);
 
 
     // Counters
@@ -104,7 +98,7 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
 
     // Acceptance counters
     outHistName = params->get_output_treename("PhaseSpaceEvents");
-    hPhaseSpaceEvents = new TH1D(outHistName.c_str(), "PhaseSpaceEvents", 10, 0.5, 10.5);
+    hSixLeptonEvents = new TH1D(outHistName.c_str(), "PhaseSpaceEvents", 10, 0.5, 10.5);
 
     outHistName = params->get_output_treename("FiducialEvents");
     hFiducialEvents = new TH1D(outHistName.c_str(), "FiducialEvents", 10, 0.5, 10.5);
@@ -114,7 +108,7 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
 }
 
 
-void PhaseSpaceAnalyzer::Init(TTree *tree)
+void SixLeptonAnalyzer::Init(TTree *tree)
 {
     // Set branch addresses and branch pointers
     if (!tree) return;
@@ -124,25 +118,25 @@ void PhaseSpaceAnalyzer::Init(TTree *tree)
     fInfo           = 0;
     fGenEvtInfo     = 0;
     fGenParticleArr = 0;
-    fLHEWeightArr   = 0;
+//  fLHEWeightArr   = 0;
 
     fChain->SetBranchAddress(   "Info",         &fInfo,             &b_Info);
     fChain->SetBranchAddress(   "GenEvtInfo",   &fGenEvtInfo,       &b_GenEvtInfo);
     fChain->SetBranchAddress(   "GenParticle",  &fGenParticleArr,   &b_GenParticleArr);
-    fChain->SetBranchAddress(   "LHEWeight",    &fLHEWeightArr,     &b_LHEWeightArr);
+//  fChain->SetBranchAddress(   "LHEWeight",    &fLHEWeightArr,     &b_LHEWeightArr);
 }
 
 
-Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
+Bool_t SixLeptonAnalyzer::Process(Long64_t entry)
 {
 
     //
     //  CLEAR CONTAINERS
     //
     
-    isFiducial = kFALSE;        qcdID.clear();              qcdWeight.clear();
-    decayChannel = 0;           pdfID.clear();              pdfWeight.clear();
-    genWeight = 1;              nomWeight = 1;
+    isFiducial = kFALSE;    //  qcdID.clear();              qcdWeight.clear();
+    decayChannel = 0;       //  pdfID.clear();              pdfWeight.clear();
+    genWeight = 1;          //  nomWeight = 1;
 
     nMuons = 0;                 nElectrons = 0;             nLeptons = 0;               nZs = 0;
 
@@ -169,10 +163,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     const bool isData = (fInfo->runNum != 1);
 
-    TString dataSetGroup = params->datasetgroup;
-    const bool isSignal = dataSetGroup.EqualTo("zz_4l") || dataSetGroup.EqualTo("zz_4l_aMC");
-    const bool isDrellYan = dataSetGroup.EqualTo("zjets_m-50");
-
     // Reject (accidental?) data events
     if (isData)
         return kTRUE;
@@ -191,7 +181,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     evtNumber   = fInfo->evtNum;
     lumiSection = fInfo->lumiSec;
 
-
+/*
     for (int i = 0; i < fLHEWeightArr->GetEntries(); i++)
     {
         TLHEWeight* lhe = (TLHEWeight*) fLHEWeightArr->At(i);
@@ -214,7 +204,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
             pdfWeight.push_back(lhe->weight / nomWeight);
         }
     }
-
+*/
 
 
 
@@ -247,7 +237,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         // Now look for electrons and muons
         if ((abs(particle->pdgId) != 13) && (abs(particle->pdgId) != 11))
             continue;
-        if (particle->status != 1)      // no point in saving Born leptons anymore...
+        if (particle->status != 1)      // no point in saving Born leptons...
             continue;
 
         // Try to trace back to a Z
@@ -374,15 +364,26 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     ////
 
 
-    if (params->selection != "dressed")
-        return kTRUE;
+//  if (params->selection != "dressed")
+//      return kTRUE;
 
 
     // Require correct number of leptons
 
-    if (isSignal && (nLeptons != 4))
+    if (nLeptons != 6)
         return kTRUE;
-    if (isDrellYan && (nLeptons != 2))
+
+
+    // Total charge
+
+    short muonTotalQ = 0, electronTotalQ = 0;
+
+    for (unsigned i = 0; i < nMuons; i++)
+        muonTotalQ += muonQ[i];
+    for (unsigned i = 0; i < nElectrons; i++)
+        electronTotalQ += electronQ[i];
+
+    if ((muonTotalQ != 0) || (electronTotalQ != 0))
         return kTRUE;
     hTotalEvents->Fill(2);
 
@@ -439,33 +440,23 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     unsigned C = 0;                             // Index
 
-    if      (nMuons == 2 && nElectrons == 0)    // mumu = 3
+    if      (nMuons == 6 && nElectrons == 0)    // 6m   = 2
+        C = 2;
+
+    else if (nMuons == 4 && nElectrons == 2)    // 4m2e = 3
         C = 3;
 
-    else if (nMuons == 0 && nElectrons == 2)    // ee   = 4
+    else if (nMuons == 2 && nElectrons == 4)    // 2m4e = 4
         C = 4;
 
-    else if (nMuons == 4 && nElectrons == 0)    // 4m   = 6
-        C = 6;
-
-    else if (nMuons == 2 && nElectrons == 2     // 2m2e = 7
-            && muonsP4.M() > elecsP4.M())
-        C = 7;
-
-    else if (nMuons == 2 && nElectrons == 2     // 2e2m = 8
-            && muonsP4.M() < elecsP4.M())
-        C = 8;
-
-    else if (nMuons == 0 && nElectrons == 4)    // 4e   = 9
-        C = 9;
+    else if (nMuons == 0 && nElectrons == 6)    // 6e   = 5
+        C = 5;
 
     else
         return kTRUE;
 
-    unsigned D = (C < 6) ? 2 : 5;
-    hPhaseSpaceEvents->Fill(1, genWeight);
-    hPhaseSpaceEvents->Fill(C, genWeight);
-    hPhaseSpaceEvents->Fill(D, genWeight);
+    hSixLeptonEvents->Fill(1, genWeight);
+    hSixLeptonEvents->Fill(C, genWeight);
     decayChannel = C;
 
 
@@ -489,11 +480,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     if (sorted_leps[1].Pt() < PT2_MIN)
         isFiducial = kFALSE;
 
-    if (nLeptons > 2)
+    for (unsigned i = 2; i < sorted_leps.size(); i++)
     {
-        if (sorted_leps[2].Pt() < PT_MIN)
-            isFiducial = kFALSE;
-        if (sorted_leps[3].Pt() < PT_MIN)
+        if (sorted_leps[i].Pt() < PT_MIN)
             isFiducial = kFALSE;
     }
 
@@ -501,7 +490,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     {
         hFiducialEvents->Fill(1, genWeight);
         hFiducialEvents->Fill(C, genWeight);
-        hFiducialEvents->Fill(D, genWeight);
     }
 
 
@@ -513,7 +501,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     return kTRUE;
 }
 
-void PhaseSpaceAnalyzer::Terminate()
+void SixLeptonAnalyzer::Terminate()
 {
     outFile->Write();
     outFile->Close();
@@ -521,14 +509,14 @@ void PhaseSpaceAnalyzer::Terminate()
     ReportPostTerminate();
 }
 
-void PhaseSpaceAnalyzer::ReportPostBegin()
+void SixLeptonAnalyzer::ReportPostBegin()
 {
     std::cout << "  ==== Begin Job =============================================" << std::endl;
     std::cout << *params << std::endl;
     std::cout << "  ============================================================" << std::endl;
 }
 
-void PhaseSpaceAnalyzer::ReportPostTerminate()
+void SixLeptonAnalyzer::ReportPostTerminate()
 {
     std::cout << "  ==== Terminate Job =========================================" << std::endl;
     std::cout << "  output   : " << params->get_output_filename("output") << std::endl;
@@ -543,7 +531,7 @@ void PhaseSpaceAnalyzer::ReportPostTerminate()
 
 int main(int argc, char **argv)
 {
-    std::unique_ptr<PhaseSpaceAnalyzer> selector(new PhaseSpaceAnalyzer());
+    std::unique_ptr<SixLeptonAnalyzer> selector(new SixLeptonAnalyzer());
 
     try {
         selector->MakeMeSandwich(argc, argv);  //<===the real main function is here

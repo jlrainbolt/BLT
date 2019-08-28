@@ -12,8 +12,8 @@ location    = 'lpc'
 
 data_samples    = ['double_mu', 'single_mu', 'egamma']
 #data_samples    = []
-mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
-#mc_samples      = []
+#mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+mc_samples      = []
 
 
 
@@ -108,6 +108,11 @@ mc_dict['signal'] = \
         path     = '{0}/ZZTo4L_powheg_RunIIAutumn18_v15_ext1-v2'.format(path),
         nJobs    = 15,
         suffix   = 'zz_4l'
+        ),
+    cfg(data_name = 'ZZTo4L_aMC',
+        path     = '{0}/ZZTo4L_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 65,
+        suffix   = 'zz_4l_aMC'
         ),
 ]
 

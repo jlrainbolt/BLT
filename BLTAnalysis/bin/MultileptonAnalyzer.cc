@@ -42,7 +42,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
-    const bool isSignal = params->datasetgroup == "zz_4l";
+    const bool isSignal = params->dataset == "ZZTo4L" || params->dataset == "ZZTo4L_aMC";
 
     // Particle selector, cuts
     cuts.reset(new Cuts());
@@ -104,7 +104,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
         singleMuonTriggers.push_back("HLT_IsoMu24_v*");
 
         doubleElecTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
-//      singleElecTriggers.push_back("HLT_Ele32_WPTight_Gsf_v*");
         singleElecTriggers.push_back("HLT_Ele35_WPTight_Gsf_v*");
 
         MUON_LEG1_PT = 17;      MUON_LEG2_PT = 8;       MUON_SINGLE_PT = 24;
@@ -167,10 +166,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "muonFiredLeg1",            &muonFiredLeg1);
     outTree->Branch(    "muonFiredLeg2",            &muonFiredLeg2);
     outTree->Branch(    "muonFiredSingle",          &muonFiredSingle);
-//  outTree->Branch(    "muonTrigEffLeg1Data",      &muonTrigEffLeg1Data);
-//  outTree->Branch(    "muonTrigEffLeg1MC",        &muonTrigEffLeg1MC);
-//  outTree->Branch(    "muonTrigEffLeg2Data",      &muonTrigEffLeg2Data);
-//  outTree->Branch(    "muonTrigEffLeg2MC",        &muonTrigEffLeg2MC);
 
     outTree->Branch(    "electronP4",               &electronP4_,           32000,      1);
     outTree->Branch(    "electronUncorrectedP4",    &electronUncorrP4_,     32000,      1);
@@ -190,10 +185,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "electronFiredLeg1",        &electronFiredLeg1);
     outTree->Branch(    "electronFiredLeg2",        &electronFiredLeg2);
     outTree->Branch(    "electronFiredSingle",      &electronFiredSingle);
-//  outTree->Branch(    "electronTrigEffLeg1Data",  &electronTrigEffLeg1Data);
-//  outTree->Branch(    "electronTrigEffLeg1MC",    &electronTrigEffLeg1MC);
-//  outTree->Branch(    "electronTrigEffLeg2Data",  &electronTrigEffLeg2Data);
-//  outTree->Branch(    "electronTrigEffLeg2MC",    &electronTrigEffLeg2MC);
 
     if (isSignal)
     {
@@ -239,8 +230,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     muonIsTight.clear();            muonIsLoose.clear();            muonIsIsolated.clear();
     muonIsPF.clear();               muonIsTrackerHighPt.clear();
     muonFiredLeg1.clear();          muonFiredLeg2.clear();          muonFiredSingle.clear();
-//  muonTrigEffLeg1Data.clear();
-//  muonTrigEffLeg1MC.clear();      muonTrigEffLeg2Data.clear();    muonTrigEffLeg2MC.clear(); 
                                                                                                         
     electronP4_->Delete();          electronUncorrP4_->Delete();    electronCharge.clear();
     electronEnergySF.clear();       electronEnergySFUp.clear();     electronEnergySFDown.clear();
@@ -248,8 +237,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     electronScEta.clear();          electronScEt.clear();           electronIsGap.clear();
     electronIsTight.clear();        electronIsLoose.clear();        electronIsV2Iso.clear();
     electronFiredLeg1.clear();      electronFiredLeg2.clear();      electronFiredSingle.clear();
-//  electronTrigEffLeg1Data.clear();
-//  electronTrigEffLeg1MC.clear();  electronTrigEffLeg2Data.clear();electronTrigEffLeg2MC.clear();
 
     nDressedMuons = 0;              nDressedElectrons = 0;          nDressedLeptons = 0; 
     dressedMuonP4_->Delete();       dressedMuonQ.clear();           dressedMuonZIndex.clear();
@@ -284,8 +271,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     TString sampleName = params->dataset;
  
-    const bool isSignal     = params->datasetgroup == "zz_4l";
-    const bool isDrellYan   = params->datasetgroup == "zjets_m-50";
+    const bool isSignal     = sampleName.EqualTo("ZZTo4L") || sampleName.Contains("aMC");
+    const bool isDrellYan   = sampleName.Contains("DYJetsToLL_M-50");
 
 
 

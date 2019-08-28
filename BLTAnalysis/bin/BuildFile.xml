@@ -5,3 +5,4 @@
 <bin file="PhaseSpaceAnalyzer.cc" name="PhaseSpaceAnalyzer"></bin>
 <bin file="TagAndProbeAnalyzer.cc" name="TagAndProbeAnalyzer"></bin>
 <bin file="SelectedEventRetriever.cc" name="SelectedEventRetriever"></bin>
+<bin file="SixLeptonAnalyzer.cc" name="SixLeptonAnalyzer"></bin>
