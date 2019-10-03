@@ -42,7 +42,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
-    const bool isSignal = params->dataset == "ZZTo4L" || params->dataset == "ZZTo4L_aMC";
+    const bool isSignal     = params->dataset == "ZZTo4L" || params->dataset == "ZZTo4L_aMC" || params->dataset == "ZZTo4L_M-1";
+    const bool isDrellYan   = params->dataset == "DYJetsToLL_M-50";
 
     // Particle selector, cuts
     cuts.reset(new Cuts());
@@ -186,7 +187,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "electronFiredLeg2",        &electronFiredLeg2);
     outTree->Branch(    "electronFiredSingle",      &electronFiredSingle);
 
-    if (isSignal)
+    if (isSignal || isDrellYan)
     {
         outTree->Branch(    "nDressedMuons",            &nDressedMuons);
         outTree->Branch(    "nDressedElectrons",        &nDressedElectrons);
@@ -271,7 +272,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     TString sampleName = params->dataset;
  
-    const bool isSignal     = sampleName.EqualTo("ZZTo4L") || sampleName.Contains("aMC");
+    const bool isSignal     = sampleName.EqualTo("ZZTo4L") || sampleName.EqualTo("ZZTo4L_aMC") || sampleName.EqualTo("ZZTo4L_M-1");
     const bool isDrellYan   = sampleName.Contains("DYJetsToLL_M-50");
 
 
@@ -335,7 +336,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             if ((abs(particle->pdgId) == 15) && (mother->pdgId == 23))
                 hasTauDecay = kTRUE;
 
-            if (!isSignal)                  // don't waste time if we aren't storing the leptons
+            if (!isSignal && !isDrellYan)   // don't waste time if we aren't storing the leptons
                 continue;
 
             // Now look for electrons and muons

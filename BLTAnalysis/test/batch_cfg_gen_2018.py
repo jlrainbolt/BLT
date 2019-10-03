@@ -10,7 +10,7 @@ period     = '2018'
 executable = 'execBatchGen.sh'
 location   = 'lpc'
 
-mc_samples  = ['zz_4l', 'zjets']
+mc_samples  = ['zz_4l']#, 'zjets']
 
 
 
@@ -25,10 +25,15 @@ mc_dict = {}
 
 mc_dict['zz_4l'] = \
 [
-    cfg(data_name = 'ZZTo4L',
-        path     = '{0}/ZZTo4L_powheg_RunIIAutumn18_v15_ext1-v2'.format(path),
-        nJobs    = 15,
-        suffix   = 'zz_4l'
+#   cfg(data_name = 'ZZTo4L',
+#       path     = '{0}/ZZTo4L_powheg_RunIIAutumn18_v15_ext1-v2'.format(path),
+#       nJobs    = 15,
+#       suffix   = 'zz_4l'
+#       ),
+    cfg(data_name = 'ZZTo4L_aMC',
+        path     = '{0}/ZZTo4L_amcatnlo_RunIIAutumn18_v15-v1'.format(path),
+        nJobs    = 65,
+        suffix   = 'zz_4l_aMC'
         ),
 ]
 

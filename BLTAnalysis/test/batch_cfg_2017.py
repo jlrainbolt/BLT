@@ -10,10 +10,10 @@ period      = '2017'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-data_samples    = ['double_mu', 'double_eg', 'single_mu', 'single_e']
-#data_samples    = []
-mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
-#mc_samples      = []
+#data_samples    = ['double_mu', 'double_eg', 'single_mu', 'single_e']
+data_samples    = []
+#mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
+mc_samples      = ['signal']
 
 
 
@@ -148,15 +148,20 @@ mc_dict = {}
 
 mc_dict['signal'] = \
 [
-    cfg(data_name = 'ZZTo4L',
-        path     = '{0}/ZZTo4L_powheg_RunIIFall17_new_pmx_v14-v1'.format(path),
-        nJobs    = 15,
-        suffix   = 'zz_4l'
-        ),
-    cfg(data_name = 'ZZTo4L_aMC',
-        path     = '{0}/ZZTo4L_amcatnlo_RunIIFall17_v14-v1'.format(path),
-        nJobs    = 65,
-        suffix   = 'zz_4l_aMC'
+#   cfg(data_name = 'ZZTo4L',
+#       path     = '{0}/ZZTo4L_powheg_RunIIFall17_new_pmx_v14-v1'.format(path),
+#       nJobs    = 15,
+#       suffix   = 'zz_4l'
+#       ),
+#   cfg(data_name = 'ZZTo4L_aMC',
+#       path     = '{0}/ZZTo4L_amcatnlo_RunIIFall17_v14-v1'.format(path),
+#       nJobs    = 65,
+#       suffix   = 'zz_4l_aMC'
+#       ),
+    cfg(data_name = 'ZZTo4L_M-1',
+        path     = '{0}/ZZTo4L_M-1_powheg_RunIIFall17_v14-v1'.format(path),
+        nJobs    = 125,
+        suffix   = 'zz_4l_m-1'
         ),
 ]
 
