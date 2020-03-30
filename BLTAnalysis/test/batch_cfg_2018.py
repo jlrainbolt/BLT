@@ -13,7 +13,7 @@ location    = 'lpc'
 #data_samples    = ['double_mu', 'single_mu', 'egamma']
 data_samples    = []
 #mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs', 'triboson']
-mc_samples      = ['signal']
+mc_samples      = ['zjets']
 
 
 

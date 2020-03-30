@@ -6,3 +6,4 @@
 <bin file="TagAndProbeAnalyzer.cc" name="TagAndProbeAnalyzer"></bin>
 <bin file="SelectedEventRetriever.cc" name="SelectedEventRetriever"></bin>
 <bin file="SixLeptonAnalyzer.cc" name="SixLeptonAnalyzer"></bin>
+<bin file="EfficiencyAnalyzer.cc" name="EfficiencyAnalyzer"></bin>
