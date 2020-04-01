@@ -10,7 +10,7 @@ period     = '2016'
 executable = 'execBatchEff.sh'
 location   = 'lpc'
 
-mc_samples  = ['zz_4l', 'zjets']
+mc_samples  = ['zz_4l'] #, 'zjets']
 
 
 

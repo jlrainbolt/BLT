@@ -113,7 +113,7 @@ void EfficiencyAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "dressedElectronP4",        &dressedElectronP4_,    32000,      1);
     outTree->Branch(    "dressedElectronQ",         &dressedElectronQ);
     outTree->Branch(    "dressedElectronIsMatched", &dressedElectronIsMatched);
-    outTree->Branch(    "dressedElectronMatchOdx",  &dressedElectronMatchIdx);
+    outTree->Branch(    "dressedElectronMatchIdx",  &dressedElectronMatchIdx);
 
 
 
@@ -434,7 +434,7 @@ Bool_t EfficiencyAnalyzer::Process(Long64_t entry)
     else
         return kTRUE;
 
-    unsigned D = (C < 6) ? 2 : 6;
+    unsigned D = (C < 5) ? 2 : 5;
     decayChannel = C;
     hTotalEvents->Fill(5);
 
@@ -541,7 +541,7 @@ Bool_t EfficiencyAnalyzer::Process(Long64_t entry)
         copy_p4(muon, MUON_MASS, p4_);
 
         TLorentzVector p4;
-        copy_p4(muons[i], MUON_MASS, p4);
+        copy_p4(muon, MUON_MASS, p4);
         muonP4.push_back(p4);
 
         muonQ.push_back(muon->q);
@@ -571,10 +571,10 @@ Bool_t EfficiencyAnalyzer::Process(Long64_t entry)
         TElectron* electron = electrons[i];
 
         TLorentzVector *p4_ = (TLorentzVector*)electronP4_->ConstructedAt(i);
-        copy_p4(electrons[i], ELE_MASS, p4_);
+        copy_p4(electron, ELE_MASS, p4_);
 
         TLorentzVector p4;
-        copy_p4(electrons[i], ELE_MASS, p4);
+        copy_p4(electron, ELE_MASS, p4);
         electronP4.push_back(p4);
 
         electronQ.push_back(electron->q);
@@ -584,8 +584,6 @@ Bool_t EfficiencyAnalyzer::Process(Long64_t entry)
         electronIsTight.push_back(particleSelector->PassElectronID(electron, cuts->tightHZZElectronID));  
         electronIsLoose.push_back(particleSelector->PassElectronID(electron, cuts->looseHZZElectronID));  
         electronIsV2Iso.push_back(electron->pass2017isoV2wpHZZ);
-
-        dressedElectronP4.push_back(p4);
 
         electronMatchIdx.push_back(-1);
         electronIsMatched.push_back(kFALSE);
@@ -608,7 +606,7 @@ Bool_t EfficiencyAnalyzer::Process(Long64_t entry)
 
     // Muons
 
-    if (muonP4.size() > 0 && dressedMuonP4.size() > 0)
+    if ((muonP4.size() > 0) && (dressedMuonP4.size() > 0))
     {
         for (unsigned i = 0; i < muonP4.size(); i++)
         {
@@ -638,7 +636,7 @@ Bool_t EfficiencyAnalyzer::Process(Long64_t entry)
 
     // Electrons
 
-    if (electronP4.size() > 0 && dressedElectronP4.size() > 0)
+    if ((electronP4.size() > 0) && (dressedElectronP4.size() > 0))
     {
         for (unsigned i = 0; i < electronP4.size(); i++)
         {
