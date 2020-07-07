@@ -10,8 +10,8 @@ period      = '2012'
 executable  = 'execBatch.sh'
 location    = 'lpc'
 
-data_samples    = ['double_mu', 'double_el', 'single_mu', 'single_el']
-#data_samples    = []
+#data_samples    = ['double_mu', 'double_el', 'single_mu', 'single_e']
+data_samples    = []
 mc_samples      = ['signal', 'zjets', 'ttbar', 'diboson', 'higgs']
 #mc_samples      = []
 
@@ -99,7 +99,7 @@ data_dict['double_el'] = \
         ),
 ]
 
-data_dict['single_mu'] = \
+data_dict['single_e'] = \
 [
     cfg(data_name = 'SingleElectron_Run2012A',
         path     = '{0}/SingleElectron_2012A-22Jan2013'.format(path),
@@ -215,11 +215,6 @@ mc_dict['diboson'] = \
         path     = '{0}/Summer12_ZZJetsTo2L2Q_TuneZ2star'.format(path),
         nJobs    = 1,
         suffix   = 'zz_2l2q'
-        ),
-    cfg(data_name = 'ZZ',
-        path     = '{0}/Summer12_ZZ_TuneZ2star'.format(path),
-        nJobs    = 3,
-        suffix   = 'zz'
         ),
 ]
 

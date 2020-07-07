@@ -5,7 +5,7 @@ import sys
 
 ''' Specify parameters '''
 cfg         = bm.JobConfig
-selection   = 'hard'
+selection   = 'dressed'
 period      = '2012'
 executable  = 'execBatchGen.sh'
 location    = 'lpc'
@@ -24,16 +24,6 @@ mc_dict = {}
 path = '/eos/uscms/store/group/lpcbacon/04'
 mc_dict['signal'] = \
 [
-#   cfg(data_name = 'ZZJetsTo4L',
-#       path     = '{0}/Summer12_ZZJetsTo4L_TuneZ2star'.format(path),
-#       nJobs    = 15,
-#       suffix   = 'zz_4l'
-#       ),
-#   cfg(data_name = 'ZZTo4L',
-#       path     = '{0}/Summer12_ZZTo4L_TuneZ2star'.format(path),
-#       nJobs    = 15,
-#       suffix   = 'zz_4l'
-#       ),
     cfg(data_name = 'ZZTo4mu',
         path     = '{0}/Summer12_ZZTo4mu'.format(path),
         nJobs    = 3,

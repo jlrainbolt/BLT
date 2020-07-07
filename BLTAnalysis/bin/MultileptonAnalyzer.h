@@ -76,6 +76,10 @@ public:
     std::vector<string>                 singleMuonTriggers, singleElecTriggers;
     std::vector<string>                 muonTriggers, elecTriggers;
 
+    float       MUON_LEG1_PT,           MUON_LEG2_PT,           MUON_SINGLE_PT;
+    float       ELEC_LEG1_PT,           ELEC_LEG2_PT,           ELEC_SINGLE_PT;
+
+
 
 
     //
@@ -105,9 +109,6 @@ public:
     std::vector<Bool_t>     muonIsTight,            muonIsLoose,            muonIsIsolated;
     std::vector<Bool_t>     muonIsPF,               muonIsTrackerHighPt; 
     std::vector<Bool_t>     muonFiredLeg1,          muonFiredLeg2,          muonFiredSingle;
-//  std::vector<Float_t>    muonTrigEffSingleMC,    muonTrigEffSingleData;
-//  std::vector<Float_t>    muonTrigEffLeg1MC,      muonTrigEffLeg1Data;
-//  std::vector<Float_t>    muonTrigEffLeg2MC,      muonTrigEffLeg2Data;
 
     // Electrons
     TClonesArray            *electronP4_        = new TClonesArray("TLorentzVector");
@@ -119,9 +120,6 @@ public:
     std::vector<Bool_t>     electronIsTight,        electronIsLoose,        electronIsMVA;
     std::vector<Bool_t>     electronIsIsolated,     electronIsGap;
     std::vector<Bool_t>     electronFiredLeg1,      electronFiredLeg2,      electronFiredSingle;
-//  std::vector<Float_t>    electronTrigEffSingleMC,electronTrigEffSingleData;
-//  std::vector<Float_t>    electronTrigEffLeg1MC,  electronTrigEffLeg1Data;
-//  std::vector<Float_t>    electronTrigEffLeg2MC,  electronTrigEffLeg2Data;
 
 
     // Gen particles
